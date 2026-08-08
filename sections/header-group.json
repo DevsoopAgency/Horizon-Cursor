@@ -14,30 +14,95 @@
     "header_announcements_9jGBFp": {
       "type": "header-announcements",
       "blocks": {
-        "announcement_BxgCk9": {
+        "announcement_shipping": {
           "type": "_announcement",
           "settings": {
-            "text": "Welcome to our store",
-            "font": "var(--font-subheading--family)",
+            "text": "FREE SHIPPING ON ORDERS OVER $59",
+            "link": "",
+            "font": "var(--font-body--family)",
             "font_size": "0.75rem",
-            "letter_spacing": "normal",
-            "case": "none"
+            "weight": "700",
+            "letter_spacing": "loose",
+            "case": "uppercase",
+            "text_color": "#ffffff"
+          },
+          "blocks": {}
+        },
+        "announcement_rewards": {
+          "type": "_announcement",
+          "settings": {
+            "text": "EARN REWARDS WITH EVERY PURCHASE",
+            "link": "",
+            "font": "var(--font-body--family)",
+            "font_size": "0.75rem",
+            "weight": "700",
+            "letter_spacing": "loose",
+            "case": "uppercase",
+            "text_color": "#ffffff"
+          },
+          "blocks": {}
+        },
+        "announcement_products": {
+          "type": "_announcement",
+          "settings": {
+            "text": "OVER 10,000 BEAUTY PRODUCTS",
+            "link": "",
+            "font": "var(--font-body--family)",
+            "font_size": "0.75rem",
+            "weight": "700",
+            "letter_spacing": "loose",
+            "case": "uppercase",
+            "text_color": "#ffffff"
+          },
+          "blocks": {}
+        },
+        "announcement_brands": {
+          "type": "_announcement",
+          "settings": {
+            "text": "AUTHENTIC BRANDS ONLY",
+            "link": "",
+            "font": "var(--font-body--family)",
+            "font_size": "0.75rem",
+            "weight": "700",
+            "letter_spacing": "loose",
+            "case": "uppercase",
+            "text_color": "#ffffff"
+          },
+          "blocks": {}
+        },
+        "announcement_returns": {
+          "type": "_announcement",
+          "settings": {
+            "text": "FREE RETURNS WITHIN 30 DAYS",
+            "link": "",
+            "font": "var(--font-body--family)",
+            "font_size": "0.75rem",
+            "weight": "700",
+            "letter_spacing": "loose",
+            "case": "uppercase",
+            "text_color": "#ffffff"
           },
           "blocks": {}
         }
       },
       "block_order": [
-        "announcement_BxgCk9"
+        "announcement_shipping",
+        "announcement_rewards",
+        "announcement_products",
+        "announcement_brands",
+        "announcement_returns"
       ],
       "name": "t:names.announcement_bar",
       "settings": {
+        "layout_style": "marquee",
         "speed": 5,
-        "section_width": "page-width",
-        "background_color": "{{ settings.color_palette.background }}",
-        "divider_width": 1,
-        "divider_color": "{{ settings.color_palette.color2 }}",
-        "padding-block-start": 15,
-        "padding-block-end": 15
+        "movement_direction": "reverse",
+        "gap_between_elements": 40,
+        "section_width": "full-width",
+        "background_color": "#0a0a0a",
+        "divider_width": 0,
+        "padding-block-start": 10,
+        "padding-block-end": 10
       }
     },
     "header_section": {
