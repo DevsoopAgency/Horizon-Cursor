@@ -1,0 +1,102 @@
+---
+description: Horizon theme client build — prefer OOTB sections/blocks; additive settings only; never break existing theme components
+alwaysApply: true
+---
+
+# Horizon Theme Build Rules
+
+This project uses **Shopify Horizon v4.1.3** (theme-blocks architecture). Client designs must be implemented without breaking stock Horizon behavior.
+
+## Prefer stock Horizon first
+
+When implementing a design:
+
+1. Compose with **existing** sections in `sections/` and blocks in `blocks/` (public + private `_*.liquid`).
+2. Prefer editor JSON (`templates/*.json`, section groups) and block nesting over new Liquid files.
+3. Do **not** fork, rewrite, or gut core sections/blocks/snippets unless the design is impossible with stock components.
+4. Reuse Horizon patterns: theme blocks, color palette tokens, type presets, existing cart/search/header/footer.
+
+## If stock sections cannot match the design
+
+Only when structure is too complex for OOTB sections/blocks:
+
+1. **Do not** paper over gaps with hard-coded CSS overrides on stock classes.
+2. **Do** add **new schema settings** (section/block/theme) that drive the layout/style via Liquid + CSS variables / conditional classes.
+3. Keep changes **additive**: new `id`s, new optional settings, new defaults that preserve current look when unset.
+4. Never rename, remove, or change the meaning of existing setting `id`s — that breaks merchant configs and `settings_data.json` / template JSON.
+
+```liquid
+{% comment %} ❌ BAD — override stock without a setting {% endcomment %}
+.hero { margin-top: -80px; }
+
+{% comment %} ✅ GOOD — new setting, default = current behavior {% endcomment %}
+{% if section.settings.overlap_header %}
+  style="--hero-overlap: {{ section.settings.overlap_amount }}px"
+{% endif %}
+```
+
+```json
+{
+  "type": "range",
+  "id": "overlap_amount",
+  "label": "Header overlap",
+  "min": 0,
+  "max": 120,
+  "default": 0,
+  "unit": "px"
+}
+```
+
+## Custom sections/blocks must follow Horizon architecture
+
+If you must create a new section or block, match Horizon — **not** Dawn-era section blocks.
+
+### Theme blocks (required)
+
+- Use `{% content_for 'blocks' %}` for nested content.
+- Schema `"blocks"` must allow theme blocks: `{ "type": "@theme" }` (and `@app` / private `_*` when needed).
+- Prefer nesting public blocks (`text`, `button`, `image`, `group`, etc.) over hard-coding markup.
+- Do **not** use old static section-block schemas (`"type": "heading"` / `"type": "text"` as local-only section blocks) unless mirroring a rare Horizon private block pattern (`_*.liquid`).
+
+```liquid
+{% capture children %}
+  {% content_for 'blocks' %}
+{% endcapture %}
+{% render 'section', section: section, children: children, section_id: section.id %}
+```
+
+```json
+"blocks": [{ "type": "@theme" }, { "type": "@app" }]
+```
+
+### Mirror Horizon standard settings
+
+Copy the same setting `id`s, option values, and `t:` locale keys from a close stock peer (usually `sections/section.liquid` or a similar block). Include the shared layout/appearance set when it applies:
+
+| Area | Setting IDs to match |
+|---|---|
+| Layout | `content_direction`, `vertical_on_mobile`, `horizontal_alignment`, `vertical_alignment`, `gap`, column variants (`*_flex_direction_column`) |
+| Size | `section_width` (`page-width` / `full-width`), `section_height`, `section_height_custom` |
+| Appearance | `background_media`, `background_color`, overlay settings |
+| Borders | `border`, `border_width`, `border_opacity`, `border_color`, `border_radius` |
+| Padding | `padding-block-start`, `padding-block-end` |
+
+Blocks that need spacing/typography should reuse Horizon block IDs (`type_preset`, `padding-block-*`, width/alignment, color tokens via `settings.color_palette`), not one-off names.
+
+Wire those settings through existing snippets (`section`, etc.) and CSS variables — don’t invent a parallel layout system.
+
+### Reference before inventing
+
+Before scaffolding a custom section, open `sections/section.liquid` (and the closest feature section) and clone its schema/structure. Same for blocks: clone a peer in `blocks/`.
+
+## Safety checklist before shipping
+
+- Existing sections/blocks still render with default settings unchanged.
+- New settings are optional; blank/`default` = previous Horizon look.
+- No global CSS that restyles unrelated components.
+- Touch the minimum files; prefer extending one section/block over duplicating.
+- Custom work uses `@theme` blocks + Horizon-standard setting IDs (`section_width`, padding, gap, etc.).
+
+## When stuck
+
+Say so: name which stock sections were tried and why a new setting (or rare new section) is required — then implement the additive schema path, not a CSS hack.
