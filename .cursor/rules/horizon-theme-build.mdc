@@ -5,13 +5,86 @@ alwaysApply: true
 
 # Horizon Theme Build Rules
 
-This project uses **Shopify Horizon v4.1.3** (theme-blocks architecture). Client designs must be implemented without breaking stock Horizon behavior.
+This project uses **Horizon v4.1.3** — Shopify’s official free Online Store 2.0 theme (**theme-blocks** architecture). Client designs must be implemented without breaking stock Horizon behavior.
+
+## Theme identity (audit)
+
+| Field | Value |
+|---|---|
+| Name | Horizon |
+| Version | 4.1.3 |
+| Author | Shopify |
+| Preset | Horizon |
+| Docs | https://help.shopify.com/manual/online-store/themes |
+| Support | https://support.shopify.com/ |
+| Dev store | `horizon-cursor-jpf40muy.myshopify.com` |
+| Repo | https://github.com/DevsoopAgency/Horizon-Cursor.git |
+
+Declared in `config/settings_schema.json`.
+
+## Architecture inventory (audit)
+
+Modern Shopify theme — **not** Dawn-style section-only. Heavy use of Theme Blocks (`/blocks`).
+
+| Folder | Count |
+|---|---|
+| `sections/` | 42 |
+| `blocks/` | 95 (44 public + 51 private `_*.liquid`) |
+| `snippets/` | 138 |
+| `templates/` | 13 |
+| `assets/` | 124 (81 JS, 34 SVG, 3 CSS, 4 TS) |
+| `locales/` | 51 files (~25 languages) |
+| `layout/` | `theme.liquid`, `password.liquid` |
+
+JSON templates are OS 2.0 (`*.json`), with comment headers that Shopify theme editor can overwrite.
+
+### Templates
+
+`404`, `article`, `blog`, `cart`, `collection`, `gift_card` (liquid), `index`, `list-collections`, `page`, `page.contact`, `password`, `product`, `search`
+
+Homepage starts with a **hero** + nested text/button theme blocks.
+
+### Key sections
+
+- **Marketing:** `hero`, `slideshow`, `layered-slideshow`, `marquee`, `media-with-content`, `carousel`, `divider`
+- **Commerce:** `product-information`, `featured-product`, `featured-product-information`, `product-list`, `product-recommendations`, `product-hotspots`, `quick-order-list`, `collection-list`, `collection-links`
+- **Chrome:** `header`, `header-announcements`, `footer`, `footer-utilities`, `cart-drawer-section`, `predictive-search`
+- **Content:** `featured-blog-posts`, `main-*` (page/blog/cart/collection/404), `custom-liquid`, `section` (generic), `_blocks`
+- **Section groups:** `header-group.json`, `footer-group.json`
+
+### Notable public blocks
+
+`text`, `image`, `video`, `button`, `buy-buttons`, `variant-picker`, `product-card`, `featured-collection`, `filters`, `accordion`, `comparison-slider`, `email-signup`, `contact-form`, `jumbo-text`, `swatches`, `menu`, `group`, `spacer`, `review`, `accelerated-checkout`, etc.
+
+### Theme settings groups
+
+Logo/favicon · Colors (palette) · Typography (49 settings) · Page layout · Animations · Badges · Buttons · Cart · Drawers · Icons · Inputs · Popovers/modals · Prices · Product cards · Search · Swatches · Variant pickers
+
+### Active defaults (`settings_data.json`)
+
+- **Fonts:** Inter (`inter_n4` body, `inter_n7` headings)
+- **Colors:** `#fff` / `#000` / `#333` / `#DFDFDF`
+- **Page width:** `narrow`
+- **Cart:** drawer (+ discount codes on, note off)
+- **Buttons:** radius `14`, primary fill = foreground
+- **Card hover:** `none`
+- **View transitions / product transition:** off
+- **Badges:** top-right, pill radius `100`
+
+### Tech signals
+
+- Web Components style JS (`header-component`, cart drawer, facets, marquee, media gallery, etc.)
+- View Transitions API opt-in in `layout/theme.liquid`
+- Color palette via `snippets/color-palette`
+- Chat drawer rendered in layout
+- Predictive search sections present
+- TypeScript sources in `assets/` (4 `.ts` files)
 
 ## Prefer stock Horizon first
 
 When implementing a design:
 
-1. Compose with **existing** sections in `sections/` and blocks in `blocks/` (public + private `_*.liquid`).
+1. Compose with **existing** sections in `sections/` and blocks in `blocks/` (public + private `_*.liquid`) — use the inventory above as the menu.
 2. Prefer editor JSON (`templates/*.json`, section groups) and block nesting over new Liquid files.
 3. Do **not** fork, rewrite, or gut core sections/blocks/snippets unless the design is impossible with stock components.
 4. Reuse Horizon patterns: theme blocks, color palette tokens, type presets, existing cart/search/header/footer.
@@ -89,14 +162,15 @@ Wire those settings through existing snippets (`section`, etc.) and CSS variable
 
 Before scaffolding a custom section, open `sections/section.liquid` (and the closest feature section) and clone its schema/structure. Same for blocks: clone a peer in `blocks/`.
 
-## Safety checklist before shipping
+## Safety checklist before shipping (audit)
 
 - Existing sections/blocks still render with default settings unchanged.
 - New settings are optional; blank/`default` = previous Horizon look.
 - No global CSS that restyles unrelated components.
 - Touch the minimum files; prefer extending one section/block over duplicating.
 - Custom work uses `@theme` blocks + Horizon-standard setting IDs (`section_width`, padding, gap, etc.).
+- Do not break identity defaults above (palette tokens, cart drawer, header/footer groups, Inter/type presets) unless the client design explicitly requires a setting-driven change.
 
 ## When stuck
 
-Say so: name which stock sections were tried and why a new setting (or rare new section) is required — then implement the additive schema path, not a CSS hack.
+Say so: name which stock sections/blocks from the inventory were tried and why a new setting (or rare new section) is required — then implement the additive schema path, not a CSS hack.
