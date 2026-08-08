@@ -22,6 +22,9 @@
     {%- render 'spacing-style', settings: section.settings %};
     {% render 'gap-style', value: gap_between_elements, name: 'marquee-gap' %}
     --marquee-direction: {{ section.settings.movement_direction }};
+    {% if section.settings.media_max_height > 0 %}
+      --marquee-media-max-height: {{ section.settings.media_max_height }}px;
+    {% endif %}
   "
   data-speed-factor="25"
   data-movement-direction="{{ section.settings.movement_direction }}"
@@ -84,6 +87,18 @@
     align-content: center;
   }
 
+  .marquee__repeated-items .image-block {
+    flex-shrink: 0;
+  }
+
+  .marquee__repeated-items .image-block__image,
+  .marquee__repeated-items .placeholder-image {
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    max-height: var(--marquee-media-max-height, none);
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     marquee-component:not([data-disabled]) .marquee__wrapper {
       animation: marquee-motion var(--marquee-speed) linear infinite var(--marquee-direction);
@@ -112,6 +127,9 @@
     },
     {
       "type": "logo"
+    },
+    {
+      "type": "image"
     },
     {
       "type": "_divider"
@@ -173,6 +191,17 @@
       "step": 1,
       "unit": "px",
       "default": 24
+    },
+    {
+      "type": "range",
+      "id": "media_max_height",
+      "label": "Image max height",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "info": "Applies to image blocks only. 0 = no max height."
     }
   ],
   "presets": [
