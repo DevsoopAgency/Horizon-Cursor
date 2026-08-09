@@ -5,16 +5,11 @@
   assign media_count_mobile = 0
   assign fallback_to_desktop = false
   assign media_1 = 'none'
-  assign media_2 = 'none'
   assign media_1_mobile = 'none'
-  assign media_2_mobile = 'none'
   assign has_only_video = false
   assign has_only_video_mobile = false
 
-  # Desktop media checks
-  # For each media slot, check if the media is not blank and the media type matches the slot
-  # Need to check both (1) media picker is not blank AND (2) section.setting.media_type because user can toggle between different media types to display, but choosing "Image" doesn't clear a saved "Video" in the theme editor.
-  # The alternate setting (section.settings.image_1 when "Video" is selected) is only visually hidden in theme editor.
+  # Desktop media
   if section.settings.image_1 != blank and section.settings.media_type_1 == 'image'
     assign media_1 = 'image'
     assign media_count = media_count | plus: 1
@@ -23,18 +18,8 @@
     assign media_1 = 'video'
     assign media_count = media_count | plus: 1
   endif
-  if section.settings.image_2 != blank and section.settings.media_type_2 == 'image'
-    assign media_2 = 'image'
-    assign media_count = media_count | plus: 1
-  endif
-  if section.settings.video_2 != blank and section.settings.media_type_2 == 'video'
-    assign media_2 = 'video'
-    assign media_count = media_count | plus: 1
-  endif
 
   if section.settings.custom_mobile_media
-    # Mobile media checks
-    # For each media slot, check if the media is not blank and the media type matches the slot
     if section.settings.image_1_mobile != blank and section.settings.media_type_1_mobile == 'image'
       assign media_1_mobile = 'image'
       assign media_count_mobile = media_count_mobile | plus: 1
@@ -43,51 +28,35 @@
       assign media_1_mobile = 'video'
       assign media_count_mobile = media_count_mobile | plus: 1
     endif
-    if section.settings.image_2_mobile != blank and section.settings.media_type_2_mobile == 'image'
-      assign media_2_mobile = 'image'
-      assign media_count_mobile = media_count_mobile | plus: 1
-    endif
-    if section.settings.video_2_mobile != blank and section.settings.media_type_2_mobile == 'video'
-      assign media_2_mobile = 'video'
-      assign media_count_mobile = media_count_mobile | plus: 1
-    endif
   endif
-  if media_count > 0 and media_1 != 'image' and media_2 != 'image'
+
+  if media_count > 0 and media_1 != 'image'
     assign has_only_video = true
   endif
-  if media_count > 0 and media_count_mobile > 0 and media_1_mobile != 'image' and media_2_mobile != 'image'
+  if media_count_mobile > 0 and media_1_mobile != 'image'
     assign has_only_video_mobile = true
   endif
 
   assign media_wrapper_desktop_class = 'hero__media-wrapper hero__media-wrapper--desktop'
   assign media_wrapper_mobile_class = 'hero__media-wrapper hero__media-wrapper--mobile'
-  # If there is no custom mobile media to show, we add the mobile class to the desktop classes so content is always shown on mobile.
+  # If there is no custom mobile media to show, desktop media also renders on mobile.
   if section.settings.custom_mobile_media == false or section.settings.custom_mobile_media == true and media_count_mobile == 0
     assign media_wrapper_desktop_class = media_wrapper_desktop_class | append: ' hero__media-wrapper--mobile'
   endif
 
-  # Should we show the blurred reflection on mobile?
   assign show_mobile_blurred_reflection = false
   if section.settings.blurred_reflection
     if section.settings.custom_mobile_media == true and media_count_mobile > 0 and has_only_video_mobile == false
-      # Custom mobile media is active and a mobile image is present
       assign show_mobile_blurred_reflection = true
     elsif section.settings.custom_mobile_media == true and media_count_mobile == 0 and media_count > 0 and has_only_video == false
-      # Custom mobile media is active, no mobile media is present, but a desktop image is present
       assign show_mobile_blurred_reflection = true
     elsif section.settings.custom_mobile_media == false and media_count > 0 and has_only_video == false
-      # Custom mobile media is inactive, but a desktop image is present
       assign show_mobile_blurred_reflection = true
     endif
   endif
 
-  if media_1 == 'image' and media_2 == 'image'
-    assign media_width_desktop = '50vw'
-  else
-    assign media_width_desktop = '100vw'
-  endif
+  assign media_width_desktop = '100vw'
 
-  # If custom mobile media is disabled or no mobile media is present, we need to fallback to desktop media.
   if section.settings.custom_mobile_media == false or media_count_mobile == 0 or media_count == 0
     assign media_count_mobile = media_count
     assign fallback_to_desktop = true
@@ -95,10 +64,8 @@
 
   if fallback_to_desktop
     assign media_width_mobile = media_width_desktop
-  elsif section.settings.stack_media_on_mobile or media_1_mobile != 'image' or media_2_mobile != 'image'
-    assign media_width_mobile = '100vw'
   else
-    assign media_width_mobile = '50vw'
+    assign media_width_mobile = '100vw'
   endif
 
   assign sizes = '(min-width: 750px) ' | append: media_width_desktop | append: ', ' | append: media_width_mobile
@@ -116,7 +83,6 @@
 
 {% capture media_slot_1 %}
   {%- if media_1 == 'image' and media_1_mobile == 'image' -%}
-    {%- comment -%} Both desktop and mobile are images. Assume similar images, and this is art direction: use picture element. {%- endcomment -%}
     <picture
       data-testid="hero-picture-1"
       class="hero__media"
@@ -180,7 +146,6 @@
     </div>
   {%- endif -%}
 
-  {%- comment -%} Mobile-only slot 1 media (when desktop is different type) {%- endcomment -%}
   {%- if media_count > 0 and media_count_mobile > 0 -%}
     {%- if media_1_mobile == 'image' and media_1 != 'image' -%}
       <div class="{{ media_wrapper_mobile_class }}">
@@ -218,113 +183,8 @@
   {%- endif -%}
 {% endcapture %}
 
-{% capture media_slot_2 %}
-  {%- if media_2 == 'image' and media_2_mobile == 'image' -%}
-    {%- comment -%} Both desktop and mobile are images. Assume this is art direction: use picture element.  {%- endcomment -%}
-    <picture
-      class="hero__media"
-      data-testid="hero-picture-2"
-    >
-      <source
-        media="(max-width: 749px)"
-        srcset="
-          {%-  for mobile_width in mobile_widths_array -%}
-            {{ section.settings.image_2_mobile | image_url: width: mobile_width }} {{ mobile_width }}w{% unless forloop.last%},{% endunless %}
-          {%- endfor -%}
-        "
-        sizes="{{ sizes_mobile }}"
-        width="{{ section.settings.image_2_mobile.width }}"
-        height="{{ section.settings.image_2_mobile.height }}"
-      >
-      {{
-        section.settings.image_2
-        | image_url: width: 3840
-        | image_tag:
-          width: section.settings.image_2.width,
-          widths: widths,
-          height: section.settings.image_2.height,
-          alt: section.settings.image_2.alt,
-          class: 'hero__media',
-          sizes: sizes,
-          fetchpriority: fetch_priority,
-          data-testid: 'hero-desktop-image-2'
-      }}
-    </picture>
-  {%- elsif media_2 == 'image' -%}
-    <div class="{{ media_wrapper_desktop_class }}">
-      {{
-        section.settings.image_2
-        | image_url: width: 3840
-        | image_tag:
-          width: section.settings.image_2.width,
-          widths: widths,
-          height: section.settings.image_2.height,
-          alt: section.settings.image_2.alt,
-          class: 'hero__media',
-          sizes: sizes,
-          fetchpriority: fetch_priority,
-          data-testid: 'hero-desktop-image-2'
-      }}
-    </div>
-  {%- endif -%}
-
-  {%- if media_2 == 'video' -%}
-    <div class="{{ media_wrapper_desktop_class }}">
-      {{
-        section.settings.video_2
-        | video_tag:
-          poster: nil,
-          autoplay: true,
-          loop: true,
-          controls: false,
-          muted: true,
-          class: 'hero__media',
-          data-testid: 'hero-desktop-video-2'
-      }}
-    </div>
-  {%- endif -%}
-
-  {%- comment -%} Mobile-only slot 2 media (when desktop is different type) {%- endcomment -%}
-  {%- if media_count > 0 and media_count_mobile > 0 -%}
-    {%- if media_2_mobile == 'image' and media_2 != 'image' -%}
-      <div class="{{ media_wrapper_mobile_class }}">
-        {{
-          section.settings.image_2_mobile
-          | image_url: width: 1600
-          | image_tag:
-            width: section.settings.image_2_mobile.width,
-            widths: mobile_widths,
-            height: section.settings.image_2_mobile.height,
-            alt: section.settings.image_2_mobile.alt,
-            class: 'hero__media',
-            sizes: sizes_mobile,
-            fetchpriority: fetch_priority,
-            data-testid: 'hero-mobile-image-2'
-        }}
-      </div>
-    {%- endif -%}
-
-    {%- if media_2_mobile == 'video' -%}
-      <div class="{{ media_wrapper_mobile_class }}">
-        {{
-          section.settings.video_2_mobile
-          | video_tag:
-            poster: nil,
-            autoplay: true,
-            loop: true,
-            controls: false,
-            muted: true,
-            class: 'hero__media',
-            data-testid: 'hero-mobile-video-2'
-        }}
-      </div>
-    {%- endif -%}
-  {%- endif -%}
-{% endcapture %}
-
 {% capture media %}
   {{ media_slot_1 }}
-  {{ media_slot_2 }}
 
   {% if media_count == 0 %}
     {{ 'hero-apparel-1' | placeholder_svg_tag: 'hero__media' }}
@@ -345,108 +205,28 @@
         sizes: sizes
     }}
   {% endif %}
-  {% if media_2 == 'image' %}
-    {{
-      section.settings.image_2
-      | image_url: width: 3840
-      | image_tag:
-        width: section.settings.image_2.width,
-        widths: widths,
-        height: section.settings.image_2.height,
-        alt: '',
-        class: 'hero__media',
-        sizes: sizes
-    }}
-  {% endif %}
   {% if media_count == 0 %}
     {{ 'hero-apparel-1' | placeholder_svg_tag: 'hero__media' }}
   {% endif %}
 {% endcapture %}
 
 {% capture mobile_media_blurred %}
-  {%- comment -%}
-    On mobile we need to check:
-    1. If the media should be stacked. If it is,we check for the second (bottom) image first, then for the first (top) image.
-    2. If custom mobile setting is active and has media (show desktop media otherwise).
-  {%- endcomment -%}
-  {% if section.settings.stack_media_on_mobile == false %}
-    {% if section.settings.custom_mobile_media == true and fallback_to_desktop == false %}
-      {% if media_1_mobile == 'image' %}
-        {{ section.settings.image_1_mobile
-          | image_url: width: 1600
-          | image_tag: width: section.settings.image_1_mobile.width,
-            widths: mobile_widths,
-            height: section.settings.image_1_mobile.height,
-            alt: '',
-            class: 'hero__media',
-            sizes: sizes_mobile
-          }}
-      {% endif %}
-      {% if media_2_mobile == 'image' %}
-        {{ section.settings.image_2_mobile
-          | image_url: width: 1600
-          | image_tag: width: section.settings.image_2_mobile.width,
-            widths: mobile_widths,
-            height: section.settings.image_2_mobile.height,
-            alt: '',
-            class: 'hero__media',
-            sizes: sizes_mobile
-          }}
-      {% endif %}
-    {% elsif fallback_to_desktop %}
-      {{ media_blurred }}
+  {% if section.settings.custom_mobile_media == true and fallback_to_desktop == false %}
+    {% if media_1_mobile == 'image' %}
+      {{
+        section.settings.image_1_mobile
+        | image_url: width: 1600
+        | image_tag:
+          width: section.settings.image_1_mobile.width,
+          widths: mobile_widths,
+          height: section.settings.image_1_mobile.height,
+          alt: '',
+          class: 'hero__media',
+          sizes: sizes_mobile
+      }}
     {% endif %}
-  {% elsif section.settings.stack_media_on_mobile == true %}
-    {% if section.settings.custom_mobile_media == true and fallback_to_desktop == false %}
-      {% if media_2_mobile == 'image' %}
-        {{ section.settings.image_2_mobile
-          | image_url: width: 1600
-          | image_tag: width: section.settings.image_2_mobile.width,
-            widths: mobile_widths,
-            height: section.settings.image_2_mobile.height,
-            alt: '',
-            class: 'hero__media',
-            sizes: sizes_mobile
-        }}
-      {% elsif media_1_mobile == 'image' %}
-        {{ section.settings.image_1_mobile
-          | image_url: width: 1600
-          | image_tag: width: section.settings.image_1_mobile.width,
-            widths: mobile_widths,
-            height: section.settings.image_1_mobile.height,
-            alt: '',
-            class: 'hero__media',
-            sizes: sizes_mobile
-          }}
-      {% endif %}
-    {% elsif fallback_to_desktop %}
-      {% if media_count > 0 %}
-        {% if media_2 == 'image' %}
-          {{ section.settings.image_2
-            | image_url: width: 1600
-            | image_tag: width: section.settings.image_2.width,
-              widths: widths,
-              height: section.settings.image_2.height,
-              alt: '',
-              class: 'hero__media',
-              sizes: sizes
-            }}
-        {% elsif media_1 == 'image' %}
-          {{ section.settings.image_1
-            | image_url: width: 1600
-            | image_tag: width: section.settings.image_1.width,
-              widths: widths,
-              height: section.settings.image_1.height,
-              alt: '',
-              class: 'hero__media',
-              sizes: sizes
-            }}
-        {% endif %}
-        {% if media_count == 0 %}
-          {{ 'hero-apparel-1' | placeholder_svg_tag: 'hero__media' }}
-        {% endif %}
-      {% endif %}
-    {% endif %}
+  {% elsif fallback_to_desktop %}
+    {{ media_blurred }}
   {% endif %}
 {% endcapture %}
 
@@ -458,16 +238,24 @@
 
 <div
   id="Hero-{{ section.id }}"
-  class="hero{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}{% if section.blocks.size == 0 and section.settings.section_height == 'auto' %} hero--no-blocks-auto-height{% endif %}{% if section.settings.stack_media_on_mobile %} hero--stack-mobile{% endif %}"
+  class="hero{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}{% if section.settings.section_height == 'auto' %} hero--auto{% endif %}{% if section.blocks.size == 0 and section.settings.section_height == 'auto' %} hero--no-blocks-auto-height{% endif %}"
   style="
     --hero-border-style: {{ section.settings.border }};
     --hero-border-width: {{ section.settings.border_width }}px;
     --hero-border-opacity: {{ section.settings.border_opacity }}%;
     --blur-opacity: {{ section.settings.reflection_opacity | divided_by: 100.0 }};
+    {% if section.settings.image_1 != blank %}
+      --hero-media-aspect-ratio: {{ section.settings.image_1.aspect_ratio }};
+    {% endif %}
+    {% if section.settings.custom_mobile_media and section.settings.image_1_mobile != blank %}
+      --hero-media-aspect-ratio-mobile: {{ section.settings.image_1_mobile.aspect_ratio }};
+    {% endif %}
     {% if section.settings.section_height == 'custom' %}
       --hero-min-height: {{ section.settings.section_height_custom }}svh;
     {% elsif section.settings.section_height == "full-screen" %}
-       --hero-min-height: 100svh;
+      --hero-min-height: 100svh;
+    {% elsif section.settings.section_height == "auto" %}
+      --hero-min-height: 0px;
     {% else %}
       --hero-min-height: var(--section-height-{{ section.settings.section_height }});
     {% endif %}
@@ -528,6 +316,60 @@
       %}
       {{ media }}
     </div>
+    {%- liquid
+      if section.settings.content_direction == 'column'
+        assign hero_h_align = section.settings.horizontal_alignment_flex_direction_column
+        assign hero_v_align = section.settings.vertical_alignment_flex_direction_column
+      else
+        assign hero_h_align = section.settings.horizontal_alignment
+        assign hero_v_align = section.settings.vertical_alignment
+      endif
+
+      assign hero_h_align_mobile = section.settings.horizontal_alignment_mobile | default: hero_h_align
+      assign hero_content_top_mobile = section.settings.mobile_content_position | default: 50
+
+      # Transform-based placement (avoids fixed pixel offsets). Skip for space-between — flex handles that.
+      assign hero_use_transform_position = true
+      if hero_v_align == 'space-between'
+        assign hero_use_transform_position = false
+      endif
+
+      case hero_v_align
+        when 'flex-start'
+          assign hero_content_top = '0%'
+          assign hero_translate_y = '0%'
+        when 'flex-end'
+          assign hero_content_top = '100%'
+          assign hero_translate_y = '-100%'
+        else
+          assign hero_content_top = '50%'
+          assign hero_translate_y = '-50%'
+      endcase
+
+      case hero_h_align
+        when 'flex-start'
+          assign hero_content_left = '0'
+          assign hero_translate_x = '6.9375rem'
+          assign hero_h_align_class = 'hero__content-wrapper--align-start'
+        when 'flex-end'
+          assign hero_content_left = '100%'
+          assign hero_translate_x = 'calc(-100% - 6.9375rem)'
+          assign hero_h_align_class = 'hero__content-wrapper--align-end'
+        else
+          assign hero_content_left = '50%'
+          assign hero_translate_x = '-50%'
+          assign hero_h_align_class = 'hero__content-wrapper--align-center'
+      endcase
+
+      case hero_h_align_mobile
+        when 'flex-start'
+          assign hero_h_align_mobile_class = 'hero__content-wrapper--align-mobile-start'
+        when 'flex-end'
+          assign hero_h_align_mobile_class = 'hero__content-wrapper--align-mobile-end'
+        else
+          assign hero_h_align_mobile_class = 'hero__content-wrapper--align-mobile-center'
+      endcase
+    -%}
     <div
       class="
         hero__content-wrapper
@@ -535,10 +377,20 @@
         layout-panel-flex--{{ section.settings.content_direction }}
         {% if section.settings.vertical_on_mobile %}mobile-column{% endif %}
         section-content-wrapper
-        {{section.settings.section_width}}
+        {{ section.settings.section_width }}
+        {% if hero_use_transform_position %}hero__content-wrapper--transform-position {{ hero_h_align_class }} {{ hero_h_align_mobile_class }}{% endif %}
         {% if request.design_mode %}hero__content-wrapper--design-mode{% endif %}
       "
-      style="{% render 'layout-panel-style', settings: section.settings %}"
+      style="
+        {% render 'layout-panel-style', settings: section.settings %}
+        {% if hero_use_transform_position %}
+          --hero-content-top: {{ hero_content_top }};
+          --hero-content-left: {{ hero_content_left }};
+          --hero-content-translate-x: {{ hero_translate_x }};
+          --hero-content-translate-y: {{ hero_translate_y }};
+          --hero-content-top-mobile: {{ hero_content_top_mobile }}%;
+        {% endif %}
+      "
     >
       {% content_for 'blocks' %}
     </div>
@@ -550,14 +402,35 @@
     --hero-height-offset: 0px;
   }
 
-  /* Being extra specific in the selector for performance reasons */
-  body:has(#header-group > .header-section > #header-component) .hero-wrapper:first-child {
+  /* Only offset when the header actually overlays the hero (transparent header) */
+  body:has(#header-group > .header-section > #header-component[transparent]):not(
+      :has(#header-group > .header-section + .shopify-section)
+    )
+    .hero-wrapper:first-child {
     --hero-height-offset: var(--header-group-height, 0);
   }
 
   .hero {
     position: relative;
     min-height: calc(var(--hero-min-height) - var(--hero-height-offset));
+  }
+
+  /* Match media aspect so the full image shows below the nav (no crop from a taller preset) */
+  .hero--auto {
+    aspect-ratio: var(--hero-media-aspect-ratio, 2 / 1);
+    min-height: 0;
+    width: 100%;
+  }
+
+  .hero--auto .hero__container {
+    min-height: 100%;
+    height: 100%;
+  }
+
+  @media screen and (max-width: 749px) {
+    .hero--auto {
+      aspect-ratio: var(--hero-media-aspect-ratio-mobile, var(--hero-media-aspect-ratio, 3 / 4));
+    }
   }
 
   .hero[data-shopify-visual-preview] {
@@ -590,8 +463,71 @@
     z-index: var(--layer-flat);
   }
 
+  /* Absolute + transform placement — vertical/horizontal from alignment settings via CSS vars */
+  .hero__content-wrapper--transform-position {
+    position: absolute;
+    inset: unset;
+    top: var(--hero-content-top, 50%);
+    left: var(--hero-content-left, 50%);
+    transform: translate(var(--hero-content-translate-x, -50%), var(--hero-content-translate-y, -50%));
+    width: fit-content;
+    max-width: min(40%, 32rem);
+    height: auto;
+    min-height: 0;
+  }
+
+  .hero__content-wrapper--transform-position.section-content-wrapper {
+    width: fit-content;
+    height: auto;
+    min-height: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .hero__content-wrapper--transform-position {
+      top: var(--hero-content-top-mobile, 50%);
+      width: calc(100% - 2 * var(--page-margin, 1rem));
+      max-width: none;
+    }
+
+    /* Set transform directly so desktop inline --hero-content-translate-x doesn't leak into mobile */
+    .hero__content-wrapper--transform-position.hero__content-wrapper--align-mobile-start {
+      left: 0;
+      transform: translate(var(--page-margin, 1rem), -50%);
+      text-align: left;
+      align-items: flex-start;
+    }
+
+    .hero__content-wrapper--transform-position.hero__content-wrapper--align-mobile-center {
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      align-items: center;
+    }
+
+    .hero__content-wrapper--transform-position.hero__content-wrapper--align-mobile-end {
+      left: auto;
+      right: 0;
+      transform: translate(calc(-1 * var(--page-margin, 1rem)), -50%);
+      text-align: right;
+      align-items: flex-end;
+    }
+
+    .hero__content-wrapper--align-mobile-center .text-block,
+    .hero__content-wrapper--align-mobile-center .text-block > * {
+      text-align: center;
+    }
+  }
+
   .hero__content-wrapper .group-block-content {
     position: relative;
+  }
+
+  .hero__content-wrapper--transform-position .button-unstyled {
+    text-decoration-line: underline;
+    text-decoration-color: currentcolor;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.35em;
+    letter-spacing: 0.04em;
   }
 
   .hero__media-grid {
@@ -654,12 +590,6 @@
 
     .hero__media-grid {
       grid-template-columns: repeat(var(--hero-media-count-mobile, 1), 1fr);
-    }
-
-    /* Mobile stacking */
-    .hero--stack-mobile .hero__media-grid {
-      grid-template-columns: 1fr;
-      grid-template-rows: repeat(var(--hero-media-count-mobile, 1), calc(100% / var(--hero-media-count-mobile, 1)));
     }
   }
 
@@ -740,15 +670,6 @@
     opacity: var(--blur-opacity);
     transform: var(--blurred-reflection-scale);
     padding-block-end: var(--blurred-reflection-padding-block-end);
-
-    &:not(:only-child) {
-      width: 50%;
-
-      &:last-child {
-        right: 0;
-        left: auto;
-      }
-    }
   }
 {% endstylesheet %}
 
@@ -784,12 +705,14 @@
     }
   ],
   "disabled_on": {
-    "groups": ["header"]
+    "groups": [
+      "header"
+    ]
   },
   "settings": [
     {
       "type": "header",
-      "content": "t:content.media_1"
+      "content": "t:content.media"
     },
     {
       "type": "select",
@@ -821,56 +744,13 @@
     },
     {
       "type": "header",
-      "content": "t:content.media_2"
-    },
-    {
-      "type": "select",
-      "id": "media_type_2",
-      "label": "t:settings.type",
-      "options": [
-        {
-          "value": "image",
-          "label": "t:options.image"
-        },
-        {
-          "value": "video",
-          "label": "t:options.video"
-        }
-      ],
-      "default": "image"
-    },
-    {
-      "type": "image_picker",
-      "id": "image_2",
-      "label": "t:settings.image",
-      "visible_if": "{{ section.settings.media_type_2 == 'image' }}"
-    },
-    {
-      "type": "video",
-      "id": "video_2",
-      "label": "t:settings.video",
-      "visible_if": "{{ section.settings.media_type_2 == 'video' }}"
-    },
-    {
-      "type": "header",
       "content": "t:content.mobile_media"
-    },
-    {
-      "type": "checkbox",
-      "id": "stack_media_on_mobile",
-      "label": "t:settings.stack_media_on_mobile",
-      "default": false
     },
     {
       "type": "checkbox",
       "id": "custom_mobile_media",
       "label": "t:settings.custom_mobile_media",
       "default": false
-    },
-    {
-      "type": "header",
-      "content": "t:content.mobile_media_1",
-      "visible_if": "{{ section.settings.custom_mobile_media }}"
     },
     {
       "type": "select",
@@ -900,40 +780,6 @@
       "id": "video_1_mobile",
       "label": "t:settings.video",
       "visible_if": "{{ section.settings.custom_mobile_media and section.settings.media_type_1_mobile == 'video' }}"
-    },
-    {
-      "type": "header",
-      "content": "t:content.mobile_media_2",
-      "visible_if": "{{ section.settings.custom_mobile_media }}"
-    },
-    {
-      "type": "select",
-      "id": "media_type_2_mobile",
-      "label": "t:settings.type",
-      "options": [
-        {
-          "value": "image",
-          "label": "t:options.image"
-        },
-        {
-          "value": "video",
-          "label": "t:options.video"
-        }
-      ],
-      "default": "image",
-      "visible_if": "{{ section.settings.custom_mobile_media }}"
-    },
-    {
-      "type": "image_picker",
-      "id": "image_2_mobile",
-      "label": "t:settings.image",
-      "visible_if": "{{ section.settings.custom_mobile_media and section.settings.media_type_2_mobile == 'image' }}"
-    },
-    {
-      "type": "video",
-      "id": "video_2_mobile",
-      "label": "t:settings.video",
-      "visible_if": "{{ section.settings.custom_mobile_media and section.settings.media_type_2_mobile == 'video' }}"
     },
     {
       "type": "header",
@@ -980,7 +826,7 @@
     {
       "type": "select",
       "id": "horizontal_alignment",
-      "label": "t:settings.alignment",
+      "label": "t:settings.alignment_desktop",
       "options": [
         {
           "value": "flex-start",
@@ -1033,7 +879,7 @@
     {
       "type": "select",
       "id": "horizontal_alignment_flex_direction_column",
-      "label": "t:settings.alignment",
+      "label": "t:settings.alignment_desktop",
       "options": [
         {
           "value": "flex-start",
@@ -1050,6 +896,37 @@
       ],
       "default": "flex-start",
       "visible_if": "{{ section.settings.content_direction != 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment_mobile",
+      "label": "t:settings.alignment_mobile",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "mobile_content_position",
+      "label": "t:settings.mobile_content_position",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 28,
+      "info": "t:info.mobile_content_position"
     },
     {
       "type": "select",
@@ -1208,7 +1085,7 @@
       "label": "t:settings.blurred_reflection",
       "default": false,
       "info": "t:info.applies_on_image_only",
-      "visible_if": "{{ section.settings.media_type_1 != 'video' or section.settings.media_type_2 != 'video' or section.settings.media_type_1_mobile != 'video' or section.settings.media_type_2_mobile != 'video' }}"
+      "visible_if": "{{ section.settings.media_type_1 != 'video' or section.settings.media_type_1_mobile != 'video' }}"
     },
     {
       "type": "range",
@@ -1219,7 +1096,7 @@
       "step": 1,
       "unit": "%",
       "default": 75,
-      "visible_if": "{{ section.settings.blurred_reflection and section.settings.media_type_1 != 'video' or section.settings.media_type_2 != 'video' }}"
+      "visible_if": "{{ section.settings.blurred_reflection and section.settings.media_type_1 != 'video' }}"
     },
     {
       "type": "header",
@@ -1276,7 +1153,11 @@
           }
         }
       },
-      "block_order": ["text_1", "text_2", "button"],
+      "block_order": [
+        "text_1",
+        "text_2",
+        "button"
+      ],
       "settings": {
         "horizontal_alignment_flex_direction_column": "center",
         "gap": 16,
@@ -1309,7 +1190,9 @@
               }
             }
           },
-          "block_order": ["text"]
+          "block_order": [
+            "text"
+          ]
         },
         "button": {
           "type": "button",
@@ -1319,7 +1202,11 @@
           }
         }
       },
-      "block_order": ["spacer", "marquee", "button"],
+      "block_order": [
+        "spacer",
+        "marquee",
+        "button"
+      ],
       "settings": {
         "horizontal_alignment_flex_direction_column": "center",
         "vertical_alignment_flex_direction_column": "space-between",
@@ -1440,7 +1327,10 @@
                   }
                 }
               },
-              "block_order": ["text_intro", "text_main"]
+              "block_order": [
+                "text_intro",
+                "text_main"
+              ]
             },
             "text_description": {
               "type": "text",
@@ -1464,10 +1354,15 @@
               }
             }
           },
-          "block_order": ["content_group", "text_description"]
+          "block_order": [
+            "content_group",
+            "text_description"
+          ]
         }
       },
-      "block_order": ["group_main"],
+      "block_order": [
+        "group_main"
+      ],
       "settings": {
         "media_type_1": "image",
         "horizontal_alignment_flex_direction_column": "center",

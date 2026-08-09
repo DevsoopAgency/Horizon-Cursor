@@ -225,6 +225,7 @@
   "info": {
     "actions_display_style": "Icons are always used on mobile",
     "applies_on_image_only": "Applies to images only",
+    "mobile_content_position": "0% is the top of the hero, 100% is the bottom. Adjust until the text sits above the products.",
     "aspect_ratio_adjusted": "Adjusted in some layouts",
     "carousel_hover_behavior_not_supported": "\"Carousel\" hover is not supported when \"Carousel\" type is selected at the section level",
     "carousel_layout_on_mobile": "Carousel is always used on mobile",
@@ -738,7 +739,9 @@
     "account": "Account",
     "actions_display_style": "Menu style",
     "alignment": "Alignment",
+    "alignment_desktop": "Desktop alignment",
     "alignment_mobile": "Mobile alignment",
+    "mobile_content_position": "Mobile text position",
     "align_baseline": "Align text baseline",
     "animation": "Animation",
     "animation_repeat": "Repeat animation",
