@@ -12,75 +12,93 @@
     "hero_radiance": {
       "type": "hero",
       "blocks": {
-        "hero_heading": {
-          "type": "text",
-          "name": "t:names.heading",
+        "banner_content_radiance": {
+          "type": "banner-content",
+          "name": "Banner content",
           "settings": {
-            "text": "<h1>The Science of Radiance</h1>",
-            "text_color": "#0a0a0a",
-            "width": "fit-content",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "h1",
-            "font": "var(--font-body--family)",
-            "font_size": "1rem",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
+            "x_position": 22,
+            "y_position": 50,
+            "content_width": 400,
+            "text_alignment": "flex-start",
+            "gap": 20,
+            "x_position_mobile": 50,
+            "y_position_mobile": 28,
+            "content_width_mobile": 360,
+            "text_alignment_mobile": "center"
           },
-          "blocks": {}
-        },
-        "hero_body": {
-          "type": "text",
-          "name": "t:names.text",
-          "settings": {
-            "text": "<p>Discover curated formulas that transform your daily routine into a luminous ritual.</p>",
-            "text_color": "#00000099",
-            "width": "fit-content",
-            "max_width": "narrow",
-            "alignment": "left",
-            "type_preset": "rte",
-            "font": "var(--font-body--family)",
-            "font_size": "1rem",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
+          "blocks": {
+            "hero_heading": {
+              "type": "text",
+              "name": "t:names.heading",
+              "settings": {
+                "text": "<h1>The Science of Radiance</h1>",
+                "text_color": "#0a0a0a",
+                "width": "100%",
+                "max_width": "none",
+                "alignment": "left",
+                "type_preset": "h1",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "hero_body": {
+              "type": "text",
+              "name": "t:names.text",
+              "settings": {
+                "text": "<p>Discover curated formulas that transform your daily routine into a luminous ritual.</p>",
+                "text_color": "#00000099",
+                "width": "100%",
+                "max_width": "none",
+                "alignment": "left",
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "hero_cta": {
+              "type": "button",
+              "name": "t:names.button",
+              "settings": {
+                "label": "Explore Collection",
+                "link": "shopify://collections/all",
+                "open_in_new_tab": false,
+                "style_class": "button-unstyled",
+                "width": "fit-content",
+                "custom_width": 100,
+                "width_mobile": "fit-content",
+                "custom_width_mobile": 100
+              },
+              "blocks": {}
+            }
           },
-          "blocks": {}
-        },
-        "hero_cta": {
-          "type": "button",
-          "name": "t:names.button",
-          "settings": {
-            "label": "Explore Collection",
-            "link": "shopify://collections/all",
-            "open_in_new_tab": false,
-            "style_class": "link",
-            "width": "fit-content",
-            "custom_width": 100,
-            "width_mobile": "fit-content",
-            "custom_width_mobile": 100
-          },
-          "blocks": {}
+          "block_order": ["hero_heading", "hero_body", "hero_cta"]
         }
       },
-      "block_order": ["hero_heading", "hero_body", "hero_cta"],
+      "block_order": ["banner_content_radiance"],
       "name": "Hero — Science of Radiance",
       "settings": {
         "media_type_1": "image",
@@ -89,7 +107,7 @@
         "custom_mobile_media": false,
         "media_type_1_mobile": "image",
         "media_type_2_mobile": "image",
-        "link": "shopify://collections/all",
+        "link": "",
         "open_in_new_tab": false,
         "content_direction": "column",
         "vertical_on_mobile": true,
@@ -109,8 +127,8 @@
         "gradient_direction": "to bottom",
         "blurred_reflection": false,
         "reflection_opacity": 75,
-        "padding-block-start": 80,
-        "padding-block-end": 80
+        "padding-block-start": 0,
+        "padding-block-end": 0
       }
     },
     "brand_logos": {
