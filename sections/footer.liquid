@@ -41,6 +41,7 @@
       spacing-style
       {% if has_isolated_grid_item_desktop %}footer-content--isolated-grid-item-desktop{% endif %}
       {% if has_isolated_grid_item_tablet %}footer-content--isolated-grid-item-tablet{% endif %}
+      {% if section.settings.columns_ratio == 'newsletter_wide' %}footer-content--newsletter-wide{% endif %}
     "
     style="
       {%  render 'spacing-style', settings: section.settings %}
@@ -86,6 +87,10 @@
   @media screen and (min-width: 990px) {
     .footer-content {
       grid-template-columns: repeat(var(--grid-columns), 1fr);
+    }
+
+    .footer-content--newsletter-wide[style*='--grid-columns: 4'] {
+      grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr));
     }
 
     /* Single item centered */
@@ -176,6 +181,22 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "select",
+      "id": "columns_ratio",
+      "label": "Column ratio",
+      "options": [
+        {
+          "value": "equal",
+          "label": "Equal"
+        },
+        {
+          "value": "newsletter_wide",
+          "label": "Wide first column"
+        }
+      ],
+      "default": "equal"
     },
     {
       "type": "color",

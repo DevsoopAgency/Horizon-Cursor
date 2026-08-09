@@ -1,49 +1,76 @@
 
 {% if shop.policies.size > 0 %}
-  <anchored-popover-component
-    data-hover-triggered="true"
-  >
-    <button
-      class="policy-list-trigger button-unstyled"
-      popovertarget="terms-policies-popover"
-      popovertargetaction="toggle"
-      ref="trigger"
+  {% if block.settings.layout == 'inline' %}
+    <ul
+      class="
+        policy_list
+        policy_list--inline
+        list-unstyled
+        custom-typography
+        {% if block.settings.font_size != '' %}custom-font-size{% endif %}
+      "
       style="
         {% render 'typography-style', preset: 'custom', settings: block.settings %}
         {% if block.settings.text_color != blank %}--color-utilities: {{ block.settings.text_color }};{% endif %}
       "
       {{ block.shopify_attributes }}
     >
-      {{ 'content.terms_and_policies' | t }}
-    </button>
-    <div
-      class="terms-policies-popover color-custom-popover"
-      id="terms-policies-popover"
-      popover="auto"
-      ref="popover"
+      {%- for policy in shop.policies -%}
+        {%- if policy != blank -%}
+          <li>
+            <a href="{{ policy.url }}" class="footer-utilities__text">
+              {{- policy.title | escape -}}
+            </a>
+          </li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+  {% else %}
+    <anchored-popover-component
+      data-hover-triggered="true"
     >
-      <ul
-        class="
-          policy_list list-unstyled
-          custom-typography
-          {% if block.settings.font_size != "" %}custom-font-size{% endif %}
+      <button
+        class="policy-list-trigger button-unstyled"
+        popovertarget="terms-policies-popover"
+        popovertargetaction="toggle"
+        ref="trigger"
+        style="
+          {% render 'typography-style', preset: 'custom', settings: block.settings %}
+          {% if block.settings.text_color != blank %}--color-utilities: {{ block.settings.text_color }};{% endif %}
         "
+        {{ block.shopify_attributes }}
       >
-        {%- for policy in shop.policies -%}
-          {%- if policy != blank -%}
-            <li>
-              <a
-                href="{{ policy.url }}"
-                class="footer-utilities__text"
-              >
-                {{- policy.title | escape -}}
-              </a>
-            </li>
-          {%- endif -%}
-        {%- endfor -%}
-      </ul>
-    </div>
-  </anchored-popover-component>
+        {{ 'content.terms_and_policies' | t }}
+      </button>
+      <div
+        class="terms-policies-popover color-custom-popover"
+        id="terms-policies-popover"
+        popover="auto"
+        ref="popover"
+      >
+        <ul
+          class="
+            policy_list list-unstyled
+            custom-typography
+            {% if block.settings.font_size != '' %}custom-font-size{% endif %}
+          "
+        >
+          {%- for policy in shop.policies -%}
+            {%- if policy != blank -%}
+              <li>
+                <a
+                  href="{{ policy.url }}"
+                  class="footer-utilities__text"
+                >
+                  {{- policy.title | escape -}}
+                </a>
+              </li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      </div>
+    </anchored-popover-component>
+  {% endif %}
 {% endif %}
 
 {% stylesheet %}
@@ -54,7 +81,45 @@
     text-transform: var(--text-transform, none);
   }
 
-  .policy_list {
+  .policy_list--inline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem 1.5rem;
+    margin: 0;
+    color: var(--color-utilities, var(--color-foreground-muted));
+    text-wrap: wrap;
+    white-space: normal;
+
+    li {
+      margin: 0;
+    }
+
+    a {
+      color: inherit;
+      display: inline;
+      padding: 0;
+      width: auto;
+      font-size: var(--font-size, 0.75rem);
+      line-height: 1.75;
+      text-decoration: none;
+      text-transform: var(--text-transform, none);
+      white-space: nowrap;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .utilities--blocks-2 .policy_list--inline {
+      justify-content: flex-end;
+    }
+  }
+
+  .policy_list:not(.policy_list--inline) {
     li {
       border-radius: calc(var(--style-border-radius-popover) - 8px);
 
@@ -152,6 +217,22 @@
     {
       "type": "paragraph",
       "content": "t:content.manage_policies"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "t:settings.layout",
+      "options": [
+        {
+          "value": "popover",
+          "label": "Popover"
+        },
+        {
+          "value": "inline",
+          "label": "Inline links"
+        }
+      ],
+      "default": "popover"
     },
     {
       "type": "header",

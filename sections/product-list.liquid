@@ -25,8 +25,12 @@
     {% render 'gap-style', value: section.settings.gap %}
   "
 >
-  <div class="section-resource-list__header">
-    {%- content_for 'block', type: '_product-list-content', id: 'static-header' -%}
+  <div class="section-resource-list__header{% if section.settings.scrollable_header_nav %} section-resource-list__header--scrollable-nav{% endif %}">
+    {%- content_for 'block',
+      type: '_product-list-content',
+      id: 'static-header',
+      closest.collection: section.settings.collection
+    -%}
   </div>
 
   {% capture list_items %}
@@ -85,6 +89,44 @@
     {%- content_for 'blocks' -%}
   </div>
 </div>
+
+{% stylesheet %}
+  .section-resource-list__header--scrollable-nav {
+    min-width: 0;
+  }
+
+  .section-resource-list__header--scrollable-nav .group-block-content {
+    min-width: 0;
+  }
+
+  /* Nested filter/nav row inside the header */
+  .section-resource-list__header--scrollable-nav .group-block .group-block > .group-block-content {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+  }
+
+  .section-resource-list__header--scrollable-nav .group-block .group-block > .group-block-content::-webkit-scrollbar {
+    display: none;
+  }
+
+  .section-resource-list__header--scrollable-nav .group-block .group-block {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* Category tabs: no underline (VIEW ALL keeps default link underline) */
+  .section-resource-list__header--scrollable-nav .group-block .group-block a {
+    text-decoration-color: transparent;
+  }
+
+  .section-resource-list__header--scrollable-nav .group-block .group-block a:hover {
+    text-decoration-color: currentcolor;
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -316,6 +358,13 @@
       "step": 1,
       "unit": "px",
       "default": 12
+    },
+    {
+      "type": "checkbox",
+      "id": "scrollable_header_nav",
+      "label": "Scrollable header navigation",
+      "default": false,
+      "info": "Lets category links in the header scroll horizontally on smaller screens"
     },
     {
       "type": "color",

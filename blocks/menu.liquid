@@ -24,6 +24,12 @@
     if dividers_enabled == true
       assign menu_class = menu_class | append: ' menu--dividers'
     endif
+    if block_settings.heading_case == 'uppercase'
+      assign menu_class = menu_class | append: ' menu--heading-uppercase'
+    endif
+    if block_settings.link_style == 'plain'
+      assign menu_class = menu_class | append: ' menu--links-plain'
+    endif
     assign should_disable_on_mobile = false
     assign should_open_by_default_on_mobile = false
     if show_as_accordion == false
@@ -36,11 +42,13 @@
       class="
         menu__details
         spacing-style
-        {% if block_settings.background_color != blank or block_settings.text_color != blank %} color-custom-{{ block.id }}{% endif %}
+        {% if block_settings.background_color != blank or block_settings.text_color != blank or block_settings.link_color != blank %} color-custom-{{ block.id }}{% endif %}
       "
       data-testid="menu-details"
       style="
         --spacing--size: {{ block_settings.menu_spacing }}px;
+        {% if block_settings.link_color != blank %}--menu-link-color: {{ block_settings.link_color }};{% endif %}
+        {% if block_settings.link_line_height != blank %}--menu-link-line-height: {{ block_settings.link_line_height }};{% endif %}
         {% render 'spacing-style', settings: block_settings %}
       "
       {% if show_as_accordion == false %}
@@ -105,6 +113,21 @@
 
   .menu__item + .menu__item {
     margin-block-start: var(--spacing--size);
+  }
+
+  .menu--heading-uppercase .menu__heading {
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .menu--links-plain .menu__item a {
+    color: var(--menu-link-color, inherit);
+    line-height: var(--menu-link-line-height, 1.75);
+    text-decoration: none;
+  }
+
+  .menu--links-plain .menu__item a:hover {
+    text-decoration: underline;
   }
 
   .menu .menu__heading--empty {
@@ -222,6 +245,69 @@
       "id": "text_color",
       "label": "t:settings.text_color",
       "placeholder": "t:settings.default"
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link color",
+      "placeholder": "t:settings.default"
+    },
+    {
+      "type": "select",
+      "id": "heading_case",
+      "label": "Heading case",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.default"
+        },
+        {
+          "value": "uppercase",
+          "label": "t:options.uppercase"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "link_style",
+      "label": "Link style",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "plain",
+          "label": "Plain"
+        }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "link_line_height",
+      "label": "Link line height",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "1.5",
+          "label": "1.5"
+        },
+        {
+          "value": "1.75",
+          "label": "1.75"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "",
+      "visible_if": "{{ block.settings.link_style == 'plain' }}"
     },
     {
       "type": "header",

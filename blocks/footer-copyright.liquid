@@ -13,8 +13,14 @@
   {{ block.shopify_attributes }}
 >
   <span class="footer-utilities__text">
-    &copy; {{ 'now' | date: '%Y' }}
-    {{ shop.name | link_to: routes.root_url -}}
+    {%- if block_settings.copyright_format == 'full' -%}
+      Copyright &copy; {{ 'now' | date: '%Y' }},
+      {{ shop.name | link_to: routes.root_url }}.
+      All rights reserved.
+    {%- else -%}
+      &copy; {{ 'now' | date: '%Y' }}
+      {{ shop.name | link_to: routes.root_url -}}
+    {%- endif -%}
     {%- if block_settings.show_powered_by -%}
       , {{ powered_by_link }}
     {%- endif -%}
@@ -24,6 +30,8 @@
 {% stylesheet %}
   .footer-utilities__group-copyright {
     color: var(--color-utilities, var(--color-foreground-muted));
+    text-wrap: wrap;
+    white-space: normal;
   }
 {% endstylesheet %}
 
@@ -37,6 +45,22 @@
       "id": "show_powered_by",
       "label": "t:settings.show_powered_by_shopify",
       "default": true
+    },
+    {
+      "type": "select",
+      "id": "copyright_format",
+      "label": "Copyright format",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "full",
+          "label": "Full sentence"
+        }
+      ],
+      "default": "default"
     },
     {
       "type": "paragraph",
