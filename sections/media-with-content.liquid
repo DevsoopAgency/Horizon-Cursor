@@ -19,6 +19,10 @@
     assign media_class_modifier = media_class_modifier | append: ' media-with-content--custom-button-radius'
   endif
 
+  if section.settings.media_vertical_alignment == 'center'
+    assign media_class_modifier = media_class_modifier | append: ' media-with-content--align-center'
+  endif
+
   assign has_custom_background = false
   assign background_for_contrast = section.settings.background_color
 
@@ -82,6 +86,10 @@
     {% if section.settings.media_height != 'auto' %}
      --section-preview-height: 600px;
      {% endif %}
+
+    {%- if section.settings.media_height != 'auto' -%}
+      --media-with-content-section-min-height: var(--media-height);
+    {%- endif -%}
   "
   {% if request.visual_preview_mode %}
     data-shopify-visual-preview
@@ -199,6 +207,7 @@
 
     @media screen and (min-width: 750px) {
       --media-with-content-grid-columns: 3.5fr 2.5fr;
+      min-height: var(--media-with-content-section-min-height, auto);
 
       /* Default desktop layout is wide media, on the left, in full page section */
       grid-template-areas: 'media content';
@@ -243,11 +252,22 @@
   }
 
   .media-with-content--media-framed .media-block {
-    overflow: visible;
-    padding: var(--media-with-content-media-inset-mobile);
+    overflow: hidden;
+    width: 100%;
+    padding: 0;
+
+    @media screen and (max-width: 749px) {
+      min-height: calc(var(--media-height-mobile) - (var(--media-with-content-media-inset-mobile) * 2));
+      margin-inline: var(--media-with-content-media-inset-mobile);
+      margin-block: var(--media-with-content-media-inset-mobile);
+    }
 
     @media screen and (min-width: 750px) {
-      padding: var(--media-with-content-media-inset);
+      min-height: unset;
+      height: calc(var(--media-height) - (var(--media-with-content-media-inset) * 2));
+      max-height: calc(var(--media-with-content-section-min-height, var(--media-height)) - (var(--media-with-content-media-inset) * 2));
+      margin-inline: var(--media-with-content-media-inset);
+      width: calc(100% - (var(--media-with-content-media-inset) * 2));
     }
   }
 
@@ -256,6 +276,47 @@
   .media-with-content--media-framed deferred-media.media-block__media {
     border-radius: var(--media-with-content-media-radius);
     overflow: hidden;
+  }
+
+  .media-with-content--media-framed .media-block__media,
+  .media-with-content--media-framed deferred-media.media-block__media {
+    @media screen and (min-width: 750px) {
+      position: relative;
+      height: 100%;
+    }
+  }
+
+  .media-with-content--media-framed .media-block__media-link {
+    @media screen and (min-width: 750px) {
+      position: relative;
+      display: block;
+      height: 100%;
+    }
+  }
+
+  .media-with-content--align-center {
+    @media screen and (min-width: 750px) {
+      min-height: var(--media-with-content-section-min-height, var(--media-height));
+      align-items: center;
+    }
+  }
+
+  .media-with-content--align-center.media-with-content--media-framed .media-block {
+    @media screen and (min-width: 750px) {
+      align-self: center;
+    }
+  }
+
+  .media-with-content--align-center .media-with-content__content {
+    @media screen and (min-width: 750px) {
+      align-self: center;
+    }
+  }
+
+  .media-with-content--align-center .media-with-content__content > .group-block-content {
+    @media screen and (min-width: 750px) {
+      padding-block: var(--media-with-content-media-inset, var(--page-margin));
+    }
   }
 
   .media-with-content--custom-button-radius .media-with-content__content :is(.button, .button-custom) {
@@ -398,6 +459,24 @@
       "step": 2,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "select",
+      "id": "media_vertical_alignment",
+      "label": "Media vertical alignment",
+      "info": "Centers the media within the section height. Use with custom height and media inset for equal top/bottom spacing.",
+      "options": [
+        {
+          "value": "stretch",
+          "label": "t:options.top"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        }
+      ],
+      "default": "stretch",
+      "visible_if": "{{ section.settings.media_height != 'auto' }}"
     },
     {
       "type": "select",

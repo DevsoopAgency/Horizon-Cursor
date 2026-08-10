@@ -1075,6 +1075,7 @@
         "media_inset": 48,
         "media_inset_mobile": 24,
         "media_border_radius": 16,
+        "media_vertical_alignment": "center",
         "section_width": "full-width",
         "extend_media": false,
         "background_style": "gradient",
