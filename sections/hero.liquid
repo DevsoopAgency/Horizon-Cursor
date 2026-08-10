@@ -112,6 +112,15 @@
   if section.index == 1
     assign fetch_priority = 'high'
   endif
+
+  assign hero_media_aspect_ratio = blank
+  if media_1 == 'image' and section.settings.image_1 != blank
+    assign hero_media_aspect_ratio = section.settings.image_1.aspect_ratio
+  elsif media_1 == 'video' and section.settings.video_1 != blank
+    assign hero_media_aspect_ratio = section.settings.video_1.aspect_ratio
+  elsif section.settings.image_1 != blank
+    assign hero_media_aspect_ratio = section.settings.image_1.aspect_ratio
+  endif
 %}
 
 {% capture media_slot_1 %}
@@ -458,7 +467,7 @@
 
 <div
   id="Hero-{{ section.id }}"
-  class="hero{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}{% if section.blocks.size == 0 and section.settings.section_height == 'auto' %} hero--no-blocks-auto-height{% endif %}{% if section.settings.stack_media_on_mobile %} hero--stack-mobile{% endif %}"
+  class="hero{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}{% if section.blocks.size == 0 and section.settings.section_height == 'auto' %} hero--no-blocks-auto-height{% endif %}{% if section.settings.section_height == 'adaptive' %} hero--height-adaptive{% endif %}{% if section.settings.stack_media_on_mobile %} hero--stack-mobile{% endif %}"
   style="
     --hero-border-style: {{ section.settings.border }};
     --hero-border-width: {{ section.settings.border_width }}px;
@@ -468,9 +477,12 @@
       --hero-min-height: {{ section.settings.section_height_custom }}svh;
     {% elsif section.settings.section_height == "full-screen" %}
        --hero-min-height: 100svh;
+    {% elsif section.settings.section_height == 'adaptive' or section.settings.section_height == 'auto' %}
+      --hero-min-height: auto;
     {% else %}
       --hero-min-height: var(--section-height-{{ section.settings.section_height }});
     {% endif %}
+    {% if hero_media_aspect_ratio != blank %}--hero-media-aspect-ratio: {{ hero_media_aspect_ratio }};{% endif %}
   "
   {% if request.visual_preview_mode %}
     data-shopify-visual-preview
@@ -518,7 +530,7 @@
     {%- endif -%}
     <div
       class="hero__media-grid"
-      style="--hero-media-count: {{ media_count }};--hero-media-count-mobile: {{ media_count_mobile }};{%- if section.settings.image_1 != blank -%} --hero-media-aspect-ratio: {{ section.settings.image_1.aspect_ratio }};{% endif %}"
+      style="--hero-media-count: {{ media_count }};--hero-media-count-mobile: {{ media_count_mobile }};"
       data-testid="hero-media-wrapper"
     >
       {% liquid
@@ -604,6 +616,49 @@
 
   .hero--auto .hero__media {
     aspect-ratio: var(--hero-media-aspect-ratio);
+  }
+
+  /* Adaptive: media aspect as floor (inherited --hero-media-aspect-ratio), grow with content */
+  .hero.hero--height-adaptive {
+    min-height: unset;
+  }
+
+  .hero--height-adaptive .hero__container {
+    min-height: unset;
+    height: auto;
+  }
+
+  .hero--height-adaptive .hero__media-grid,
+  .hero--height-adaptive .hero__content-wrapper,
+  .hero--height-adaptive .hero__link {
+    grid-row: 1;
+  }
+
+  .hero--height-adaptive .hero__media-grid {
+    position: relative;
+    inset: unset;
+    aspect-ratio: var(--hero-media-aspect-ratio, auto);
+    height: auto;
+    min-height: 100%;
+    align-self: stretch;
+  }
+
+  .hero--height-adaptive .hero__media-wrapper {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero--height-adaptive .hero__media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero--height-adaptive .hero__content-wrapper {
+    position: relative;
+    z-index: var(--layer-flat);
   }
 
   .hero--no-blocks-auto-height {
@@ -1112,6 +1167,10 @@
           "label": "t:options.auto"
         },
         {
+          "value": "adaptive",
+          "label": "t:options.adaptive"
+        },
+        {
           "value": "small",
           "label": "t:options.small"
         },
@@ -1132,7 +1191,8 @@
           "label": "t:options.custom"
         }
       ],
-      "default": "medium"
+      "default": "medium",
+      "info": "Adaptive keeps the media’s natural height as a minimum and grows with taller content."
     },
     {
       "type": "range",
