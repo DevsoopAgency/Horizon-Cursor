@@ -41,6 +41,10 @@
           "label": "t:options.link"
         },
         {
+          "value": "button-link-arrow",
+          "label": "Text Link with Arrow"
+        },
+        {
           "value": "button-custom",
           "label": "t:options.custom"
         }
@@ -82,7 +86,7 @@
       "id": "link_text_color",
       "label": "t:settings.link_text_color",
       "placeholder": "t:settings.default",
-      "visible_if": "{{ block.settings.style_class == 'button-unstyled' }}"
+      "visible_if": "{{ block.settings.style_class == 'button-unstyled' or block.settings.style_class == 'button-link-arrow' }}"
     },
     {
       "type": "header",

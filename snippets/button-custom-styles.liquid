@@ -23,6 +23,20 @@
   {% endstyle %}
 {% endif %}
 
+{% if block_settings.style_class == 'button-link-arrow' and block_settings.link_text_color != blank %}
+  {% style %}
+    .button-link-arrow--{{ block_id }} {
+      color: rgb({{ block_settings.link_text_color.rgba }});
+      border-bottom-color: rgb({{ block_settings.link_text_color.rgba }});
+    }
+
+    .button-link-arrow--{{ block_id }}:hover {
+      color: rgb({{ block_settings.link_text_color.rgb }} / var(--opacity-70));
+      border-bottom-color: rgb({{ block_settings.link_text_color.rgb }} / var(--opacity-70));
+    }
+  {% endstyle %}
+{% endif %}
+
 {% if block_settings.style_class == 'button-custom' %}
   {%- assign effective_background_color = block_settings.custom_button_background
     | default: settings.palette_primary_button_background

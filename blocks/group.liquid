@@ -4,13 +4,131 @@
   {% content_for 'blocks' %}
 {% endcapture %}
 
+{% liquid
+  assign group_extra_class = ''
+  if block.settings.enable_stats_layout
+    assign group_extra_class = 'group-block--stats'
+    assign group_extra_class = group_extra_class | append: ' group-block--stats-desktop-' | append: block.settings.stats_desktop_columns
+    assign group_extra_class = group_extra_class | append: ' group-block--stats-tablet-' | append: block.settings.stats_tablet_layout
+    assign group_extra_class = group_extra_class | append: ' group-block--stats-mobile-' | append: block.settings.stats_mobile_layout
+    if block.settings.show_top_divider
+      assign group_extra_class = group_extra_class | append: ' group-block--stats-divider'
+    endif
+  endif
+%}
+
 {% render 'group',
   children: children,
   settings: block.settings,
   shopify_attributes: block.shopify_attributes,
   background_color: block.settings.background_color,
-  block_id: block.id
+  block_id: block.id,
+  class: group_extra_class
 %}
+
+{% stylesheet %}
+  .group-block--stats-divider {
+    border-top: 1px solid #e5e5e5;
+    padding-block-start: 20px;
+  }
+
+  .group-block--stats > .group-block-content {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .group-block--stats.group-block--stats-desktop-2 > .group-block-content {
+    @media screen and (min-width: 991px) {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--gap);
+    }
+  }
+
+  .group-block--stats.group-block--stats-desktop-3 > .group-block-content {
+    @media screen and (min-width: 991px) {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--gap);
+    }
+  }
+
+  .group-block--stats.group-block--stats-desktop-4 > .group-block-content {
+    @media screen and (min-width: 991px) {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--gap);
+    }
+  }
+
+  .group-block--stats.group-block--stats-tablet-columns_2 > .group-block-content {
+    @media screen and (min-width: 750px) and (max-width: 990px) {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--gap);
+      overflow-x: visible;
+    }
+  }
+
+  .group-block--stats.group-block--stats-tablet-scroll > .group-block-content {
+    @media screen and (min-width: 750px) and (max-width: 990px) {
+      display: flex;
+      flex-flow: row nowrap;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      gap: var(--gap);
+    }
+  }
+
+  .group-block--stats.group-block--stats-tablet-scroll > .group-block-content::-webkit-scrollbar {
+    display: none;
+  }
+
+  .group-block--stats.group-block--stats-tablet-scroll > .group-block-content > .group-block {
+    @media screen and (min-width: 750px) and (max-width: 990px) {
+      flex: 0 0 40%;
+      min-width: 160px;
+    }
+  }
+
+  .group-block--stats.group-block--stats-mobile-stacked > .group-block-content {
+    @media screen and (max-width: 749px) {
+      display: flex;
+      flex-flow: column nowrap;
+      gap: var(--gap);
+      overflow-x: visible;
+    }
+  }
+
+  .group-block--stats.group-block--stats-mobile-scroll > .group-block-content {
+    @media screen and (max-width: 749px) {
+      display: flex;
+      flex-flow: row nowrap;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      gap: var(--gap);
+    }
+  }
+
+  .group-block--stats.group-block--stats-mobile-scroll > .group-block-content::-webkit-scrollbar {
+    display: none;
+  }
+
+  .group-block--stats.group-block--stats-mobile-scroll > .group-block-content > .group-block {
+    @media screen and (max-width: 749px) {
+      flex: 0 0 70%;
+      min-width: 140px;
+    }
+  }
+
+  .group-block--stats > .group-block-content > .group-block {
+    min-width: 0;
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -464,6 +582,80 @@
       "id": "placeholder",
       "label": "t:settings.image",
       "visible_if": "{{ false }}"
+    },
+    {
+      "type": "header",
+      "content": "Stats layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_stats_layout",
+      "label": "Enable stats layout",
+      "info": "Responsive grid/scroll behavior for statistic columns.",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_top_divider",
+      "label": "Show top divider",
+      "info": "Renders a 1px #E5E5E5 border above the stats row.",
+      "default": false,
+      "visible_if": "{{ block.settings.enable_stats_layout }}"
+    },
+    {
+      "type": "select",
+      "id": "stats_desktop_columns",
+      "label": "Desktop columns",
+      "options": [
+        {
+          "value": "2",
+          "label": "2 columns"
+        },
+        {
+          "value": "3",
+          "label": "3 columns"
+        },
+        {
+          "value": "4",
+          "label": "4 columns"
+        }
+      ],
+      "default": "3",
+      "visible_if": "{{ block.settings.enable_stats_layout }}"
+    },
+    {
+      "type": "select",
+      "id": "stats_tablet_layout",
+      "label": "Tablet layout",
+      "options": [
+        {
+          "value": "columns_2",
+          "label": "2 columns"
+        },
+        {
+          "value": "scroll",
+          "label": "Scroll"
+        }
+      ],
+      "default": "columns_2",
+      "visible_if": "{{ block.settings.enable_stats_layout }}"
+    },
+    {
+      "type": "select",
+      "id": "stats_mobile_layout",
+      "label": "Mobile layout",
+      "options": [
+        {
+          "value": "stacked",
+          "label": "1 column stacked"
+        },
+        {
+          "value": "scroll",
+          "label": "Horizontal scroll"
+        }
+      ],
+      "default": "stacked",
+      "visible_if": "{{ block.settings.enable_stats_layout }}"
     },
     {
       "type": "header",
