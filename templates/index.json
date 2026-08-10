@@ -12,62 +12,37 @@
     "hero_radiance": {
       "type": "hero",
       "blocks": {
-        "hero_content": {
-          "type": "group",
-          "name": "t:names.group",
+        "banner_content_cHcMza": {
+          "type": "banner-content",
+          "name": "t:names.banner_content",
           "settings": {
-            "content_direction": "column",
-            "vertical_on_mobile": true,
-            "horizontal_alignment": "flex-start",
-            "vertical_alignment": "center",
-            "align_baseline": false,
-            "horizontal_alignment_flex_direction_column": "flex-start",
-            "vertical_alignment_flex_direction_column": "flex-start",
-            "gap": 28,
-            "width": "custom",
-            "custom_width": 36,
-            "width_mobile": "fill",
-            "custom_width_mobile": 100,
-            "height": "fit",
-            "custom_height": 100,
-            "background_media": "none",
-            "background_color": "",
-            "video_position": "cover",
-            "background_image_position": "cover",
-            "toggle_overlay": false,
-            "overlay_color": "#00000026",
-            "overlay_style": "solid",
-            "gradient_direction": "to top",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_color": "",
-            "border_radius": 0,
-            "link": "",
-            "open_in_new_tab": false,
-            "placeholder": "",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 110,
-            "padding-inline-end": 0
+            "x_position": 22,
+            "y_position": 50,
+            "content_width": 400,
+            "text_alignment": "flex-start",
+            "gap": 20,
+            "x_position_mobile": 50,
+            "y_position_mobile": 28,
+            "content_width_mobile": 360,
+            "text_alignment_mobile": "center"
           },
           "blocks": {
-            "hero_heading": {
+            "text_fQ3dHq": {
               "type": "text",
               "name": "t:names.heading",
               "settings": {
-                "text": "<h1>The Science<br/>of Radiance</h1>",
+                "text": "<h1>The Science of Radiance</h1>",
                 "width": "100%",
                 "max_width": "none",
                 "alignment": "left",
                 "type_preset": "h1",
-                "font": "var(--font-heading--family)",
-                "font_size": "4.5rem",
-                "line_height": "tight",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none",
-                "wrap": "balance",
-                "text_color": "#0a0a0a",
+                "wrap": "pretty",
+                "text_color": "",
                 "background": false,
                 "background_color": "#00000026",
                 "corner_radius": 0,
@@ -78,7 +53,7 @@
               },
               "blocks": {}
             },
-            "hero_body": {
+            "text_kHp88C": {
               "type": "text",
               "name": "t:names.text",
               "settings": {
@@ -86,60 +61,52 @@
                 "width": "100%",
                 "max_width": "none",
                 "alignment": "left",
-                "type_preset": "custom",
+                "type_preset": "rte",
                 "font": "var(--font-body--family)",
                 "font_size": "1rem",
-                "line_height": "loose",
+                "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none",
                 "wrap": "pretty",
-                "text_color": "#0a0a0a",
+                "text_color": "",
                 "background": false,
                 "background_color": "#00000026",
                 "corner_radius": 0,
                 "padding-block-start": 0,
-                "padding-block-end": 8,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "hero_cta": {
-              "type": "text",
-              "name": "t:names.button",
-              "settings": {
-                "text": "<p><a href=\"/collections/all\">EXPLORE COLLECTION →</a></p>",
-                "width": "fit-content",
-                "max_width": "none",
-                "alignment": "left",
-                "type_preset": "custom",
-                "font": "var(--font-body--family)",
-                "font_size": "0.875rem",
-                "line_height": "normal",
-                "letter_spacing": "loose",
-                "case": "uppercase",
-                "wrap": "pretty",
-                "text_color": "#0a0a0a",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 4,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
                 "padding-inline-end": 0
               },
               "blocks": {}
+            },
+            "button_qnKMQk": {
+              "type": "button",
+              "settings": {
+                "label": "Explore Collection",
+                "link": "shopify://collections/all",
+                "open_in_new_tab": false,
+                "style_class": "button-unstyled",
+                "custom_button_background": "{{ settings.color_palette.foreground }}",
+                "custom_button_text": "{{ settings.color_palette.background }}",
+                "custom_button_border": "{{ settings.color_palette.background }}",
+                "link_text_color": "",
+                "width": "fit-content",
+                "custom_width": 100,
+                "width_mobile": "fit-content",
+                "custom_width_mobile": 100
+              },
+              "blocks": {}
             }
           },
           "block_order": [
-            "hero_heading",
-            "hero_body",
-            "hero_cta"
+            "text_fQ3dHq",
+            "text_kHp88C",
+            "button_qnKMQk"
           ]
         }
       },
       "block_order": [
-        "hero_content"
+        "banner_content_cHcMza"
       ],
       "name": "Hero — Science of Radiance",
       "settings": {
@@ -170,8 +137,8 @@
         "gradient_direction": "to bottom",
         "blurred_reflection": false,
         "reflection_opacity": 75,
-        "padding-block-start": 80,
-        "padding-block-end": 80,
+        "padding-block-start": 0,
+        "padding-block-end": 0,
         "padding-inline-start": 0,
         "padding-inline-end": 0
       }
@@ -388,7 +355,6 @@
         "static-collection-card": {
           "type": "_collection-card",
           "name": "t:names.collection_card",
-          "disabled": true,
           "static": true,
           "settings": {
             "placement": "on_image",
@@ -434,11 +400,11 @@
                 "label": "Shop now",
                 "link": "",
                 "open_in_new_tab": false,
-                "style_class": "link",
+                "style_class": "button-unstyled",
                 "custom_button_background": "{{ settings.color_palette.foreground }}",
                 "custom_button_text": "{{ settings.color_palette.background }}",
                 "custom_button_border": "{{ settings.color_palette.background }}",
-                "link_text_color": "",
+                "link_text_color": "{{ settings.color_palette.background }}",
                 "width": "fit-content",
                 "custom_width": 100,
                 "width_mobile": "fit-content",
@@ -567,6 +533,7 @@
             "best_sellers_filters": {
               "type": "group",
               "name": "Category filters",
+              "disabled": true,
               "settings": {
                 "content_direction": "row",
                 "vertical_on_mobile": false,
@@ -1304,7 +1271,7 @@
           "static": true,
           "settings": {
             "media_type": "image",
-            "image": "shopify://shop_images/70df2a7e9beceb5650fe8fd91a215cdda4a2053d_1.png",
+            "image": "shopify://shop_images/inset-0.png",
             "link": "",
             "video_loop": true,
             "video_autoplay": true,
@@ -1851,10 +1818,21 @@
       "settings": {
         "media_position": "left",
         "media_width": "medium",
-        "media_height": "80svh",
+        "media_height": "adaptive",
+        "media_height_custom": 700,
+        "media_height_custom_mobile": 450,
+        "media_inset": 0,
+        "media_inset_mobile": 0,
+        "media_border_radius": 0,
+        "media_vertical_alignment": "stretch",
         "section_width": "full-width",
         "extend_media": false,
+        "background_style": "solid",
         "background_color": "#f5f3ef",
+        "background_gradient_start": "#404040",
+        "background_gradient_end": "#000000",
+        "background_gradient_direction": "to bottom",
+        "content_button_border_radius": 0,
         "padding-block-start": 0,
         "padding-block-end": 0
       }
@@ -1993,10 +1971,21 @@
       "settings": {
         "media_position": "right",
         "media_width": "medium",
-        "media_height": "80svh",
+        "media_height": "adaptive",
+        "media_height_custom": 700,
+        "media_height_custom_mobile": 450,
+        "media_inset": 0,
+        "media_inset_mobile": 0,
+        "media_border_radius": 0,
+        "media_vertical_alignment": "stretch",
         "section_width": "full-width",
         "extend_media": false,
+        "background_style": "solid",
         "background_color": "{{ settings.color_palette.background }}",
+        "background_gradient_start": "#404040",
+        "background_gradient_end": "#000000",
+        "background_gradient_direction": "to bottom",
+        "content_button_border_radius": 0,
         "padding-block-start": 0,
         "padding-block-end": 0
       }
