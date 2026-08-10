@@ -1,0 +1,283 @@
+{% liquid
+  assign s = block.settings
+  assign gap = s.gap | default: 20
+%}
+
+<div
+  class="
+    banner-content
+    banner-content--{{ block.id }}
+    banner-content--align-{{ s.text_alignment }}
+    banner-content--align-mobile-{{ s.text_alignment_mobile }}
+  "
+  style="
+    --banner-content-x: {{ s.x_position }}%;
+    --banner-content-y: {{ s.y_position }}%;
+    --banner-content-width: {{ s.content_width }}px;
+    --banner-content-x-mobile: {{ s.x_position_mobile }}%;
+    --banner-content-y-mobile: {{ s.y_position_mobile }}%;
+    --banner-content-width-mobile: {{ s.content_width_mobile }}px;
+    --banner-content-gap: {{ gap }}px;
+  "
+  {{ block.shopify_attributes }}
+>
+  <div class="banner-content__inner">
+    {% content_for 'blocks' %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .banner-content {
+    position: absolute;
+    left: var(--banner-content-x);
+    top: var(--banner-content-y);
+    width: min(var(--banner-content-width), calc(100% - 2rem));
+    z-index: var(--layer-flat);
+    pointer-events: auto;
+    transform: translate(-50%, -50%);
+  }
+
+  .banner-content__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--banner-content-gap, 20px);
+    width: 100%;
+  }
+
+  .banner-content--align-flex-start .banner-content__inner {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .banner-content--align-center .banner-content__inner {
+    align-items: center;
+    text-align: center;
+  }
+
+  .banner-content--align-flex-end .banner-content__inner {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .banner-content__inner > * {
+    max-width: 100%;
+  }
+
+  @media screen and (max-width: 749px) {
+    .banner-content {
+      left: var(--banner-content-x-mobile);
+      top: var(--banner-content-y-mobile);
+      width: min(var(--banner-content-width-mobile), calc(100% - 2rem));
+      transform: translate(-50%, -50%);
+    }
+
+    .banner-content--align-mobile-flex-start .banner-content__inner {
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    .banner-content--align-mobile-center .banner-content__inner {
+      align-items: center;
+      text-align: center;
+    }
+
+    .banner-content--align-mobile-flex-end .banner-content__inner {
+      align-items: flex-end;
+      text-align: right;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.banner_content",
+  "tag": null,
+  "blocks": [
+    {
+      "type": "text"
+    },
+    {
+      "type": "button"
+    },
+    {
+      "type": "image"
+    },
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:content.layout"
+    },
+    {
+      "type": "range",
+      "id": "x_position",
+      "label": "t:settings.x_position",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "y_position",
+      "label": "t:settings.y_position",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "content_width",
+      "label": "t:settings.content_width",
+      "min": 160,
+      "max": 800,
+      "step": 8,
+      "unit": "px",
+      "default": 400
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "flex-start"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "t:content.mobile_layout"
+    },
+    {
+      "type": "range",
+      "id": "x_position_mobile",
+      "label": "t:settings.x_position",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "y_position_mobile",
+      "label": "t:settings.y_position",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "content_width_mobile",
+      "label": "t:settings.content_width",
+      "min": 160,
+      "max": 600,
+      "step": 8,
+      "unit": "px",
+      "default": 360
+    },
+    {
+      "type": "select",
+      "id": "text_alignment_mobile",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "center"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.banner_content",
+      "category": "t:categories.basic",
+      "settings": {
+        "x_position": 22,
+        "y_position": 50,
+        "content_width": 400,
+        "text_alignment": "flex-start",
+        "gap": 20,
+        "x_position_mobile": 50,
+        "y_position_mobile": 28,
+        "content_width_mobile": 360,
+        "text_alignment_mobile": "center"
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "name": "t:names.heading",
+          "settings": {
+            "text": "<h1>The Science of Radiance</h1>",
+            "type_preset": "h1",
+            "width": "100%",
+            "max_width": "none",
+            "alignment": "left"
+          }
+        },
+        {
+          "type": "text",
+          "name": "t:names.text",
+          "settings": {
+            "text": "<p>Discover curated formulas that transform your daily routine into a luminous ritual.</p>",
+            "type_preset": "rte",
+            "width": "100%",
+            "max_width": "none",
+            "alignment": "left"
+          }
+        },
+        {
+          "type": "button",
+          "settings": {
+            "label": "Explore Collection",
+            "link": "shopify://collections/all",
+            "style_class": "button-unstyled",
+            "width": "fit-content"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
