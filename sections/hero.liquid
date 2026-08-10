@@ -118,8 +118,10 @@
     assign hero_media_aspect_ratio = section.settings.image_1.aspect_ratio
   elsif media_1 == 'video' and section.settings.video_1 != blank
     assign hero_media_aspect_ratio = section.settings.video_1.aspect_ratio
-  elsif section.settings.image_1 != blank
-    assign hero_media_aspect_ratio = section.settings.image_1.aspect_ratio
+  elsif media_2 == 'image' and section.settings.image_2 != blank
+    assign hero_media_aspect_ratio = section.settings.image_2.aspect_ratio
+  elsif media_2 == 'video' and section.settings.video_2 != blank
+    assign hero_media_aspect_ratio = section.settings.video_2.aspect_ratio
   endif
 %}
 
@@ -618,7 +620,7 @@
     aspect-ratio: var(--hero-media-aspect-ratio);
   }
 
-  /* Adaptive: media aspect as floor (inherited --hero-media-aspect-ratio), grow with content */
+  /* Adaptive: media natural aspect as floor; grow with in-flow content */
   .hero.hero--height-adaptive {
     min-height: unset;
   }
@@ -638,6 +640,7 @@
     position: relative;
     inset: unset;
     aspect-ratio: var(--hero-media-aspect-ratio, auto);
+    width: 100%;
     height: auto;
     min-height: 100%;
     align-self: stretch;
@@ -646,6 +649,7 @@
   .hero--height-adaptive .hero__media-wrapper {
     position: absolute;
     inset: 0;
+    height: 100%;
   }
 
   .hero--height-adaptive .hero__media {
@@ -658,7 +662,49 @@
 
   .hero--height-adaptive .hero__content-wrapper {
     position: relative;
+    inset: unset;
     z-index: var(--layer-flat);
+    /* Override .layout-panel-flex { height: 100% } so content can grow the section */
+    height: auto;
+    min-height: 100%;
+    align-self: stretch;
+  }
+
+  .hero--height-adaptive .hero__content-wrapper:has(.banner-content) {
+    width: 100%;
+    grid-column: 1 / -1;
+  }
+
+  /* Banner content must stay in-flow under adaptive or height collapses */
+  .hero--height-adaptive .banner-content {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    pointer-events: auto;
+  }
+
+  .hero--height-adaptive .banner-content__slot {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    width: min(var(--banner-content-width), calc(100% - 2rem));
+    margin-inline-start: clamp(
+      0px,
+      calc(var(--banner-content-x) - (var(--banner-content-width) / 2)),
+      max(0px, 100% - var(--banner-content-width))
+    );
+  }
+
+  @media screen and (max-width: 749px) {
+    .hero--height-adaptive .banner-content__slot {
+      width: min(var(--banner-content-width-mobile), calc(100% - 2rem));
+      margin-inline-start: clamp(
+        0px,
+        calc(var(--banner-content-x-mobile) - (var(--banner-content-width-mobile) / 2)),
+        max(0px, 100% - var(--banner-content-width-mobile))
+      );
+    }
   }
 
   .hero--no-blocks-auto-height {

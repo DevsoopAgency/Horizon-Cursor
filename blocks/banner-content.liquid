@@ -21,20 +21,32 @@
   "
   {{ block.shopify_attributes }}
 >
-  <div class="banner-content__inner">
-    {% content_for 'blocks' %}
+  <div class="banner-content__slot">
+    <div class="banner-content__inner">
+      {% content_for 'blocks' %}
+    </div>
   </div>
 </div>
 
 {% stylesheet %}
+  /*
+    Overlay mode (default): fill the content area and pin the slot at x/y.
+    Adaptive heroes override this so the slot stays in-flow and can size height.
+  */
   .banner-content {
+    position: absolute;
+    inset: 0;
+    z-index: var(--layer-flat);
+    pointer-events: none;
+  }
+
+  .banner-content__slot {
     position: absolute;
     left: var(--banner-content-x);
     top: var(--banner-content-y);
     width: min(var(--banner-content-width), calc(100% - 2rem));
-    z-index: var(--layer-flat);
-    pointer-events: auto;
     transform: translate(-50%, -50%);
+    pointer-events: auto;
   }
 
   .banner-content__inner {
@@ -63,12 +75,50 @@
     max-width: 100%;
   }
 
+  /* Adaptive height: stay in-flow so content defines section min-height */
+  .hero--height-adaptive .banner-content {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    pointer-events: auto;
+  }
+
+  .hero--height-adaptive .banner-content__slot {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    width: min(var(--banner-content-width), calc(100% - 2rem));
+    margin-inline-start: clamp(
+      0px,
+      calc(var(--banner-content-x) - (var(--banner-content-width) / 2)),
+      max(0px, 100% - var(--banner-content-width))
+    );
+  }
+
+  .hero--height-adaptive .hero__content-wrapper:has(.banner-content) {
+    width: 100%;
+    align-self: stretch;
+  }
+
   @media screen and (max-width: 749px) {
-    .banner-content {
+    .banner-content__slot {
       left: var(--banner-content-x-mobile);
       top: var(--banner-content-y-mobile);
       width: min(var(--banner-content-width-mobile), calc(100% - 2rem));
       transform: translate(-50%, -50%);
+    }
+
+    .hero--height-adaptive .banner-content__slot {
+      left: auto;
+      top: auto;
+      transform: none;
+      width: min(var(--banner-content-width-mobile), calc(100% - 2rem));
+      margin-inline-start: clamp(
+        0px,
+        calc(var(--banner-content-x-mobile) - (var(--banner-content-width-mobile) / 2)),
+        max(0px, 100% - var(--banner-content-width-mobile))
+      );
     }
 
     .banner-content--align-mobile-flex-start .banner-content__inner {
@@ -132,7 +182,8 @@
       "max": 100,
       "step": 1,
       "unit": "%",
-      "default": 50
+      "default": 50,
+      "info": "Y position applies when hero height is fixed. Adaptive height sizes to content instead."
     },
     {
       "type": "range",
@@ -196,7 +247,8 @@
       "max": 100,
       "step": 1,
       "unit": "%",
-      "default": 28
+      "default": 28,
+      "info": "Y position applies when hero height is fixed. Adaptive height sizes to content instead."
     },
     {
       "type": "range",
