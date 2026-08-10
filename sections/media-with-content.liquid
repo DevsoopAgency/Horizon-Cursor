@@ -23,6 +23,10 @@
     assign media_class_modifier = media_class_modifier | append: ' media-with-content--align-center'
   endif
 
+  if section.settings.media_height == 'adaptive'
+    assign media_class_modifier = media_class_modifier | append: ' media-with-content--height-adaptive'
+  endif
+
   assign has_custom_background = false
   assign background_for_contrast = section.settings.background_color
 
@@ -78,16 +82,19 @@
       {% when 'custom' %}
         --media-height: {{ section.settings.media_height_custom | default: 700 }}px;
         --media-height-mobile: {{ section.settings.media_height_custom_mobile | default: section.settings.media_height_custom | default: 700 | times: 0.65 | round }}px;
+      {% when 'adaptive' %}
+        --media-height: auto;
+        --media-height-mobile: auto;
       {% else %}
         --media-height: auto;
         --media-height-mobile: auto;
     {% endcase -%}
 
-    {% if section.settings.media_height != 'auto' %}
+    {% if section.settings.media_height != 'auto' and section.settings.media_height != 'adaptive' %}
      --section-preview-height: 600px;
      {% endif %}
 
-    {%- if section.settings.media_height != 'auto' -%}
+    {%- if section.settings.media_height != 'auto' and section.settings.media_height != 'adaptive' -%}
       --media-with-content-section-min-height: var(--media-height);
     {%- endif -%}
   "
@@ -323,6 +330,41 @@
     border-radius: var(--media-with-content-button-radius);
   }
 
+  /* Adaptive: natural media aspect as floor, stretch with taller content */
+  .media-with-content--height-adaptive {
+    @media screen and (min-width: 750px) {
+      align-items: stretch;
+
+      .media-block {
+        min-height: unset;
+        height: 100%;
+        align-self: stretch;
+        aspect-ratio: var(--media-block-aspect-ratio, 4 / 3);
+      }
+
+      .media-block__media,
+      .media-block__media-link,
+      deferred-media.media-block__media {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .media-block__media-link {
+        display: block;
+      }
+    }
+  }
+
+  .media-with-content--height-adaptive.media-with-content--media-framed .media-block {
+    @media screen and (min-width: 750px) {
+      height: 100%;
+      max-height: none;
+      aspect-ratio: var(--media-block-aspect-ratio, 4 / 3);
+    }
+  }
+
   .shopify-section:has(.media-with-content.color-custom) > .section-background[style*='linear-gradient'] {
     background-color: transparent;
   }
@@ -381,6 +423,10 @@
           "label": "t:options.auto"
         },
         {
+          "value": "adaptive",
+          "label": "t:options.adaptive"
+        },
+        {
           "value": "50svh",
           "label": "t:options.small"
         },
@@ -401,7 +447,8 @@
           "label": "t:options.custom"
         }
       ],
-      "default": "80svh"
+      "default": "80svh",
+      "info": "Adaptive keeps the media’s natural height as a minimum and grows with taller content."
     },
     {
       "type": "range",
@@ -476,7 +523,7 @@
         }
       ],
       "default": "stretch",
-      "visible_if": "{{ section.settings.media_height != 'auto' }}"
+      "visible_if": "{{ section.settings.media_height != 'auto' and section.settings.media_height != 'adaptive' }}"
     },
     {
       "type": "select",
