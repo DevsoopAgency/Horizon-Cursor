@@ -10,34 +10,72 @@
   if section.settings.media_position == 'right'
     assign media_class_modifier = media_class_modifier | append: ' media-with-content--media-right'
   endif
+
+  if section.settings.media_inset > 0 or section.settings.media_inset_mobile > 0 or section.settings.media_border_radius > 0
+    assign media_class_modifier = media_class_modifier | append: ' media-with-content--media-framed'
+  endif
+
+  if section.settings.content_button_border_radius > 0
+    assign media_class_modifier = media_class_modifier | append: ' media-with-content--custom-button-radius'
+  endif
+
+  assign has_custom_background = false
+  assign background_for_contrast = section.settings.background_color
+
+  if section.settings.background_style == 'gradient'
+    assign has_custom_background = true
+    assign background_for_contrast = section.settings.background_gradient_end | default: '#000000'
+  elsif section.settings.background_color != blank
+    assign has_custom_background = true
+  endif
 %}
 
 {% liquid
-  if section.settings.background_color != blank
-    render 'contrast-override', background_color: section.settings.background_color, section_id: section.id
+  if has_custom_background and background_for_contrast != blank
+    render 'contrast-override', background_color: background_for_contrast, section_id: section.id
   endif
 %}
 
 <div
-  class="section-background{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
+  class="section-background{% if has_custom_background %} color-custom-{{ section.id }}{% endif %}"
+  style="
+    {%- if section.settings.background_style == 'gradient' -%}
+      background: linear-gradient(
+        {{ section.settings.background_gradient_direction | default: 'to bottom' }},
+        {{ section.settings.background_gradient_start | default: '#404040' }},
+        {{ section.settings.background_gradient_end | default: '#000000' }}
+      );
+    {%- endif -%}
+  "
 ></div>
 <div
-  class="section section--{{ section.settings.section_width }} disable-section-top-offset media-with-content{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %} spacing-style {{ media_class_modifier }}"
+  class="section section--{{ section.settings.section_width }} disable-section-top-offset media-with-content{% if has_custom_background %} color-custom-{{ section.id }}{% endif %} spacing-style {{ media_class_modifier }}"
   data-testid="media-with-content"
   style="
     {%- render 'spacing-style', settings: section.settings %}
     {% render 'border-override', settings: section.settings %}
-    --media-height: {{ section.settings.media_height }};
+    --media-with-content-media-inset: {{ section.settings.media_inset | default: 0 }}px;
+    --media-with-content-media-inset-mobile: {{ section.settings.media_inset_mobile | default: section.settings.media_inset | default: 0 }}px;
+    --media-with-content-media-radius: {{ section.settings.media_border_radius | default: 0 }}px;
+    --media-with-content-button-radius: {{ section.settings.content_button_border_radius | default: 0 }}px;
     {%- case section.settings.media_height %}
       {% when '50svh' %}
+        --media-height: 50svh;
         --media-height-mobile: 30svh;
       {% when '60svh' %}
+        --media-height: 60svh;
         --media-height-mobile: 50svh;
       {% when '80svh' %}
+        --media-height: 80svh;
         --media-height-mobile: 70svh;
       {% when '100svh' %}
+        --media-height: 100svh;
         --media-height-mobile: 100svh;
+      {% when 'custom' %}
+        --media-height: {{ section.settings.media_height_custom | default: 700 }}px;
+        --media-height-mobile: {{ section.settings.media_height_custom_mobile | default: section.settings.media_height_custom | default: 700 | times: 0.65 | round }}px;
       {% else %}
+        --media-height: auto;
         --media-height-mobile: auto;
     {% endcase -%}
 
@@ -203,6 +241,30 @@
 
     min-height: 500px;
   }
+
+  .media-with-content--media-framed .media-block {
+    overflow: visible;
+    padding: var(--media-with-content-media-inset-mobile);
+
+    @media screen and (min-width: 750px) {
+      padding: var(--media-with-content-media-inset);
+    }
+  }
+
+  .media-with-content--media-framed .media-block__media,
+  .media-with-content--media-framed .media-block__media-link,
+  .media-with-content--media-framed deferred-media.media-block__media {
+    border-radius: var(--media-with-content-media-radius);
+    overflow: hidden;
+  }
+
+  .media-with-content--custom-button-radius .media-with-content__content :is(.button, .button-custom) {
+    border-radius: var(--media-with-content-button-radius);
+  }
+
+  .shopify-section:has(.media-with-content.color-custom) > .section-background[style*='linear-gradient'] {
+    background-color: transparent;
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -272,9 +334,70 @@
         {
           "value": "100svh",
           "label": "t:options.full_screen"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
         }
       ],
       "default": "80svh"
+    },
+    {
+      "type": "range",
+      "id": "media_height_custom",
+      "label": "Custom media height",
+      "min": 300,
+      "max": 900,
+      "step": 10,
+      "unit": "px",
+      "default": 700,
+      "visible_if": "{{ section.settings.media_height == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "media_height_custom_mobile",
+      "label": "Custom media height on mobile",
+      "min": 200,
+      "max": 700,
+      "step": 10,
+      "unit": "px",
+      "default": 450,
+      "visible_if": "{{ section.settings.media_height == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "Media frame"
+    },
+    {
+      "type": "range",
+      "id": "media_inset",
+      "label": "Media inset",
+      "info": "Padding around the media on desktop",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "media_inset_mobile",
+      "label": "Media inset on mobile",
+      "min": 0,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "media_border_radius",
+      "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "select",
@@ -300,10 +423,85 @@
       "visible_if": "{{ section.settings.section_width == 'page-width' }}"
     },
     {
+      "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "select",
+      "id": "background_style",
+      "label": "Background style",
+      "options": [
+        {
+          "value": "solid",
+          "label": "t:options.solid"
+        },
+        {
+          "value": "gradient",
+          "label": "t:options.gradient"
+        }
+      ],
+      "default": "solid"
+    },
+    {
       "type": "color",
       "id": "background_color",
       "label": "t:settings.background_color",
-      "placeholder": "t:settings.default"
+      "placeholder": "t:settings.default",
+      "visible_if": "{{ section.settings.background_style == 'solid' }}"
+    },
+    {
+      "type": "color",
+      "id": "background_gradient_start",
+      "label": "Gradient start",
+      "default": "#404040",
+      "visible_if": "{{ section.settings.background_style == 'gradient' }}"
+    },
+    {
+      "type": "color",
+      "id": "background_gradient_end",
+      "label": "Gradient end",
+      "default": "#000000",
+      "visible_if": "{{ section.settings.background_style == 'gradient' }}"
+    },
+    {
+      "type": "select",
+      "id": "background_gradient_direction",
+      "label": "t:settings.gradient_direction",
+      "options": [
+        {
+          "value": "to bottom",
+          "label": "t:options.down"
+        },
+        {
+          "value": "to top",
+          "label": "t:options.up"
+        },
+        {
+          "value": "to right",
+          "label": "t:options.right"
+        },
+        {
+          "value": "to left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "135deg",
+          "label": "Diagonal"
+        }
+      ],
+      "default": "to bottom",
+      "visible_if": "{{ section.settings.background_style == 'gradient' }}"
+    },
+    {
+      "type": "range",
+      "id": "content_button_border_radius",
+      "label": "Button corner radius",
+      "info": "Applies to buttons in the content area. Set to 0 to use theme default.",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "header",
