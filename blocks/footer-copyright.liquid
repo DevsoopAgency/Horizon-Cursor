@@ -4,7 +4,7 @@
   class="
     footer-utilities__group-copyright
     custom-typography
-    {% if block_settings.font_size != "" %}custom-font-size{% endif %}
+    {% if block_settings.font_size != blank %}custom-font-size{% endif %}
   "
   style="
     {% render 'typography-style', preset: 'custom', settings: block_settings %}
@@ -13,10 +13,11 @@
   {{ block.shopify_attributes }}
 >
   <span class="footer-utilities__text">
-    &copy; {{ 'now' | date: '%Y' }}
-    {{ shop.name | link_to: routes.root_url -}}
+    Copyright &copy; {{ 'now' | date: '%Y' }},
+    {{ shop.name | link_to: routes.root_url }}.
+    All rights reserved.
     {%- if block_settings.show_powered_by -%}
-      , {{ powered_by_link }}
+      {{ powered_by_link }}
     {%- endif -%}
   </span>
 </div>
@@ -24,6 +25,13 @@
 {% stylesheet %}
   .footer-utilities__group-copyright {
     color: var(--color-utilities, var(--color-foreground-muted));
+  }
+
+  .footer-utilities__group-copyright a {
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+    text-decoration-color: currentcolor;
   }
 {% endstylesheet %}
 

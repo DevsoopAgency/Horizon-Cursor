@@ -390,6 +390,8 @@
           --hero-content-translate-y: {{ hero_translate_y }};
           --hero-content-top-mobile: {{ hero_content_top_mobile }}%;
         {% endif %}
+        --hero-content-padding-desktop: {{ section.settings.content_padding_desktop | default: 0 }}px;
+        --hero-content-padding-mobile: {{ section.settings.content_padding_mobile | default: 16 }}px;
       "
     >
       {% content_for 'blocks' %}
@@ -482,11 +484,39 @@
     min-height: 0;
   }
 
+  /* Treat heading + body + CTA as one content unit */
+  .hero__content-wrapper--transform-position > .shopify-block,
+  .hero__content-wrapper--transform-position > .shopify-block > .group-block {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .hero__content-wrapper--transform-position {
+    padding: var(--hero-content-padding-desktop, 0px);
+    box-sizing: border-box;
+  }
+
+  .hero__content-wrapper--align-start .group-block-content {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .hero__content-wrapper--align-center .group-block-content {
+    align-items: center;
+    text-align: center;
+  }
+
+  .hero__content-wrapper--align-end .group-block-content {
+    align-items: flex-end;
+    text-align: right;
+  }
+
   @media screen and (max-width: 749px) {
     .hero__content-wrapper--transform-position {
       top: var(--hero-content-top-mobile, 50%);
       width: calc(100% - 2 * var(--page-margin, 1rem));
       max-width: none;
+      padding: var(--hero-content-padding-mobile, 1rem);
     }
 
     /* Set transform directly so desktop inline --hero-content-translate-x doesn't leak into mobile */
@@ -512,9 +542,21 @@
       align-items: flex-end;
     }
 
+    .hero__content-wrapper--align-mobile-start .group-block-content {
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    .hero__content-wrapper--align-mobile-center .group-block-content,
     .hero__content-wrapper--align-mobile-center .text-block,
     .hero__content-wrapper--align-mobile-center .text-block > * {
+      align-items: center;
       text-align: center;
+    }
+
+    .hero__content-wrapper--align-mobile-end .group-block-content {
+      align-items: flex-end;
+      text-align: right;
     }
   }
 
@@ -927,6 +969,26 @@
       "unit": "%",
       "default": 28,
       "info": "t:info.mobile_content_position"
+    },
+    {
+      "type": "range",
+      "id": "content_padding_desktop",
+      "label": "t:settings.content_padding_desktop",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "content_padding_mobile",
+      "label": "t:settings.content_padding_mobile",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 16
     },
     {
       "type": "select",

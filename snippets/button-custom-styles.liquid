@@ -55,6 +55,9 @@
       --button-color: rgb({{ effective_text_color.rgba }});
       --button-border-color: rgb({{ effective_border_color.rgba }});
       --button-focus-outline-color: rgb({{ effective_focus_outline_color.rgb }});
+      {% if block_settings.custom_button_radius != blank %}
+        border-radius: {{ block_settings.custom_button_radius }}px;
+      {% endif %}
     }
     .button-custom--{{ block_id }}:hover {
       --button-background-color: {{ effective_hover_bg }};

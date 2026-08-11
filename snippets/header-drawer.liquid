@@ -108,10 +108,21 @@
             {% assign first_accordion_open = false %}
             {% assign animation_index = 0 %}
             {%- for link in linklist.links -%}
-              {% assign animation_index = animation_index | plus: 1 %}
+              {% liquid
+                assign animation_index = animation_index | plus: 1
+                assign is_highlighted = false
+                assign highlight_title = block_settings.highlighted_menu_item | default: 'Sale' | strip | downcase
+                assign highlight_handle = highlight_title | handleize
+                if highlight_title != blank
+                  assign link_title_down = link.title | strip | downcase
+                  if link_title_down == highlight_title or link.handle == highlight_handle
+                    assign is_highlighted = true
+                  endif
+                endif
+              %}
               <li
-                style="--menu-drawer-animation-index: {{ animation_index }};"
-                class="{%- if block_settings.drawer_accordion -%}menu-drawer__list-item--deep{%- else -%}menu-drawer__list-item--flat{%- endif -%}{% if block_settings.drawer_dividers %} menu-drawer__list-item--divider{% endif %}"
+                style="--menu-drawer-animation-index: {{ animation_index }};{% if is_highlighted %} --menu-highlight-color: {{ block_settings.highlighted_menu_color | default: '#e6007a' }};{% endif %}"
+                class="{%- if block_settings.drawer_accordion -%}menu-drawer__list-item--deep{%- else -%}menu-drawer__list-item--flat{%- endif -%}{% if block_settings.drawer_dividers %} menu-drawer__list-item--divider{% endif %}{% if is_highlighted %} menu-drawer__list-item--highlight{% endif %}"
               >
                 {% if block_settings.drawer_accordion and link.links != blank %}
                   {%- comment -%}
@@ -261,10 +272,21 @@
             {%- endcomment -%}
             {% assign animation_index = 0 %}
             {%- for link in linklist.links -%}
-              {% assign animation_index = animation_index | plus: 1 %}
+              {% liquid
+                assign animation_index = animation_index | plus: 1
+                assign is_highlighted = false
+                assign highlight_title = block_settings.highlighted_menu_item | default: 'Sale' | strip | downcase
+                assign highlight_handle = highlight_title | handleize
+                if highlight_title != blank
+                  assign link_title_down = link.title | strip | downcase
+                  if link_title_down == highlight_title or link.handle == highlight_handle
+                    assign is_highlighted = true
+                  endif
+                endif
+              %}
               <li
-                class="menu-drawer__list-item"
-                style="--menu-drawer-animation-index: {{ animation_index }};"
+                class="menu-drawer__list-item{% if is_highlighted %} menu-drawer__list-item--highlight{% endif %}"
+                style="--menu-drawer-animation-index: {{ animation_index }};{% if is_highlighted %} --menu-highlight-color: {{ block_settings.highlighted_menu_color | default: '#e6007a' }};{% endif %}"
               >
                 {%- if link.links != blank -%}
                   {%- comment -%}
@@ -1058,6 +1080,16 @@
 
     &:hover {
       color: var(--menu-top-level-font-color);
+    }
+  }
+
+  .menu-drawer__list-item--highlight > .menu-drawer__menu-item--mainlist,
+  .menu-drawer__list-item--highlight > details > .menu-drawer__menu-item--mainlist,
+  .menu-drawer__list-item--highlight > .menu-drawer__menu-container > .menu-drawer__menu-item--mainlist {
+    color: var(--menu-highlight-color, #e6007a);
+
+    &:hover {
+      color: var(--menu-highlight-color, #e6007a);
     }
   }
 

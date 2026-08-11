@@ -125,6 +125,40 @@
     },
     {
       "type": "color",
+      "id": "text_color",
+      "label": "t:settings.text_color",
+      "placeholder": "t:settings.default"
+    },
+    {
+      "type": "select",
+      "id": "card_size",
+      "label": "t:settings.card_height",
+      "options": [
+        {
+          "value": "auto",
+          "label": "t:options.auto"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "auto",
+      "visible_if": "{{ block.settings.placement == \"on_image\" }}"
+    },
+    {
+      "type": "range",
+      "id": "card_height",
+      "label": "t:settings.custom_height",
+      "min": 20,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 49,
+      "visible_if": "{{ block.settings.placement == \"on_image\" and block.settings.card_size == \"custom\" }}"
+    },
+    {
+      "type": "color",
       "id": "background_color",
       "label": "t:settings.background_color",
       "placeholder": "t:settings.default"

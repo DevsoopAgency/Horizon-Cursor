@@ -18,10 +18,37 @@
   fetchpriority="low"
 ></script>
 
+{% liquid
+  assign account_icon_image = section.settings.account_icon_image
+  assign account_icon_link = section.settings.account_icon_link
+  assign cart_icon_image = section.settings.cart_icon_image
+  assign cart_icon_link = section.settings.cart_icon_link
+%}
+
+{% capture cart_icon_markup %}
+  {% if cart_icon_image != blank %}
+    {{
+      cart_icon_image
+      | image_url: width: 48
+      | image_tag:
+        class: 'header-actions__custom-icon',
+        widths: '24, 48',
+        sizes: '24px',
+        alt: '',
+        loading: 'lazy'
+    }}
+  {% else %}
+    {{ 'icon-cart.svg' | inline_asset_content }}
+  {% endif %}
+{% endcapture %}
+
 {% capture cart_icon %}
   <cart-icon
-    class="header-actions__cart-icon{% if display_style == 'text' %} header-actions__cart-icon--text{% endif %}{% unless cart == empty %} header-actions__cart-icon--has-cart{% endunless %}"
+    class="header-actions__cart-icon{% if display_style == 'text' %} header-actions__cart-icon--text{% endif %}{% if cart_icon_image != blank %} header-actions__cart-icon--custom{% endif %}{% unless cart == empty %} header-actions__cart-icon--has-cart{% endunless %}"
     data-testid="cart-icon"
+    {% if section.settings.show_cart_count_when_empty %}
+      data-show-when-empty="true"
+    {% endif %}
   >
     <span class="{% if display_style == 'icon' %}hidden{% else %}mobile:hidden{% endif %}">
       {{ 'content.cart_title' | t }}
@@ -31,30 +58,42 @@
       class="svg-wrapper {% if display_style != 'icon' %}desktop:hidden{% endif %}"
       aria-hidden="true"
     >
-      {{ 'icon-cart.svg' | inline_asset_content }}
+      {{ cart_icon_markup }}
     </span>
 
-    {% render 'cart-bubble', limit: 100 %}
+    {% render 'cart-bubble', limit: 100, show_when_empty: section.settings.show_cart_count_when_empty %}
   </cart-icon>
 {% endcapture %}
 
 {% capture account_icon %}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="15"
-    height="17"
-    viewBox="0 0 15 17"
-    fill="none"
-    slot="signed-out-avatar"
-    class="account-button__icon"
-  >
-    <path
-      stroke="currentColor"
-      stroke-linejoin="round"
-      stroke-width="var(--icon-stroke-width)"
-      d="M10.375 3.813a3.063 3.063 0 1 1-6.125 0 3.063 3.063 0 0 1 6.125 0ZM7.313 9.5c-3.667 0-6.24 2.691-6.563 6.125h13.125C13.552 12.191 10.979 9.5 7.312 9.5Z"
-    />
-  </svg>
+  {% if account_icon_image != blank %}
+    {{
+      account_icon_image
+      | image_url: width: 48
+      | image_tag:
+        class: 'header-actions__custom-icon account-button__icon',
+        widths: '24, 48',
+        sizes: '24px',
+        alt: '',
+        loading: 'lazy'
+    }}
+  {% else %}
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="15"
+      height="17"
+      viewBox="0 0 15 17"
+      fill="none"
+      class="account-button__icon"
+    >
+      <path
+        stroke="currentColor"
+        stroke-linejoin="round"
+        stroke-width="var(--icon-stroke-width)"
+        d="M10.375 3.813a3.063 3.063 0 1 1-6.125 0 3.063 3.063 0 0 1 6.125 0ZM7.313 9.5c-3.667 0-6.24 2.691-6.563 6.125h13.125C13.552 12.191 10.979 9.5 7.312 9.5Z"
+      />
+    </svg>
+  {% endif %}
 {% endcapture %}
 
 <header-actions
@@ -63,7 +102,25 @@
   {% endif %}
   {{- block.shopify_attributes -}}
 >
-  {% if shop.customer_accounts_enabled %}
+  {% if account_icon_link != blank %}
+    <a
+      href="{{ account_icon_link }}"
+      class="account-button header-actions__action{% if display_style == 'text' %} account-button--text{% endif %}"
+      aria-label="{{ 'content.account_title' | t }}"
+    >
+      <span
+        class="account-button__text header-actions__text-style {% if display_style == 'icon' %}hidden{% else %}mobile:hidden{% endif %}"
+      >
+        {{ 'content.account_title' | t }}
+      </span>
+      <span
+        class="{% if display_style != 'icon' %}desktop:hidden{% endif %}"
+        aria-hidden="true"
+      >
+        {{ account_icon }}
+      </span>
+    </a>
+  {% elsif shop.customer_accounts_enabled %}
     {% liquid
       assign account_actions_style = ''
       if display_style == 'text' and section
@@ -113,7 +170,16 @@
     </div>
   {% endif %}
 
-  {% if settings.cart_type == 'drawer' and template.name != 'cart' %}
+  {% if cart_icon_link != blank %}
+    <a
+      href="{{ cart_icon_link }}"
+      class="header-actions__action action__cart{% if display_style == 'text' %} header-actions__text-style{% endif %}"
+      aria-label="{{ 'accessibility.cart' | t }}"
+      aria-describedby="cart-bubble-text"
+    >
+      {{ cart_icon }}
+    </a>
+  {% elsif settings.cart_type == 'drawer' and template.name != 'cart' %}
     <button
       class="header-actions__action button-unstyled{% if display_style == 'text' %} header-actions__text-style{% endif %}"
       on:click="#cart-drawer/toggle"
@@ -274,7 +340,7 @@
     font-weight: var(--font-paragraph--weight);
   }
 
-  .header-actions__cart-icon.header-actions__cart-icon--has-cart svg {
+  .header-actions__cart-icon.header-actions__cart-icon--has-cart:not(.header-actions__cart-icon--custom) svg {
     /* Create donut mask where the cart bubble sits */
     mask: radial-gradient(
       calc(var(--cart-bubble-size) + 2px) at calc(100% - var(--cart-bubble-right)) var(--cart-bubble-top),
@@ -282,6 +348,13 @@
       #fff 45.45%,
       #fff 100%
     );
+  }
+
+  .header-actions__custom-icon {
+    display: block;
+    width: var(--icon-size-md, 1.25rem);
+    height: var(--icon-size-md, 1.25rem);
+    object-fit: contain;
   }
 
   .cart-bubble.cart-bubble--animating .cart-bubble__background {
@@ -328,6 +401,23 @@
 
     .header__column--right .header-actions--text {
       margin-inline-start: 0;
+    }
+  }
+  @media screen and (max-width: 749px) {
+    header-actions {
+      align-items: center;
+    }
+
+    .header-actions__action {
+      min-width: var(--minimum-touch-target);
+      min-height: var(--minimum-touch-target);
+      align-items: center;
+    }
+
+    .header-actions__cart-icon {
+      --cart-bubble-size: 16px;
+      --cart-bubble-top: 2px;
+      --cart-bubble-right: 0px;
     }
   }
 {% endstylesheet %}

@@ -1,5 +1,14 @@
 
-{% render 'button', link: block.settings.link %}
+{% liquid
+  assign button_link = block.settings.link
+
+  # Inside collection cards, inherit the collection URL when no link is set
+  if button_link == blank and closest.collection != blank and closest.collection.url != blank
+    assign button_link = closest.collection.url
+  endif
+%}
+
+{% render 'button', link: button_link %}
 
 {% schema %}
 {
@@ -75,6 +84,17 @@
       "label": "t:settings.borders",
       "default": "{{ settings.color_palette.background }}",
       "alpha": true,
+      "visible_if": "{{ block.settings.style_class == 'button-custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_button_radius",
+      "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 14,
       "visible_if": "{{ block.settings.style_class == 'button-custom' }}"
     },
     {

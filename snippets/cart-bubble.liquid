@@ -3,6 +3,8 @@
 
   The maximum number of items to display. Anything above shows as "99+".
 
+  @param [show_when_empty] - {boolean} Show the bubble with 0 when the cart is empty
+
   Colors: reads --cart-bubble-background / --cart-bubble-text from an ancestor. Falls back to a contrasting pair
   computed from the palette foreground when unset.
 {%- enddoc -%}
@@ -10,11 +12,12 @@
 {% liquid
   assign bubble_bg_fallback = settings.page_text_color
   assign bubble_text_fallback = settings.page_background_color
+  assign show_empty = show_when_empty | default: false
 %}
 
 <div
   ref="cartBubble"
-  class="cart-bubble{% if cart == empty %} visually-hidden{% endif %}"
+  class="cart-bubble{% if cart == empty and show_empty == false %} visually-hidden{% endif %}"
   style="--cart-bubble-background-fallback: {{ bubble_bg_fallback }}; --cart-bubble-text-fallback: {{ bubble_text_fallback }};"
   {% assign item_count = cart.item_count %}
   {% if item_count <= 99 %}
@@ -28,7 +31,7 @@
     class="cart-bubble__text"
   >
     <span
-      class="cart-bubble__text-count{% if cart == empty %} hidden{% endif %}"
+      class="cart-bubble__text-count{% if cart == empty and show_empty == false %} hidden{% endif %}"
       ref="cartBubbleCount"
       aria-hidden="true"
       data-testid="cart-bubble"

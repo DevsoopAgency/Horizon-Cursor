@@ -2210,3 +2210,125 @@ main > .shopify-section:first-child .section:not(.disable-section-top-offset) {
     margin-top: calc(var(--header-height) * var(--transparent-header-offset-boolean) * -1);
   }
 }
+
+/* Customer reviews: size quote icons + circular avatars */
+[id$='__customer_reviews'] .image-block {
+  max-width: 36px;
+}
+
+[id$='__customer_reviews'] .image-block .image-block__image,
+[id$='__customer_reviews'] .image-block .placeholder-image,
+[id$='__customer_reviews'] .image-block .image-block__placeholder {
+  width: 36px;
+  max-width: 36px;
+  height: 36px;
+}
+
+[id$='__customer_reviews'] .image-block[class*='_quote_icon'] .image-block__image,
+[id$='__customer_reviews'] .image-block[class*='_quote_icon'] .placeholder-image {
+  object-fit: contain;
+}
+
+[id$='__customer_reviews'] .image-block[class*='_avatar'] .image-block__image,
+[id$='__customer_reviews'] .image-block[class*='_avatar'] .placeholder-image {
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Instagram feed: equal-width portrait cards that fill the row */
+[id$='__instagram_feed'] .section.section--full-width > .custom-section-content {
+  padding-inline: max(1.25rem, calc((100vw - min(1440px, 100vw - 2.5rem)) / 2));
+  overflow: visible;
+}
+
+[id$='__instagram_feed'] .layout-panel-flex--row:has(> .image-block) {
+  overflow: visible;
+  padding-block: 8px;
+}
+
+[id$='__instagram_feed'] .layout-panel-flex--row > .image-block {
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto;
+  max-width: none;
+  overflow: hidden;
+  border-radius: 12px;
+  transition:
+    transform 0.35s var(--animation-easing, ease),
+    box-shadow 0.35s var(--animation-easing, ease);
+  will-change: transform;
+}
+
+[id$='__instagram_feed'] .layout-panel-flex--row > .image-block:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 16px 32px rgb(0 0 0 / 0.14);
+  z-index: 1;
+}
+
+[id$='__instagram_feed'] .image-block .image-block__image,
+[id$='__instagram_feed'] .image-block .placeholder-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  object-position: center center;
+  transition: transform 0.45s var(--animation-easing, ease);
+}
+
+[id$='__instagram_feed'] .image-block:hover .image-block__image,
+[id$='__instagram_feed'] .image-block:hover .placeholder-image {
+  transform: scale(1.06);
+}
+
+[id$='__instagram_feed'] .button-unstyled {
+  text-decoration-line: underline;
+  text-decoration-color: currentcolor;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.35em;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+@media screen and (max-width: 749px) {
+  [id$='__instagram_feed'] .layout-panel-flex--row.mobile-column > .image-block {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  [id$='__instagram_feed'] .layout-panel-flex--row > .image-block:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  [id$='__instagram_feed'] .image-block:hover .image-block__image,
+  [id$='__instagram_feed'] .image-block:hover .placeholder-image {
+    transform: none;
+  }
+}
+
+/* Beauty routine: charcoal → black gradient + wider CTA */
+[id$='__routine_made_simple'] .section-background,
+[id$='__routine_made_simple'] .media-with-content {
+  background: linear-gradient(90deg, #2c2c2c 0%, #141414 45%, #0a0a0a 100%) !important;
+  background-color: transparent !important;
+}
+
+[id$='__routine_made_simple'] .media-with-content {
+  min-height: 80svh;
+}
+
+[id$='__routine_made_simple'] .button-custom {
+  min-width: min(18rem, 100%);
+  padding-inline: 2.75rem;
+  justify-content: center;
+  text-align: center;
+}
+
+@media screen and (max-width: 749px) {
+  [id$='__routine_made_simple'] .media-with-content {
+    min-height: 0;
+  }
+}

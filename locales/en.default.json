@@ -131,7 +131,7 @@
     },
     "email_signup": {
       "label": "Email",
-      "placeholder": "Email address",
+      "placeholder": "Email",
       "success": "Thanks for subscribing!"
     },
     "filter": "Filter",
@@ -251,7 +251,7 @@
     "reviews": "reviews",
     "read_more": "Read more...",
     "search_input_label": "Search",
-    "search_input_placeholder": "Search",
+    "search_input_placeholder": "What can we help you find?",
     "search": "Search",
     "search_results": "Search results",
     "search_results_label": "Search results",

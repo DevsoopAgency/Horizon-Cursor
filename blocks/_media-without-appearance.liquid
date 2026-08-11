@@ -71,7 +71,7 @@
           "label": "t:options.cover"
         },
         {
-          "value": "contain ",
+          "value": "contain",
           "label": "t:options.contain"
         }
       ],
@@ -94,6 +94,12 @@
       ],
       "default": "cover",
       "visible_if": "{{ block.settings.media_type == 'video' }}"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:settings.background_color",
+      "placeholder": "t:settings.default"
     }
   ],
   "presets": [

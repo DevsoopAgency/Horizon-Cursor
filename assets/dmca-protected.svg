@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 56" fill="none" role="img" aria-label="DMCA Protected">
+  <defs>
+    <linearGradient id="dmca-metal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f2f2f2"/>
+      <stop offset="45%" stop-color="#c8c8c8"/>
+      <stop offset="100%" stop-color="#8f8f8f"/>
+    </linearGradient>
+    <linearGradient id="dmca-shield" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8e8e8"/>
+      <stop offset="100%" stop-color="#9a9a9a"/>
+    </linearGradient>
+  </defs>
+  <path d="M18 4h28c1.1 0 2 .9 2 2v24.5c0 8.2-6.2 15.3-14.2 17.8l-1.8.6-1.8-.6C22.2 45.8 16 38.7 16 30.5V6c0-1.1.9-2 2-2z" fill="url(#dmca-shield)" stroke="#6e6e6e" stroke-width="1"/>
+  <path d="M24.5 18.2l5.2 5.2 10.6-10.6" stroke="#2a2a2a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="56" y="24" fill="url(#dmca-metal)" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" letter-spacing="0.08em">DMCA</text>
+  <text x="56" y="40" fill="#bdbdbd" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="600" letter-spacing="0.14em">PROTECTED</text>
+</svg>

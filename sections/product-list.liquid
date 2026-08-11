@@ -25,8 +25,41 @@
     {% render 'gap-style', value: section.settings.gap %}
   "
 >
-  <div class="section-resource-list__header">
-    {%- content_for 'block', type: '_product-list-content', id: 'static-header' -%}
+  <div class="section-resource-list__header{% if section.settings.show_category_menu and section.settings.category_menu != blank %} product-list-header--with-menu{% endif %}">
+    <div class="product-list-header__bar">
+      {%- content_for 'block', type: '_product-list-content', id: 'static-header' -%}
+    </div>
+
+    {% if section.settings.show_category_menu and section.settings.category_menu != blank %}
+      {% liquid
+        assign category_menu = section.settings.category_menu
+        assign active_color = section.settings.category_menu_active_color | default: '#e6007a'
+        assign inactive_color = section.settings.category_menu_color | default: '#8a8a8a'
+      %}
+      <nav
+        class="product-list-category-menu product-list-category-menu--section"
+        style="
+          --pl-menu-active: {{ active_color }};
+          --pl-menu-inactive: {{ inactive_color }};
+          --pl-menu-gap: 20px;
+        "
+        aria-label="{{ category_menu.title | escape }}"
+      >
+        <ul class="product-list-category-menu__list list-unstyled">
+          {% for link in category_menu.links %}
+            <li class="product-list-category-menu__item">
+              <a
+                href="{{ link.url }}"
+                class="product-list-category-menu__link{% if forloop.first %} product-list-category-menu__link--active{% endif %}"
+                {% if forloop.first %}aria-current="page"{% endif %}
+              >
+                {{ link.title | escape }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </nav>
+    {% endif %}
   </div>
 
   {% capture list_items %}
@@ -86,6 +119,106 @@
   </div>
 </div>
 
+{% stylesheet %}
+  .product-list-header--with-menu {
+    position: relative;
+  }
+
+  .product-list-header--with-menu .product-list-header__bar {
+    width: 100%;
+  }
+
+  /* Keep title + view-all on one row; center menu on that same baseline */
+  .product-list-header--with-menu .product-list-category-menu--section {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: max-content;
+    max-width: min(70%, 52rem);
+    justify-content: center;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .product-list-header--with-menu .product-list-category-menu--section .product-list-category-menu__link {
+    pointer-events: auto;
+  }
+
+  .product-list-category-menu {
+    display: flex;
+    justify-content: center;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .product-list-category-menu__list {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--pl-menu-gap, 20px);
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .product-list-category-menu__list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .product-list-category-menu__link {
+    display: inline-block;
+    color: var(--pl-menu-inactive, #8a8a8a);
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    padding-block: 0.25rem;
+    transition: color 0.2s ease;
+  }
+
+  .product-list-category-menu__link:hover {
+    color: var(--pl-menu-active, #e6007a);
+  }
+
+  /* Only the first item (ALL) is pink — never other links */
+  .product-list-category-menu__link--active,
+  .product-list-category-menu__item:first-child .product-list-category-menu__link {
+    color: var(--pl-menu-active, #e6007a);
+  }
+
+  .product-list-category-menu__item:not(:first-child) .product-list-category-menu__link {
+    color: var(--pl-menu-inactive, #8a8a8a);
+  }
+
+  .product-list-category-menu__item:not(:first-child) .product-list-category-menu__link:hover {
+    color: var(--pl-menu-active, #e6007a);
+  }
+
+  @media screen and (max-width: 989px) {
+    .product-list-header--with-menu .product-list-category-menu--section {
+      position: static;
+      transform: none;
+      width: 100%;
+      max-width: 100%;
+      margin-block-start: 0.75rem;
+      pointer-events: auto;
+      justify-content: flex-start;
+    }
+
+    .product-list-category-menu__list {
+      justify-content: flex-start;
+      gap: 1rem;
+    }
+  }
+{% endstylesheet %}
+
 {% schema %}
 {
   "name": "t:names.product_list",
@@ -109,6 +242,38 @@
       "type": "collection",
       "id": "collection",
       "label": "t:settings.collection"
+    },
+    {
+      "type": "header",
+      "content": "Category menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_category_menu",
+      "label": "Show category menu",
+      "default": false,
+      "info": "Shows collection links between the title and View all (like All, Body, Face)."
+    },
+    {
+      "type": "link_list",
+      "id": "category_menu",
+      "label": "Category menu",
+      "info": "Create a menu under Online Store → Navigation, then select it here.",
+      "visible_if": "{{ section.settings.show_category_menu }}"
+    },
+    {
+      "type": "color",
+      "id": "category_menu_active_color",
+      "label": "Active link color",
+      "default": "#e6007a",
+      "visible_if": "{{ section.settings.show_category_menu }}"
+    },
+    {
+      "type": "color",
+      "id": "category_menu_color",
+      "label": "Link color",
+      "default": "#8a8a8a",
+      "visible_if": "{{ section.settings.show_category_menu }}"
     },
     {
       "type": "select",

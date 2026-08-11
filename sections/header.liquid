@@ -11,7 +11,11 @@
   assign search_style = 'none'
 
   if section.settings.show_search
-    assign search_style = 'modal'
+    if section.settings.search_style == 'field'
+      assign search_style = 'field'
+    else
+      assign search_style = 'modal'
+    endif
   endif
 
   if section.settings.show_search
@@ -128,10 +132,15 @@
       endif
     endif
   endif
-  capture search
-    render 'search', style: search_style, class: search_class, display_style: section.settings.actions_display_style
-  endcapture
 
+  assign search_placeholder = section.settings.search_placeholder
+%}
+
+{% capture search %}
+  {% render 'search', style: search_style, class: search_class, display_style: section.settings.actions_display_style, placeholder: search_placeholder %}
+{% endcapture %}
+
+{% liquid
   # Skip drawer search under specific conditions:
   # Always render if search_row is bottom
   # Don't render when shop.customer_accounts_enabled is false and search_position is left and search_style is not none
@@ -139,14 +148,15 @@
   if shop.customer_accounts_enabled == false and section.settings.search_position == 'left' and search_style != 'none'
     assign skip_drawer_search = true
   endif
+%}
 
-  if section.settings.search_row == 'bottom' or search_style != 'none' and skip_drawer_search == false
-    # Mobile search duplicate for when search is not in the right order for mobile layout
-    capture drawer_search
-      render 'search', class: 'search-action--hidden-on-menu', style: search_style, display_style: section.settings.actions_display_style
-    endcapture
-  endif
+{% if section.settings.search_row == 'bottom' or search_style != 'none' and skip_drawer_search == false %}
+  {% capture drawer_search %}
+    {% render 'search', class: 'search-action--hidden-on-menu', style: search_style, display_style: section.settings.actions_display_style, placeholder: search_placeholder %}
+  {% endcapture %}
+{% endif %}
 
+{% liquid
   assign show_language = section.settings.show_language
   if localization.available_languages.size <= 1
     assign show_language = false
@@ -163,7 +173,7 @@
     assign bottom_row_blocks = bottom_row_blocks | append: 'menu,'
   endif
 
-  if section.settings.search_style != 'none'
+  if search_style != 'none'
     if section.settings.search_row == 'bottom'
       assign bottom_row_blocks = bottom_row_blocks | append: 'search,'
     endif
@@ -360,7 +370,16 @@
       --header-actions-font-weight: var(--font-{{ section.settings.actions_font | default: 'heading' }}--weight);
       --header-actions-text-case: {{ section.settings.actions_text_case | default: 'none' }};
     {% endif %}
+    --mobile-header-border-width: {{ section.settings.mobile_border_width | default: 1 }}px;
+    --mobile-header-border-color: {{ section.settings.mobile_border_color | default: '#f5c6d6' }};
+    --mobile-header-actions-gap: {{ section.settings.mobile_actions_gap | default: 4 }}px;
   "
+  {% if section.settings.mobile_show_search == false %}
+    data-mobile-hide-search
+  {% endif %}
+  {% if section.settings.mobile_layout == 'logo_left' %}
+    data-mobile-layout="logo-left"
+  {% endif %}
 >
   <div class="header__underlay header__underlay-closed"></div>
   <div
@@ -917,6 +936,59 @@
     }
   }
 
+  /* Mobile: logo left, account + cart + hamburger right (reference layout) */
+  @media screen and (max-width: 749px) {
+    #header-component[data-mobile-layout='logo-left'] .header__columns,
+    #header-component[data-mobile-layout='logo-left'][data-menu-style='drawer'] .header__columns {
+      --header-template-columns: 1fr auto auto;
+      grid-template-areas: 'logo actions drawer';
+      grid-column: span 3;
+      column-gap: var(--mobile-header-actions-gap, 4px);
+      align-items: center;
+      padding-block: 0;
+      padding-inline: var(--padding-md) var(--padding-xs);
+    }
+
+    #header-component[data-mobile-layout='logo-left'] .header__columns .header-logo,
+    #header-component[data-mobile-layout='logo-left'][data-menu-style='drawer'] .header__columns .header-logo {
+      grid-area: logo;
+      justify-self: start;
+      max-width: min(70vw, 12rem);
+    }
+
+    #header-component[data-mobile-layout='logo-left'] .header__columns header-actions,
+    #header-component[data-mobile-layout='logo-left'][data-menu-style='drawer'] .header__columns header-actions {
+      grid-area: actions;
+      justify-self: end;
+      gap: var(--mobile-header-actions-gap, 4px);
+    }
+
+    #header-component[data-mobile-layout='logo-left'] .header__columns .header__drawer,
+    #header-component[data-mobile-layout='logo-left'][data-menu-style='drawer'] .header__columns .header__drawer {
+      grid-area: drawer;
+      justify-self: end;
+      min-height: var(--minimum-touch-target);
+    }
+
+    #header-component[data-mobile-layout='logo-left'] .header__drawer .header__icon--summary {
+      padding: var(--padding-sm);
+    }
+
+    #header-component[data-mobile-hide-search] .header__columns .search-action,
+    #header-component[data-mobile-hide-search][data-menu-style='drawer'] .header__columns .search-action {
+      display: none;
+    }
+
+    #header-component[data-mobile-layout='logo-left'] .header__row--top,
+    #header-component[data-mobile-layout='logo-left'] .header__row--top.divider--page-width .header__columns,
+    #header-component[data-mobile-layout='logo-left'][data-menu-style='drawer'] .header__row--top:not(.divider--page-width),
+    #header-component[data-mobile-layout='logo-left'][data-menu-style='drawer'] .header__row--top.divider--page-width .header__columns {
+      border-bottom-width: var(--mobile-header-border-width, 1px);
+      border-bottom-style: solid;
+      border-bottom-color: var(--mobile-header-border-color, #f5c6d6);
+    }
+  }
+
   /* Single column layout if there are no columns within */
   .header__columns:not(:has(.header__column)) {
     grid-template-columns: 1fr;
@@ -1209,6 +1281,26 @@
       "default": "center"
     },
     {
+      "type": "range",
+      "id": "logo_height",
+      "label": "t:settings.desktop_height",
+      "min": 12,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "logo_height_mobile",
+      "label": "t:settings.mobile_height",
+      "min": 12,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 28
+    },
+    {
       "type": "header",
       "content": "t:content.menu"
     },
@@ -1271,6 +1363,30 @@
       "id": "show_search",
       "label": "t:settings.search_icon",
       "default": true
+    },
+    {
+      "type": "select",
+      "id": "search_style",
+      "label": "t:settings.search_style",
+      "options": [
+        {
+          "value": "icon",
+          "label": "t:options.icons"
+        },
+        {
+          "value": "field",
+          "label": "t:options.search_field"
+        }
+      ],
+      "default": "icon",
+      "visible_if": "{{ section.settings.show_search }}"
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "t:settings.search_placeholder",
+      "default": "What can we help you find?",
+      "visible_if": "{{ section.settings.show_search and section.settings.search_style == 'field' }}"
     },
     {
       "type": "select",
@@ -1526,6 +1642,68 @@
     },
     {
       "type": "header",
+      "content": "t:content.mobile_layout"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "t:settings.mobile_layout",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "logo_left",
+          "label": "t:options.logo_left_actions_right"
+        }
+      ],
+      "default": "logo_left"
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_show_search",
+      "label": "t:settings.mobile_show_search",
+      "default": false,
+      "visible_if": "{{ section.settings.show_search }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart_count_when_empty",
+      "label": "t:settings.show_cart_count_when_empty",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "mobile_actions_gap",
+      "label": "t:settings.mobile_actions_gap",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 4,
+      "visible_if": "{{ section.settings.mobile_layout == 'logo_left' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_border_width",
+      "label": "t:settings.mobile_border_width",
+      "min": 0,
+      "max": 5,
+      "step": 0.5,
+      "unit": "px",
+      "default": 1,
+      "visible_if": "{{ section.settings.mobile_layout == 'logo_left' }}"
+    },
+    {
+      "type": "color",
+      "id": "mobile_border_color",
+      "label": "t:settings.mobile_border_color",
+      "default": "#f5c6d6",
+      "visible_if": "{{ section.settings.mobile_layout == 'logo_left' and section.settings.mobile_border_width > 0 }}"
+    },
+    {
+      "type": "header",
       "content": "t:content.utilities"
     },
     {
@@ -1611,6 +1789,36 @@
       ],
       "default": "none",
       "visible_if": "{{ section.settings.actions_display_style == 'text' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.account"
+    },
+    {
+      "type": "image_picker",
+      "id": "account_icon_image",
+      "label": "t:settings.account_icon_image"
+    },
+    {
+      "type": "url",
+      "id": "account_icon_link",
+      "label": "t:settings.account_icon_link",
+      "info": "t:info.account_icon_link"
+    },
+    {
+      "type": "header",
+      "content": "t:content.cart"
+    },
+    {
+      "type": "image_picker",
+      "id": "cart_icon_image",
+      "label": "t:settings.cart_icon_image"
+    },
+    {
+      "type": "url",
+      "id": "cart_icon_link",
+      "label": "t:settings.cart_icon_link",
+      "info": "t:info.cart_icon_link"
     },
     {
       "type": "header",
