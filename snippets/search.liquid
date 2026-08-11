@@ -1,21 +1,59 @@
 {%- doc -%}
-  Renders the search action button.
+  Renders the search action button or inline input.
 
   @param {string} [style] - The style of the search action.
   @param {string} [class] - Additional classes for the search action.
   @param {string} [display_style] - The display style ('icon' or 'text').
+  @param {string} [search_type] - 'inline' or 'icon' (default).
+  @param {string} [search_placeholder] - Placeholder for inline search input.
+  @param {string} [section_id] - Section id for unique input ids.
 
   @example
-  {% render 'search', style: 'default', class: 'custom-class', display_style: 'icon' %}
+  {% render 'search', style: 'modal', search_type: 'inline', search_placeholder: 'What can we help you find?' %}
 {%- enddoc -%}
+
+{% liquid
+  assign search_type = search_type | default: 'icon'
+  assign search_placeholder = search_placeholder | default: 'What can we help you find?'
+  assign input_id = 'HeaderSearch-' | append: section_id | default: 'HeaderSearch'
+%}
 
 {% unless style == 'none' %}
   <search-button
-    class="search-action{% if display_style == 'text' %} search-action--text{% endif %}{% if class != blank %} {{ class | strip }}{% endif %}"
+    class="search-action{% if search_type == 'inline' %} search-action--inline{% endif %}{% if display_style == 'text' %} search-action--text{% endif %}{% if class != blank %} {{ class | strip }}{% endif %}"
   >
+    {% if search_type == 'inline' %}
+      <form
+        action="{{ routes.search_url }}"
+        method="get"
+        role="search"
+        class="header-search-inline"
+      >
+        <label
+          class="visually-hidden"
+          for="{{ input_id }}"
+        >
+          {{ 'content.search_input_label' | t }}
+        </label>
+        <input
+          id="{{ input_id }}"
+          class="header-search-inline__input"
+          type="search"
+          name="q"
+          placeholder="{{ search_placeholder | escape }}"
+          autocomplete="off"
+        >
+        <input
+          name="options[prefix]"
+          type="hidden"
+          value="last"
+        >
+      </form>
+    {% endif %}
+
     <button
       on:click="#search-modal/showDialog"
-      class="button-unstyled header-actions__action{% if display_style == 'text' %} header-actions__text-style{% endif %}"
+      class="button-unstyled header-actions__action search-action__icon-trigger{% if display_style == 'text' %} header-actions__text-style{% endif %}"
       aria-label="{{ 'content.search_input_label' | t }}"
       aria-haspopup="dialog"
     >
@@ -36,6 +74,7 @@
     --search-border-width: var(--style-border-width-inputs);
 
     display: flex;
+    align-items: center;
   }
 
   @media screen and (max-width: 749px) {
@@ -74,5 +113,10 @@
     [data-menu-style='menu'] .header__column--left .search-action--text {
       margin-inline: 0;
     }
+  }
+
+  /* Inline search: icon trigger is mobile/tablet fallback; form shows ≥991px via section {% style %} */
+  .search-action--inline .header-search-inline {
+    display: none;
   }
 {% endstylesheet %}

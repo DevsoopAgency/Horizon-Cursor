@@ -19,9 +19,16 @@
 ></script>
 
 {% capture cart_icon %}
+  {% liquid
+    assign badge_visibility = 'when_has_items'
+    if section != blank and section.settings.badge_visibility != blank
+      assign badge_visibility = section.settings.badge_visibility
+    endif
+  %}
   <cart-icon
     class="header-actions__cart-icon{% if display_style == 'text' %} header-actions__cart-icon--text{% endif %}{% unless cart == empty %} header-actions__cart-icon--has-cart{% endunless %}"
     data-testid="cart-icon"
+    data-badge-visibility="{{ badge_visibility }}"
   >
     <span class="{% if display_style == 'icon' %}hidden{% else %}mobile:hidden{% endif %}">
       {{ 'content.cart_title' | t }}
@@ -34,7 +41,7 @@
       {{ 'icon-cart.svg' | inline_asset_content }}
     </span>
 
-    {% render 'cart-bubble', limit: 100 %}
+    {% render 'cart-bubble', limit: 100, badge_visibility: badge_visibility %}
   </cart-icon>
 {% endcapture %}
 
@@ -248,18 +255,27 @@
   }
 
   .header-actions__cart-icon {
-    --cart-bubble-size: 20px;
-    --cart-bubble-top: 4.5px;
-    --cart-bubble-right: 2.5px;
+    --cart-bubble-size: 16px;
+    --cart-bubble-top: 0px;
+    --cart-bubble-right: 0px;
 
     position: relative;
+    overflow: visible;
   }
 
-  .header-actions__cart-icon .cart-bubble {
+  .header-actions__action {
+    overflow: visible;
+  }
+
+  .header-actions__cart-icon .cart-bubble,
+  .header-actions__cart-icon .cart-count-badge {
     position: absolute;
-    width: var(--cart-bubble-size, 20px);
+    width: var(--cart-bubble-size, 16px);
+    height: var(--cart-bubble-size, 16px);
     top: var(--cart-bubble-top);
     right: var(--cart-bubble-right);
+    border-radius: 50%;
+    box-sizing: border-box;
   }
 
   @media screen and (min-width: 750px) {
@@ -274,8 +290,8 @@
     font-weight: var(--font-paragraph--weight);
   }
 
-  .header-actions__cart-icon.header-actions__cart-icon--has-cart svg {
-    /* Create donut mask where the cart bubble sits */
+  .header-actions__cart-icon.header-actions__cart-icon--has-cart:not(:has(.cart-count-badge)) svg {
+    /* Create donut mask where the cart bubble sits (legacy bubble only) */
     mask: radial-gradient(
       calc(var(--cart-bubble-size) + 2px) at calc(100% - var(--cart-bubble-right)) var(--cart-bubble-top),
       transparent 45.45%,
@@ -289,15 +305,15 @@
   }
 
   .cart-bubble--animating .cart-bubble__text {
-    --start-y: -1em;
+    --start-y: -12px;
     --start-opacity: 1;
     /* Set initial transform state before animation starts */
-    transform: translate(0, var(--start-y, -1em));
+    transform: translate(0, var(--start-y, -12px));
     opacity: var(--start-opacity, 1);
     animation: move-and-fade var(--animation-speed) var(--animation-easing);
   }
 
-  cart-icon:has(.cart-bubble__text-count:empty) {
+  cart-icon:has(.cart-bubble__text-count:empty):not(:has(.cart-count-badge)) {
     --cart-bubble-size: 10px;
     --cart-bubble-top: 9px;
     --cart-bubble-right: 9px;
@@ -309,7 +325,7 @@
   }
 
   @media screen and (min-width: 750px) {
-    cart-icon.header-actions__cart-icon--text:has(.cart-bubble__text-count:empty) {
+    cart-icon.header-actions__cart-icon--text:has(.cart-bubble__text-count:empty):not(:has(.cart-count-badge)) {
       --cart-bubble-right: 2.5px;
     }
   }

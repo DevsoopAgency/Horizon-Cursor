@@ -47,12 +47,20 @@
     assign transparent_text_contrast = 'var(--palette-lightest)'
   endif
 
-  # Cart bubble colors: custom styles apply in every header state; default
-  # mirrors the top row's effective text color, with a contrasting text color.
-  if section.settings.bubble_style == 'custom' or section.settings.text_color_top != blank or section.settings.background_color_top != blank
+  # Cart badge / bubble colors: cart_badge_* take precedence; then bubble_style
+  # custom; else mirrors the top row's effective text color.
+  assign cart_badge_bg = section.settings.cart_badge_bg
+  assign cart_badge_text_color = section.settings.cart_badge_text_color
+  assign badge_visibility = section.settings.badge_visibility | default: 'when_has_items'
+
+  if cart_badge_bg != blank or cart_badge_text_color != blank
+    assign cart_bubble_color_override = true
+    assign cart_bubble_background = cart_badge_bg | default: '#E03F7E'
+    assign cart_bubble_text = cart_badge_text_color | default: '#FFFFFF'
+  elsif section.settings.bubble_style == 'custom' or section.settings.text_color_top != blank or section.settings.background_color_top != blank
     assign cart_bubble_color_override = true
   endif
-  if cart_bubble_color_override
+  if cart_bubble_color_override and cart_badge_bg == blank and cart_badge_text_color == blank
     if section.settings.bubble_style == 'custom'
       assign cart_bubble_background = section.settings.bubble_background_color | default: section.settings.text_color_top | default: settings.page_text_color
       assign cart_bubble_text = section.settings.bubble_text_color | default: section.settings.background_color_top | default: settings.page_background_color
@@ -104,6 +112,9 @@
     assign search_class = 'search-action--hidden-on-drawer'
   endif
 
+  assign search_type = section.settings.search_type | default: 'icon'
+  assign search_placeholder = section.settings.search_placeholder | default: 'What can we help you find?'
+
   # Handle localization positioning
   if section.settings.localization_position == 'left'
     if section.settings.search_position == 'left'
@@ -129,7 +140,7 @@
     endif
   endif
   capture search
-    render 'search', style: search_style, class: search_class, display_style: section.settings.actions_display_style
+    render 'search', style: search_style, class: search_class, display_style: section.settings.actions_display_style, search_type: search_type, search_placeholder: search_placeholder, section_id: section.id
   endcapture
 
   # Skip drawer search under specific conditions:
@@ -142,8 +153,9 @@
 
   if section.settings.search_row == 'bottom' or search_style != 'none' and skip_drawer_search == false
     # Mobile search duplicate for when search is not in the right order for mobile layout
+    # Inline desktop field collapses to modal icon ≤990px; drawer_search stays icon-only
     capture drawer_search
-      render 'search', class: 'search-action--hidden-on-menu', style: search_style, display_style: section.settings.actions_display_style
+      render 'search', class: 'search-action--hidden-on-menu', style: search_style, display_style: section.settings.actions_display_style, search_type: 'icon', search_placeholder: search_placeholder, section_id: section.id
     endcapture
   endif
 
@@ -323,11 +335,178 @@
   }
 </script>
 
+{% style %}
+  #shopify-section-{{ section.id }} {
+    --header-search-border-color: #D1D1D1;
+    --header-search-border-focus-color: #0a0a0a;
+    --header-search-placeholder-color: #9a9a9a;
+    --header-search-width: {{ section.settings.inline_search_width | default: 220 }}px;
+    --header-search-gap: {{ section.settings.inline_search_gap | default: 24 }}px;
+    --header-search-shift: {{ section.settings.inline_search_shift | default: 0 }}px;
+    --cart-badge-bg: {{ cart_badge_bg | default: '#E03F7E' }};
+    --cart-badge-text-color: {{ cart_badge_text_color | default: '#FFFFFF' }};
+    --cart-badge-size: {{ section.settings.cart_badge_size | default: 16 }}px;
+    --cart-badge-top: {{ section.settings.cart_badge_offset_y | default: 0 }}px;
+    --cart-badge-right: {{ section.settings.cart_badge_offset_x | default: 0 }}px;
+    --cart-badge-font-size: {{ section.settings.cart_badge_font_size | default: 10 }}px;
+  }
+
+  {% if cart_badge_bg != blank or cart_badge_text_color != blank or cart_bubble_color_override %}
+  #shopify-section-{{ section.id }} {
+    --cart-bubble-background: {{ cart_bubble_background | default: cart_badge_bg | default: '#E03F7E' }};
+    --cart-bubble-text: {{ cart_bubble_text | default: cart_badge_text_color | default: '#FFFFFF' }};
+  }
+  {% endif %}
+
+  /* Keep badge inside the icon box — header uses contain:layout which clips overflow */
+  #shopify-section-{{ section.id }} .header-actions__cart-icon,
+  #shopify-section-{{ section.id }} .header-actions__action {
+    overflow: visible;
+  }
+
+  #shopify-section-{{ section.id }} .header-actions__cart-icon {
+    --cart-bubble-size: var(--cart-badge-size);
+    --cart-bubble-top: var(--cart-badge-top);
+    --cart-bubble-right: var(--cart-badge-right);
+    position: relative;
+  }
+
+  #shopify-section-{{ section.id }} .header-actions__cart-icon .cart-count-badge,
+  #shopify-section-{{ section.id }} .cart-count-badge {
+    position: absolute;
+    top: var(--cart-badge-top);
+    right: var(--cart-badge-right);
+    left: auto;
+    bottom: auto;
+    width: var(--cart-badge-size);
+    height: var(--cart-badge-size);
+    min-width: var(--cart-badge-size);
+    max-width: var(--cart-badge-size);
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--cart-bubble-background, var(--cart-badge-bg));
+    color: var(--cart-bubble-text, var(--cart-badge-text-color));
+    font-size: var(--cart-badge-font-size);
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    z-index: 2;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    transform: none;
+  }
+
+  #shopify-section-{{ section.id }} .cart-count-badge .cart-bubble__background {
+    display: none;
+  }
+
+  #shopify-section-{{ section.id }} .cart-count-badge .cart-bubble__text,
+  #shopify-section-{{ section.id }} .cart-count-badge .cart-bubble__text-count {
+    position: static;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+    line-height: 1;
+    transform: none;
+    opacity: 1;
+  }
+
+  #shopify-section-{{ section.id }} .header-actions__cart-icon.header-actions__cart-icon--has-cart svg,
+  #shopify-section-{{ section.id }} .header-actions__cart-icon svg {
+    mask: none;
+  }
+
+  /* Kill Horizon empty-dot size overrides for the count badge */
+  #shopify-section-{{ section.id }} cart-icon:has(.cart-count-badge) {
+    --cart-bubble-size: var(--cart-badge-size);
+    --cart-bubble-top: var(--cart-badge-top);
+    --cart-bubble-right: var(--cart-badge-right);
+  }
+
+  #shopify-section-{{ section.id }} .header-search-inline {
+    display: none;
+    align-items: center;
+    width: var(--header-search-width);
+    min-width: 0;
+    max-width: 100%;
+    margin-inline-end: var(--header-search-gap);
+    transform: translateX(calc(var(--header-search-shift) * -1));
+  }
+
+  #shopify-section-{{ section.id }} .header-search-inline__input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--header-search-border-color);
+    border-radius: 0;
+    box-shadow: none;
+    outline: none;
+    padding: 8px 0;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--color-foreground);
+    appearance: none;
+  }
+
+  #shopify-section-{{ section.id }} .header-search-inline__input::placeholder {
+    color: var(--header-search-placeholder-color);
+    opacity: 1;
+  }
+
+  #shopify-section-{{ section.id }} .header-search-inline__input:focus,
+  #shopify-section-{{ section.id }} .header-search-inline__input:focus-visible {
+    outline: none;
+    box-shadow: none;
+    border-color: var(--header-search-border-focus-color);
+  }
+
+  #shopify-section-{{ section.id }} .search-action--inline .search-action__icon-trigger {
+    display: flex;
+  }
+
+  @media screen and (min-width: 991px) {
+    #shopify-section-{{ section.id }} .search-action--inline .header-search-inline {
+      display: flex;
+    }
+
+    #shopify-section-{{ section.id }} .search-action--inline .search-action__icon-trigger {
+      display: none;
+    }
+
+    #shopify-section-{{ section.id }} .header__column--right .search-action--inline {
+      margin-inline: 0;
+      width: auto;
+    }
+  }
+
+  @media screen and (max-width: 990px) {
+    #shopify-section-{{ section.id }} .search-action--inline .header-search-inline {
+      display: none;
+    }
+
+    #shopify-section-{{ section.id }} .search-action--inline .search-action__icon-trigger {
+      display: flex;
+    }
+  }
+{% endstyle %}
+
 <header-component
   id="header-component"
   class="{{ class }}"
   data-theme-color="rgb({{ section.settings.background_color_top.rgb | default: settings.page_background_color.rgb }})"
-  data-bubble-style="{{ section.settings.bubble_style }}"
+  data-bubble-style="{% if cart_badge_bg != blank or cart_badge_text_color != blank %}custom{% else %}{{ section.settings.bubble_style }}{% endif %}"
+  data-badge-visibility="{{ badge_visibility }}"
+  data-search-type="{{ search_type }}"
   {% if transparent %}
     transparent="{{ transparent }}"
   {% endif %}
@@ -1274,6 +1453,65 @@
     },
     {
       "type": "select",
+      "id": "search_type",
+      "label": "t:settings.search_type",
+      "options": [
+        {
+          "value": "inline",
+          "label": "t:options.inline_input_field"
+        },
+        {
+          "value": "icon",
+          "label": "t:options.icon_only"
+        }
+      ],
+      "default": "icon",
+      "visible_if": "{{ section.settings.show_search }}"
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "t:settings.search_placeholder",
+      "default": "What can we help you find?",
+      "visible_if": "{{ section.settings.show_search and section.settings.search_type == 'inline' }}"
+    },
+    {
+      "type": "range",
+      "id": "inline_search_width",
+      "label": "t:settings.inline_search_width",
+      "min": 140,
+      "max": 360,
+      "step": 4,
+      "unit": "px",
+      "default": 220,
+      "visible_if": "{{ section.settings.show_search and section.settings.search_type == 'inline' }}"
+    },
+    {
+      "type": "range",
+      "id": "inline_search_gap",
+      "label": "t:settings.inline_search_gap",
+      "info": "t:info.inline_search_gap",
+      "min": 0,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 24,
+      "visible_if": "{{ section.settings.show_search and section.settings.search_type == 'inline' }}"
+    },
+    {
+      "type": "range",
+      "id": "inline_search_shift",
+      "label": "t:settings.inline_search_shift",
+      "info": "t:info.inline_search_shift",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ section.settings.show_search and section.settings.search_type == 'inline' }}"
+    },
+    {
+      "type": "select",
       "id": "search_position",
       "label": "t:settings.search_position",
       "options": [
@@ -1675,6 +1913,76 @@
       "label": "t:settings.text",
       "placeholder": "t:settings.default",
       "visible_if": "{{ section.settings.bubble_style == 'custom' }}"
+    },
+    {
+      "type": "color",
+      "id": "cart_badge_bg",
+      "label": "t:settings.cart_badge_bg",
+      "default": "#E03F7E"
+    },
+    {
+      "type": "color",
+      "id": "cart_badge_text_color",
+      "label": "t:settings.cart_badge_text_color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "select",
+      "id": "badge_visibility",
+      "label": "t:settings.badge_visibility",
+      "options": [
+        {
+          "value": "when_has_items",
+          "label": "t:options.only_when_count_gt_zero"
+        },
+        {
+          "value": "always",
+          "label": "t:options.always_show"
+        }
+      ],
+      "default": "when_has_items"
+    },
+    {
+      "type": "range",
+      "id": "cart_badge_size",
+      "label": "t:settings.cart_badge_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "cart_badge_font_size",
+      "label": "t:settings.cart_badge_font_size",
+      "min": 8,
+      "max": 14,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "cart_badge_offset_x",
+      "label": "t:settings.cart_badge_offset_x",
+      "info": "t:info.cart_badge_offset_x",
+      "min": -8,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "cart_badge_offset_y",
+      "label": "t:settings.cart_badge_offset_y",
+      "info": "t:info.cart_badge_offset_y",
+      "min": -8,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "header",

@@ -1,7 +1,6 @@
 {%- doc -%}
-  @param [limit] - {number}
-
-  The maximum number of items to display. Anything above shows as "99+".
+  @param [limit] - {number} The maximum number of items to display. Anything above shows as "99+".
+  @param [badge_visibility] - {string} 'when_has_items' (default) or 'always'
 
   Colors: reads --cart-bubble-background / --cart-bubble-text from an ancestor. Falls back to a contrasting pair
   computed from the palette foreground when unset.
@@ -10,11 +9,16 @@
 {% liquid
   assign bubble_bg_fallback = settings.page_text_color
   assign bubble_text_fallback = settings.page_background_color
+  assign badge_visibility = badge_visibility | default: 'when_has_items'
+  assign hide_when_empty = true
+  if badge_visibility == 'always'
+    assign hide_when_empty = false
+  endif
 %}
 
-<div
+<span
   ref="cartBubble"
-  class="cart-bubble{% if cart == empty %} visually-hidden{% endif %}"
+  class="cart-bubble cart-count-badge{% if cart == empty and hide_when_empty %} visually-hidden{% endif %}"
   style="--cart-bubble-background-fallback: {{ bubble_bg_fallback }}; --cart-bubble-text-fallback: {{ bubble_text_fallback }};"
   {% assign item_count = cart.item_count %}
   {% if item_count <= 99 %}
@@ -28,7 +32,7 @@
     class="cart-bubble__text"
   >
     <span
-      class="cart-bubble__text-count{% if cart == empty %} hidden{% endif %}"
+      class="cart-bubble__text-count{% if cart == empty and hide_when_empty %} hidden{% endif %}"
       ref="cartBubbleCount"
       aria-hidden="true"
       data-testid="cart-bubble"
@@ -38,11 +42,11 @@
       {%- endif -%}
     </span>
   </span>
-</div>
+</span>
 
 {% stylesheet %}
   .cart-bubble {
-    --cart-padding: 0.2em;
+    --cart-padding: 2px;
 
     position: relative;
     width: 20px;
@@ -57,19 +61,29 @@
     padding-inline: var(--cart-padding);
   }
 
+  /* Figma count badge: self-contained circle, no legacy padding/bg layer */
+  .cart-bubble.cart-count-badge {
+    --cart-padding: 0;
+
+    padding: 0;
+    overflow: visible;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+  }
+
   .cart-bubble[data-maintain-ratio] {
     aspect-ratio: 1;
   }
 
   .cart-bubble[data-maintain-ratio] .cart-bubble__background {
-    border-radius: var(--style-border-radius-50);
+    border-radius: 50%;
   }
 
   .cart-bubble__background {
     position: absolute;
     inset: 0;
     background-color: var(--cart-bubble-background, var(--cart-bubble-background-fallback));
-    border-radius: var(--style-border-radius-lg);
+    border-radius: 50%;
   }
 
   .cart-bubble__text {
