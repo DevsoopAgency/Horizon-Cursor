@@ -105,6 +105,7 @@
     "mobile_media_2": "Mobile media 2",
     // Section header for navigation menu settings in theme editor
     "menu": "Menu",
+    "menu_highlight": "Menu highlight",
     "mobile_column_optimization": "Columns will automatically optimize for mobile",
     "mobile_layout": "Mobile layout",
     "mobile_size": "Mobile size",
@@ -252,6 +253,7 @@
     "media_type_info": "Features are populated from your menu links",
     "inline_search_gap": "Space between the search field and the account/cart icons",
     "inline_search_shift": "Slide the search field left without changing column",
+    "highlight_menu_title": "Match is case-insensitive. Leave blank to disable.",
     "cart_badge_offset_x": "Higher = more left (inward). Lower / negative = more right",
     "cart_badge_offset_y": "Higher = lower on the bag. Lower / negative = higher up",
     "mobile_content_layout": "Overlay keeps text on the media. Stack places text above the media on mobile (≤749px)."
@@ -870,6 +872,7 @@
     "enable_sticky_content": "Sticky content on desktop",
     "enable_video_looping": "Video looping",
     "enable_zoom": "Enable zoom",
+    "enable_underline": "Enable underline",
     "equal_columns": "Equal columns",
     "error_color": "Error",
     "expand_first_group": "Expand first group",
@@ -899,6 +902,8 @@
     "heading_preset": "Heading preset",
     "headings": "Headings",
     "height": "Height",
+    "highlight_color": "Highlight color",
+    "highlight_menu_title": "Highlight Target Menu Title",
     "hide_logo_on_home_page": "Hide logo on home page",
     // Checkbox to hide padding control settings
     "hide_padding": "Hide padding",

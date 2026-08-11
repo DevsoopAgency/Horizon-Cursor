@@ -45,11 +45,19 @@
             role="list"
           >
             {% for link in block_settings.menu.links %}
+              {% liquid
+                assign highlight_target = section.settings.highlight_menu_title | downcase | strip
+                assign link_title_normalized = link.title | downcase | strip
+                assign link_is_highlighted = false
+                if highlight_target != blank and link_title_normalized == highlight_target
+                  assign link_is_highlighted = true
+                endif
+              %}
               <li>
                 <a
                   href="{{ link.url }}"
                   id="MenuItem-{{ link.handle }}"
-                  class="menu-list__item"
+                  class="menu-list__item{% if link_is_highlighted %} is-highlighted{% endif %}"
                   {% if link.current %}
                     aria-current="page"
                   {% endif %}
@@ -93,6 +101,14 @@
 
     {% capture children %}
       {% for link in block_settings.menu.links %}
+        {% liquid
+          assign highlight_target = section.settings.highlight_menu_title | downcase | strip
+          assign link_title_normalized = link.title | downcase | strip
+          assign link_is_highlighted = false
+          if highlight_target != blank and link_title_normalized == highlight_target
+            assign link_is_highlighted = true
+          endif
+        %}
         <li
           role="presentation"
           class="menu-list__list-item"
@@ -104,7 +120,7 @@
           <a
             href="{{ link.url }}"
             data-skip-node-update="true"
-            class="menu-list__link{% if link.active %} menu-list__link--active{% endif %}"
+            class="menu-list__link{% if link.active %} menu-list__link--active{% endif %}{% if link_is_highlighted %} is-highlighted{% endif %}"
             {%- if link.links != blank -%}
               aria-controls="submenu-{{ forloop.index }}"
               aria-haspopup="true"

@@ -73,10 +73,14 @@
     assign list_items_array = list_items | strip | split: '<!--@list/split-->'
   %}
 
+  {% liquid
+    assign product_list_carousel_ref = 'productListCarousel-' | append: section.id
+  %}
   {% render 'resource-list',
     list_items: list_items,
     list_items_array: list_items_array,
     settings: section.settings,
+    carousel_ref: product_list_carousel_ref,
     slide_count: max_items,
     content_type: 'products',
     test_id: 'resource-list-grid'
@@ -126,7 +130,139 @@
   .section-resource-list__header--scrollable-nav .group-block .group-block a:hover {
     text-decoration-color: currentcolor;
   }
+
+  /*
+   * Product-list carousel track: always allow programmatic + pointer scroll.
+   * Stock slideshow sets overflow:hidden when missing [in-viewport], which blocks scrollBy.
+   * Scoped to .section-resource-list so every product-list instance is covered
+   * (and specificity beats slideshow-component:not([in-viewport]) slideshow-slides).
+   */
+  .section-resource-list slideshow-component.resource-list__carousel slideshow-slides,
+  .section-resource-list slideshow-component.resource-list__carousel:not([in-viewport]) slideshow-slides {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .section-resource-list slideshow-component.resource-list__carousel slideshow-slides::-webkit-scrollbar {
+    display: none;
+  }
 {% endstylesheet %}
+
+<script>
+  (() => {
+    const section = document.getElementById('shopify-section-{{ section.id }}');
+    if (!section) return;
+
+    const root = section.querySelector('[data-testid="product-list"]') || section;
+    if (root.dataset.productListCarouselBound === 'true') return;
+    root.dataset.productListCarouselBound = 'true';
+
+    const getCarousel = (from) => {
+      const carousel = from.closest('slideshow-component.resource-list__carousel');
+      return carousel && root.contains(carousel) ? carousel : null;
+    };
+
+    const getTrack = (carousel) => {
+      const track = carousel.querySelector(':scope > slideshow-container > slideshow-slides')
+        || carousel.querySelector('slideshow-slides');
+      return track instanceof HTMLElement ? track : null;
+    };
+
+    const getScrollAmount = (track) => {
+      const slide = track.querySelector('.resource-list__slide');
+      if (!slide) return Math.max(Math.floor(track.clientWidth * 0.85), 200);
+      const styles = getComputedStyle(track);
+      const gap = parseFloat(styles.columnGap || styles.gap) || 0;
+      return Math.max(Math.round(slide.getBoundingClientRect().width + gap), 1);
+    };
+
+    const maxScrollLeft = (track) => Math.max(track.scrollWidth - track.clientWidth, 0);
+
+    const syncArrowState = (track, carousel) => {
+      const prev = carousel.querySelector(':scope .slideshow-control--previous');
+      const next = carousel.querySelector(':scope .slideshow-control--next');
+      if (!(prev instanceof HTMLButtonElement) || !(next instanceof HTMLButtonElement)) return;
+
+      const max = maxScrollLeft(track);
+      prev.disabled = track.scrollLeft <= 1;
+      next.disabled = max <= 1 || track.scrollLeft >= max - 1;
+    };
+
+    const scrollTrack = (track, direction) => {
+      const amount = getScrollAmount(track) * direction;
+      const target = Math.max(0, Math.min(track.scrollLeft + amount, maxScrollLeft(track)));
+
+      if (typeof track.scrollTo === 'function') {
+        track.scrollTo({ left: target, behavior: 'smooth' });
+      } else {
+        track.scrollLeft = target;
+      }
+
+      // Fallback if smooth scroll is blocked / no-ops
+      requestAnimationFrame(() => {
+        if (Math.abs(track.scrollLeft - target) > 2 && maxScrollLeft(track) > 1) {
+          track.scrollLeft = target;
+        }
+      });
+    };
+
+    const bindCarousel = (carousel) => {
+      const track = getTrack(carousel);
+      if (!track || track.dataset.productListTrackBound === 'true') return;
+      track.dataset.productListTrackBound = 'true';
+
+      const sync = () => syncArrowState(track, carousel);
+      sync();
+      track.addEventListener('scroll', sync, { passive: true });
+
+      if (typeof ResizeObserver !== 'undefined') {
+        const ro = new ResizeObserver(sync);
+        ro.observe(track);
+      }
+      window.addEventListener('load', sync, { once: true });
+    };
+
+    root.addEventListener(
+      'click',
+      (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+
+        const button = target.closest('.slideshow-control--previous, .slideshow-control--next');
+        if (!button || !root.contains(button)) return;
+
+        const carousel = getCarousel(button);
+        if (!carousel) return;
+
+        const track = getTrack(carousel);
+        if (!track) return;
+
+        // Own the arrow so stock slideshow can't swallow / no-op the click
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        if (maxScrollLeft(track) <= 1) return;
+
+        const direction = button.classList.contains('slideshow-control--previous') ? -1 : 1;
+        scrollTrack(track, direction);
+        requestAnimationFrame(() => syncArrowState(track, carousel));
+      },
+      true
+    );
+
+    root.querySelectorAll('slideshow-component.resource-list__carousel').forEach(bindCarousel);
+
+    // Theme editor / late morphs
+    document.addEventListener('shopify:section:load', (event) => {
+      if (event.target === section || section.contains(event.target)) {
+        root.querySelectorAll('slideshow-component.resource-list__carousel').forEach(bindCarousel);
+      }
+    });
+  })();
+</script>
 
 {% schema %}
 {
