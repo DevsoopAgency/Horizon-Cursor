@@ -63,7 +63,7 @@
                 "vertical_alignment_flex_direction_column": "flex-start",
                 "gap": 12,
                 "width": "custom",
-                "custom_width": 30,
+                "custom_width": 28,
                 "width_mobile": "fill",
                 "custom_width_mobile": 100,
                 "height": "fit",
@@ -90,11 +90,12 @@
                   "type": "text",
                   "settings": {
                     "text": "<h2>Don't miss out!</h2>",
+                    "text_color": "#ffffff",
                     "width": "100%",
                     "max_width": "normal",
                     "alignment": "left",
                     "type_preset": "h3",
-                    "font": "var(--font-body--family)",
+                    "font": "var(--font-heading--family)",
                     "font_size": "1rem",
                     "line_height": "normal",
                     "letter_spacing": "normal",
@@ -114,6 +115,7 @@
                   "type": "text",
                   "settings": {
                     "text": "<p>Exclusive sales, savings and offers!</p>",
+                    "text_color": "#ffffffb3",
                     "width": "100%",
                     "max_width": "normal",
                     "alignment": "left",
@@ -160,11 +162,25 @@
                   },
                   "blocks": {}
                 },
-                "footer_logo": {
-                  "type": "logo",
+                "footer_badge": {
+                  "type": "image",
+                  "name": "Cruelty-free badge",
                   "settings": {
-                    "padding-block-start": 40,
-                    "padding-block-end": 0
+                    "link": "",
+                    "image_ratio": "adapt",
+                    "width": "custom",
+                    "custom_width": 35,
+                    "width_mobile": "custom",
+                    "custom_width_mobile": 40,
+                    "height": "fit",
+                    "border": "none",
+                    "border_width": 1,
+                    "border_opacity": 100,
+                    "border_radius": 0,
+                    "padding-block-start": 32,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
                   },
                   "blocks": {}
                 }
@@ -173,7 +189,7 @@
                 "newsletter_heading",
                 "newsletter_sub",
                 "email_signup_footer",
-                "footer_logo"
+                "footer_badge"
               ]
             },
             "menu_company": {
@@ -195,11 +211,11 @@
               },
               "blocks": {}
             },
-            "menu_policies": {
+            "menu_services": {
               "type": "menu",
               "settings": {
                 "menu": "footer",
-                "heading": "Policies",
+                "heading": "Services",
                 "menu_spacing": 8,
                 "show_as_accordion": true,
                 "accordion_icon": "caret",
@@ -214,11 +230,30 @@
               },
               "blocks": {}
             },
-            "menu_quick_links": {
+            "menu_support": {
               "type": "menu",
               "settings": {
                 "menu": "footer",
-                "heading": "Quick Links",
+                "heading": "Support",
+                "menu_spacing": 8,
+                "show_as_accordion": true,
+                "accordion_icon": "caret",
+                "accordion_dividers": false,
+                "heading_preset": "h6",
+                "link_preset": "paragraph",
+                "text_color": "#f5f1e8b3",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "menu_legal": {
+              "type": "menu",
+              "settings": {
+                "menu": "footer",
+                "heading": "Legal",
                 "menu_spacing": 8,
                 "show_as_accordion": true,
                 "accordion_icon": "caret",
@@ -237,8 +272,9 @@
           "block_order": [
             "newsletter_col",
             "menu_company",
-            "menu_policies",
-            "menu_quick_links"
+            "menu_services",
+            "menu_support",
+            "menu_legal"
           ]
         }
       },
@@ -248,7 +284,7 @@
         "section_width": "page-width",
         "gap": 24,
         "background_color": "#0a0a0a",
-        "padding-block-start": 48,
+        "padding-block-start": 64,
         "padding-block-end": 24
       }
     },

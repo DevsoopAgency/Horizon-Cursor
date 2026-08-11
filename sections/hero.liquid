@@ -458,13 +458,15 @@
 
 <div
   id="Hero-{{ section.id }}"
-  class="hero{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}{% if section.blocks.size == 0 and section.settings.section_height == 'auto' %} hero--no-blocks-auto-height{% endif %}{% if section.settings.stack_media_on_mobile %} hero--stack-mobile{% endif %}"
+  class="hero{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}{% if section.blocks.size == 0 and section.settings.section_height == 'auto' %} hero--no-blocks-auto-height{% endif %}{% if section.settings.stack_media_on_mobile %} hero--stack-mobile{% endif %}{% if section.settings.section_height == 'fixed' %} hero--fixed-height{% endif %}{% if section.settings.underline_buttons %} hero--underline-buttons{% endif %}"
   style="
     --hero-border-style: {{ section.settings.border }};
     --hero-border-width: {{ section.settings.border_width }}px;
     --hero-border-opacity: {{ section.settings.border_opacity }}%;
     --blur-opacity: {{ section.settings.reflection_opacity | divided_by: 100.0 }};
-    {% if section.settings.section_height == 'custom' %}
+    {% if section.settings.section_height == 'fixed' %}
+      --hero-min-height: {{ section.settings.section_height_px }}px;
+    {% elsif section.settings.section_height == 'custom' %}
       --hero-min-height: {{ section.settings.section_height_custom }}svh;
     {% elsif section.settings.section_height == "full-screen" %}
        --hero-min-height: 100svh;
@@ -558,6 +560,27 @@
   .hero {
     position: relative;
     min-height: calc(var(--hero-min-height) - var(--hero-height-offset));
+  }
+
+  /* Fixed px height matches design frames — do not subtract header offset */
+  .hero.hero--fixed-height {
+    min-height: var(--hero-min-height);
+  }
+
+  .hero.hero--underline-buttons .button-unstyled {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding-block: 17px;
+    padding-inline: 0;
+    border-block-end: 1px solid currentColor;
+    font-family: var(--font-subheading--family);
+    font-style: var(--font-subheading--style);
+    font-weight: var(--font-subheading--weight);
+    font-size: 0.875rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    width: fit-content;
   }
 
   .hero[data-shopify-visual-preview] {
@@ -1130,6 +1153,10 @@
         {
           "value": "custom",
           "label": "t:options.custom"
+        },
+        {
+          "value": "fixed",
+          "label": "Fixed (px)"
         }
       ],
       "default": "medium"
@@ -1144,6 +1171,24 @@
       "default": 50,
       "unit": "%",
       "visible_if": "{{ section.settings.section_height == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "section_height_px",
+      "label": "Height (px)",
+      "min": 200,
+      "max": 1200,
+      "step": 10,
+      "default": 700,
+      "unit": "px",
+      "visible_if": "{{ section.settings.section_height == 'fixed' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "underline_buttons",
+      "label": "Underline link buttons",
+      "default": false,
+      "info": "Bottom border + uppercase styling for unstyled buttons (CTA links)."
     },
     {
       "type": "header",

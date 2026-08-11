@@ -10,6 +10,10 @@
   if section.settings.media_position == 'right'
     assign media_class_modifier = media_class_modifier | append: ' media-with-content--media-right'
   endif
+
+  if section.settings.content_first_on_mobile
+    assign media_class_modifier = media_class_modifier | append: ' media-with-content--content-first-mobile'
+  endif
 %}
 
 {% liquid
@@ -166,6 +170,12 @@
       grid-template-areas: 'media content';
     }
 
+    &.media-with-content--content-first-mobile {
+      @media screen and (max-width: 749px) {
+        grid-template-areas: 'content content content' 'media media media';
+      }
+    }
+
     .media-block {
       grid-area: media;
     }
@@ -227,6 +237,13 @@
         }
       ],
       "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "content_first_on_mobile",
+      "label": "Content first on mobile",
+      "default": false,
+      "info": "Stack text above media on mobile. Default keeps media on top."
     },
     {
       "type": "select",
