@@ -39,6 +39,22 @@
     assign media_class_modifier = media_class_modifier | append: ' media-with-content--scale-typography'
   endif
 
+  if section.settings.constrain_content_width
+    assign media_class_modifier = media_class_modifier | append: ' media-with-content--content-max-width'
+  endif
+
+  if section.settings.text_alignment_desktop != blank
+    assign media_class_modifier = media_class_modifier | append: ' media-with-content--align-desktop-' | append: section.settings.text_alignment_desktop
+  endif
+
+  if section.settings.text_alignment_mobile != blank
+    assign media_class_modifier = media_class_modifier | append: ' media-with-content--align-mobile-' | append: section.settings.text_alignment_mobile
+  endif
+
+  if section.settings.link_style == 'button-link-arrow'
+    assign media_class_modifier = media_class_modifier | append: ' media-with-content--link-arrow'
+  endif
+
   assign has_custom_background = false
   assign background_for_contrast = section.settings.background_color
 
@@ -134,9 +150,13 @@
     --padding-left-mobile: {{ section.settings.content_padding_left_mobile | default: 0 }}px;
     --padding-right-mobile: {{ section.settings.content_padding_right_mobile | default: 0 }}px;
     --content-panel-bg: {{ section.settings.color_background | default: 'transparent' }};
-    --spotlight-heading-size: 48px;
-    --spotlight-heading-size-tablet: 36px;
-    --spotlight-heading-size-mobile: 28px;
+    --content-max-width: {{ section.settings.content_max_width | default: 504 }}px;
+    --spotlight-heading-size: {{ section.settings.heading_size_desktop | default: 48 }}px;
+    --spotlight-heading-size-tablet: {{ section.settings.heading_size_tablet | default: 36 }}px;
+    --spotlight-heading-size-mobile: {{ section.settings.heading_size_mobile | default: 28 }}px;
+    --spotlight-heading-line-height: {{ section.settings.heading_line_height | default: 55 }}px;
+    --spotlight-heading-color: {{ section.settings.heading_color | default: '#0A0A0A' }};
+    --spotlight-eyebrow-letter-spacing: {{ section.settings.eyebrow_letter_spacing | default: 1 }}px;
     --spotlight-stat-size: 40px;
     --spotlight-stat-size-tablet: 32px;
     --spotlight-stat-size-mobile: 28px;
@@ -416,6 +436,62 @@
 
   .media-with-content--content-panel-bg .media-with-content__content {
     background-color: var(--content-panel-bg);
+  }
+
+  .media-with-content--content-max-width .media-with-content__content > .group-block-content {
+    max-width: var(--content-max-width);
+    width: 100%;
+  }
+
+  .media-with-content--align-desktop-left .media-with-content__content > .group-block-content {
+    @media screen and (min-width: 750px) {
+      align-items: flex-start;
+      text-align: left;
+      margin-inline: 0;
+    }
+  }
+
+  .media-with-content--align-desktop-center .media-with-content__content > .group-block-content {
+    @media screen and (min-width: 750px) {
+      align-items: center;
+      text-align: center;
+      margin-inline: auto;
+    }
+  }
+
+  .media-with-content--align-desktop-right .media-with-content__content > .group-block-content {
+    @media screen and (min-width: 750px) {
+      align-items: flex-end;
+      text-align: right;
+      margin-inline-start: auto;
+      margin-inline-end: 0;
+    }
+  }
+
+  .media-with-content--align-mobile-left .media-with-content__content > .group-block-content {
+    @media screen and (max-width: 749px) {
+      align-items: flex-start;
+      text-align: left;
+    }
+  }
+
+  .media-with-content--align-mobile-center .media-with-content__content > .group-block-content {
+    @media screen and (max-width: 749px) {
+      align-items: center;
+      text-align: center;
+      margin-inline: auto;
+    }
+  }
+
+  .media-with-content--scale-typography .media-with-content__content :is(h2, .h2) {
+    color: var(--spotlight-heading-color);
+    font-weight: 700;
+    line-height: var(--spotlight-heading-line-height);
+  }
+
+  .media-with-content--scale-typography .media-with-content__content .text-block:first-child {
+    letter-spacing: var(--spotlight-eyebrow-letter-spacing);
+    text-transform: uppercase;
   }
 
   .media-with-content--custom-content-padding .media-with-content__content > .group-block-content {
@@ -756,11 +832,151 @@
       "default": 0
     },
     {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "constrain_content_width",
+      "label": "Constrain content width",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Content max width",
+      "min": 300,
+      "max": 800,
+      "step": 4,
+      "unit": "px",
+      "default": 504,
+      "visible_if": "{{ section.settings.constrain_content_width }}"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment_desktop",
+      "label": "Text alignment (desktop)",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "right",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment_mobile",
+      "label": "Text alignment (mobile)",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "link_style",
+      "label": "Content link style",
+      "info": "Prefer setting each button’s Style to match. This adds a section-level class for styling.",
+      "options": [
+        {
+          "value": "button-link-arrow",
+          "label": "Text link with arrow"
+        },
+        {
+          "value": "button",
+          "label": "Standard Theme Button"
+        }
+      ],
+      "default": "button-link-arrow"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
       "type": "checkbox",
       "id": "scale_content_typography",
       "label": "Scale heading and stat sizes",
-      "info": "Reduces heading and stat number sizes on tablet and mobile.",
+      "info": "Applies responsive heading sizes and eyebrow letter-spacing.",
       "default": false
+    },
+    {
+      "type": "range",
+      "id": "heading_size_desktop",
+      "label": "Heading size (desktop)",
+      "min": 24,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.scale_content_typography }}"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_tablet",
+      "label": "Heading size (tablet)",
+      "min": 20,
+      "max": 56,
+      "step": 2,
+      "unit": "px",
+      "default": 36,
+      "visible_if": "{{ section.settings.scale_content_typography }}"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading size (mobile)",
+      "min": 18,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 28,
+      "visible_if": "{{ section.settings.scale_content_typography }}"
+    },
+    {
+      "type": "range",
+      "id": "heading_line_height",
+      "label": "Heading line height",
+      "min": 28,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 55,
+      "visible_if": "{{ section.settings.scale_content_typography }}"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#0A0A0A",
+      "visible_if": "{{ section.settings.scale_content_typography }}"
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_letter_spacing",
+      "label": "Eyebrow letter spacing",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1,
+      "visible_if": "{{ section.settings.scale_content_typography }}"
     },
     {
       "type": "header",

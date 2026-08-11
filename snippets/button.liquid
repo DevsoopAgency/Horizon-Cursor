@@ -12,11 +12,52 @@
 {% render 'button-custom-styles', block_settings: block_settings, block_id: block.id %}
 
 {% liquid
-  assign button_label = block_settings.label
+  assign is_link_arrow = false
   if block_settings.style_class == 'button-link-arrow'
-    assign button_label = button_label | append: ' →'
+    assign is_link_arrow = true
   endif
 %}
+
+{% if is_link_arrow %}
+  {% style %}
+    .button-link-arrow--{{ block.id }} {
+      --btn-space-top: {{ block_settings.spacing_top | default: 0 }}px;
+      --btn-space-bottom: {{ block_settings.spacing_bottom | default: 0 }}px;
+      --btn-space-left: {{ block_settings.spacing_left | default: 0 }}px;
+      --btn-space-right: {{ block_settings.spacing_right | default: 0 }}px;
+      --btn-space-top-tablet: {{ block_settings.spacing_top_tablet | default: 0 }}px;
+      --btn-space-bottom-tablet: {{ block_settings.spacing_bottom_tablet | default: 0 }}px;
+      --btn-space-left-tablet: {{ block_settings.spacing_left_tablet | default: 0 }}px;
+      --btn-space-right-tablet: {{ block_settings.spacing_right_tablet | default: 0 }}px;
+      --btn-space-top-mobile: {{ block_settings.spacing_top_mobile | default: 0 }}px;
+      --btn-space-bottom-mobile: {{ block_settings.spacing_bottom_mobile | default: 0 }}px;
+      --btn-space-left-mobile: {{ block_settings.spacing_left_mobile | default: 0 }}px;
+      --btn-space-right-mobile: {{ block_settings.spacing_right_mobile | default: 0 }}px;
+      margin-block-start: var(--btn-space-top);
+      margin-block-end: var(--btn-space-bottom);
+      margin-inline-start: var(--btn-space-left);
+      margin-inline-end: var(--btn-space-right);
+    }
+
+    @media screen and (max-width: 990px) {
+      .button-link-arrow--{{ block.id }} {
+        margin-block-start: var(--btn-space-top-tablet);
+        margin-block-end: var(--btn-space-bottom-tablet);
+        margin-inline-start: var(--btn-space-left-tablet);
+        margin-inline-end: var(--btn-space-right-tablet);
+      }
+    }
+
+    @media screen and (max-width: 749px) {
+      .button-link-arrow--{{ block.id }} {
+        margin-block-start: var(--btn-space-top-mobile);
+        margin-block-end: var(--btn-space-bottom-mobile);
+        margin-inline-start: var(--btn-space-left-mobile);
+        margin-inline-end: var(--btn-space-right-mobile);
+      }
+    }
+  {% endstyle %}
+{% endif %}
 
 <a
   {% if link == blank %}
@@ -29,6 +70,7 @@
     size-style
     {{ block_settings.style_class }}
     {{ block_settings.style_class }}--{{ block.id }}
+    {% if is_link_arrow and block_settings.link_underline == false %} button-link-arrow--no-underline{% endif %}
   "
   style="{% render 'size-style', settings: block_settings %}"
   {%- if block_settings.open_in_new_tab -%}
@@ -37,13 +79,19 @@
   {%- endif -%}
   {{ block.shopify_attributes }}
 >
-  {{ button_label }}
+  {%- if is_link_arrow -%}
+    <span class="button-link-arrow__label">{{ block_settings.label }}</span>
+    <span class="button-link-arrow__icon" aria-hidden="true">→</span>
+  {%- else -%}
+    {{ block_settings.label }}
+  {%- endif -%}
 </a>
 
 {% stylesheet %}
   .button-link-arrow {
     display: inline-flex;
     align-items: center;
+    gap: 6px;
     width: fit-content;
     padding: 0;
     border: none;
@@ -57,11 +105,28 @@
     line-height: 1.2;
     text-transform: uppercase;
     text-decoration: none;
+  }
+
+  .button-link-arrow__label {
     border-bottom: 1px solid currentcolor;
     padding-block-end: 2px;
   }
 
+  .button-link-arrow--no-underline .button-link-arrow__label {
+    border-bottom: none;
+    padding-block-end: 0;
+  }
+
+  .button-link-arrow__icon {
+    display: inline-block;
+    transition: transform 200ms ease;
+  }
+
+  .button-link-arrow:hover .button-link-arrow__icon {
+    transform: translateX(4px);
+  }
+
   .button-link-arrow:hover {
-    opacity: 0.7;
+    opacity: 0.85;
   }
 {% endstylesheet %}
