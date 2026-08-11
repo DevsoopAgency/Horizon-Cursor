@@ -469,12 +469,16 @@
 
 <div
   id="Hero-{{ section.id }}"
-  class="hero{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}{% if section.blocks.size == 0 and section.settings.section_height == 'auto' %} hero--no-blocks-auto-height{% endif %}{% if section.settings.section_height == 'adaptive' %} hero--height-adaptive{% endif %}{% if section.settings.stack_media_on_mobile %} hero--stack-mobile{% endif %}"
+  class="hero{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}{% if section.blocks.size == 0 and section.settings.section_height == 'auto' %} hero--no-blocks-auto-height{% endif %}{% if section.settings.section_height == 'adaptive' %} hero--height-adaptive{% endif %}{% if section.settings.stack_media_on_mobile %} hero--stack-mobile{% endif %}{% if section.settings.mobile_content_layout == 'stack' %} hero--stack-content-mobile{% endif %}"
   style="
     --hero-border-style: {{ section.settings.border }};
     --hero-border-width: {{ section.settings.border_width }}px;
     --hero-border-opacity: {{ section.settings.border_opacity }}%;
     --blur-opacity: {{ section.settings.reflection_opacity | divided_by: 100.0 }};
+    --hero-mobile-stack-pad-top: {{ section.settings.mobile_stack_padding_top | default: 48 }}px;
+    --hero-mobile-stack-pad-bottom: {{ section.settings.mobile_stack_padding_bottom | default: 16 }}px;
+    --hero-mobile-stack-pad-inline: {{ section.settings.mobile_stack_padding_inline | default: 24 }}px;
+    --hero-mobile-stack-gap: {{ section.settings.mobile_stack_gap | default: 8 }}px;
     {% if section.settings.section_height == 'custom' %}
       --hero-min-height: {{ section.settings.section_height_custom }}svh;
     {% elsif section.settings.section_height == "full-screen" %}
@@ -762,6 +766,116 @@
       grid-template-columns: 1fr;
       grid-template-rows: repeat(var(--hero-media-count-mobile, 1), calc(100% / var(--hero-media-count-mobile, 1)));
     }
+
+    /*
+      Stack content above media (Figma mobile): text/CTA on top, media below.
+      Default remains overlay — only when mobile_content_layout = stack.
+    */
+    .hero--stack-content-mobile .hero__container {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      min-height: unset;
+      height: auto;
+      gap: var(--hero-mobile-stack-gap, 8px);
+    }
+
+    .hero--stack-content-mobile .hero__content-wrapper {
+      position: relative;
+      inset: unset;
+      order: 1;
+      z-index: var(--layer-flat);
+      width: 100%;
+      height: auto;
+      min-height: 0;
+      align-self: stretch;
+      padding-block-start: var(--hero-mobile-stack-pad-top, 48px);
+      padding-block-end: var(--hero-mobile-stack-pad-bottom, 16px);
+      padding-inline: var(--hero-mobile-stack-pad-inline, 24px);
+      box-sizing: border-box;
+    }
+
+    .hero--stack-content-mobile .hero__media-grid {
+      position: relative;
+      inset: unset;
+      order: 2;
+      width: 100%;
+      height: auto;
+      min-height: 0;
+      aspect-ratio: auto;
+      align-self: stretch;
+      grid-template-columns: 1fr;
+      grid-template-rows: auto;
+    }
+
+    .hero--stack-content-mobile .hero__media-wrapper {
+      position: relative;
+      inset: unset;
+      height: auto;
+      width: 100%;
+    }
+
+    .hero--stack-content-mobile .hero__media {
+      position: relative;
+      inset: unset;
+      width: 100%;
+      height: auto;
+      max-height: none;
+      object-fit: contain;
+      object-position: center bottom;
+    }
+
+    .hero--stack-content-mobile.hero--height-adaptive .hero__media-grid,
+    .hero--stack-content-mobile.hero--height-adaptive .hero__content-wrapper,
+    .hero--stack-content-mobile.hero--height-adaptive .hero__link {
+      grid-row: auto;
+    }
+
+    .hero--stack-content-mobile.hero--height-adaptive .hero__media-wrapper,
+    .hero--stack-content-mobile.hero--height-adaptive .hero__media {
+      position: relative;
+      inset: unset;
+      height: auto;
+    }
+
+    .hero--stack-content-mobile .hero__link {
+      order: 3;
+      position: absolute;
+      inset: 0;
+    }
+
+    .hero--stack-content-mobile .banner-content {
+      position: relative;
+      inset: auto;
+      width: 100%;
+      pointer-events: auto;
+    }
+
+    .hero--stack-content-mobile .banner-content__slot {
+      position: relative;
+      left: auto;
+      top: auto;
+      transform: none;
+      width: min(var(--banner-content-width-mobile), 100%);
+      margin-inline: auto;
+    }
+
+    .hero--stack-content-mobile.hero--height-adaptive .banner-content__slot {
+      margin-inline-start: auto;
+      margin-inline-end: auto;
+    }
+
+    .hero--stack-content-mobile .banner-content--align-mobile-center .text-block,
+    .hero--stack-content-mobile .banner-content--align-mobile-center .text-block > * {
+      --text-align: center;
+      text-align: center;
+    }
+
+    .hero--stack-content-mobile .banner-content--align-mobile-center .button-block,
+    .hero--stack-content-mobile .banner-content--align-mobile-center .button {
+      margin-inline: auto;
+    }
   }
 
   .hero__link {
@@ -964,6 +1078,67 @@
       "id": "stack_media_on_mobile",
       "label": "t:settings.stack_media_on_mobile",
       "default": false
+    },
+    {
+      "type": "select",
+      "id": "mobile_content_layout",
+      "label": "t:settings.mobile_content_layout",
+      "options": [
+        {
+          "value": "overlay",
+          "label": "t:options.overlay"
+        },
+        {
+          "value": "stack",
+          "label": "t:options.stack_content_above_media"
+        }
+      ],
+      "default": "overlay",
+      "info": "t:info.mobile_content_layout"
+    },
+    {
+      "type": "range",
+      "id": "mobile_stack_padding_top",
+      "label": "t:settings.mobile_stack_padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.mobile_content_layout == 'stack' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_stack_padding_bottom",
+      "label": "t:settings.mobile_stack_padding_bottom",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ section.settings.mobile_content_layout == 'stack' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_stack_padding_inline",
+      "label": "t:settings.mobile_stack_padding_inline",
+      "min": 0,
+      "max": 64,
+      "step": 4,
+      "unit": "px",
+      "default": 24,
+      "visible_if": "{{ section.settings.mobile_content_layout == 'stack' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_stack_gap",
+      "label": "t:settings.mobile_stack_gap",
+      "min": 0,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 8,
+      "visible_if": "{{ section.settings.mobile_content_layout == 'stack' }}"
     },
     {
       "type": "checkbox",

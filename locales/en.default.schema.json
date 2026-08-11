@@ -253,7 +253,8 @@
     "inline_search_gap": "Space between the search field and the account/cart icons",
     "inline_search_shift": "Slide the search field left without changing column",
     "cart_badge_offset_x": "Higher = more left (inward). Lower / negative = more right",
-    "cart_badge_offset_y": "Higher = lower on the bag. Lower / negative = higher up"
+    "cart_badge_offset_y": "Higher = lower on the bag. Lower / negative = higher up",
+    "mobile_content_layout": "Overlay keeps text on the media. Stack places text above the media on mobile (≤749px)."
   },
   "names": {
     "column": "Column",
@@ -616,6 +617,7 @@
     "only_when_count_gt_zero": "Only when count > 0",
     // Star rating style showing empty star outlines
     "outline": "Outline",
+    "overlay": "Overlay",
     "page": "Page",
     "page_center_aligned": "Page, center aligned",
     "page_left_aligned": "Page, left aligned",
@@ -698,6 +700,7 @@
     "square": "Square",
     // Layout option to arrange elements vertically
     "stack": "Stack",
+    "stack_content_above_media": "Stack content above media",
     // Size option for header height, larger than compact
     "standard": "Standard",
     // Star-shaped icon option for decorative use
@@ -758,6 +761,11 @@
     "aspect_ratio": "Aspect ratio",
     "custom_mobile_media": "Show different media on mobile",
     "stack_media_on_mobile": "Stack media",
+    "mobile_content_layout": "Mobile content layout",
+    "mobile_stack_padding_top": "Mobile stack padding top",
+    "mobile_stack_padding_bottom": "Mobile stack padding bottom",
+    "mobile_stack_padding_inline": "Mobile stack padding inline",
+    "mobile_stack_gap": "Mobile stack gap",
     "auto_rotate_announcements": "Auto-rotate announcements",
     "auto_rotate_slides": "Auto-rotate slides",
     "auto_load_products": "Auto load products on scroll",
