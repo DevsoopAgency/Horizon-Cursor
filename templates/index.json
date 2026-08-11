@@ -57,7 +57,7 @@
               "type": "text",
               "name": "t:names.text",
               "settings": {
-                "text": "<p><strong>Discover curated formulas that transform your daily routine into a luminous ritual.</strong></p>",
+                "text": "<p>Discover curated formulas that transform your daily routine into a luminous ritual.</p>",
                 "width": "100%",
                 "max_width": "narrow",
                 "alignment": "left",
@@ -523,7 +523,7 @@
         "max_collections": 5,
         "icons_style": "arrow",
         "icons_shape": "none",
-        "section_width": "full-width",
+        "section_width": "page-width",
         "gap": 28,
         "background_color": "{{ settings.color_palette.background }}",
         "padding-block-start": 48,
@@ -980,7 +980,7 @@
         "collection": "best-seller",
         "layout_type": "carousel",
         "carousel_on_mobile": false,
-        "max_products": 8,
+        "max_products": 10,
         "columns": 5,
         "mobile_columns": "2",
         "mobile_card_size": "44cqw",
@@ -2744,6 +2744,7 @@
             "ig_img_1": {
               "type": "image",
               "settings": {
+                "image": "shopify://shop_images/Rectangle_16_1_d10bd6ea-7c80-468b-a293-7d1860ae8855.png",
                 "link": "https://www.instagram.com/",
                 "image_ratio": "square",
                 "width": "fill",
@@ -2766,6 +2767,7 @@
             "ig_img_2": {
               "type": "image",
               "settings": {
+                "image": "shopify://shop_images/Rectangle_17_1_2046039c-8362-43d4-9d2c-e42fee4233fe.png",
                 "link": "https://www.instagram.com/",
                 "image_ratio": "square",
                 "width": "fill",
@@ -2788,6 +2790,7 @@
             "ig_img_3": {
               "type": "image",
               "settings": {
+                "image": "shopify://shop_images/Rectangle_18_1.png",
                 "link": "https://www.instagram.com/",
                 "image_ratio": "square",
                 "width": "fill",
@@ -2810,6 +2813,7 @@
             "ig_img_4": {
               "type": "image",
               "settings": {
+                "image": "shopify://shop_images/a66b49381cc0f9c5a7b64acc4e21f0ce6175948f_9be8fa16-8756-4712-9186-e0328e05ff7a.png",
                 "link": "https://www.instagram.com/",
                 "image_ratio": "square",
                 "width": "fill",
@@ -2832,6 +2836,7 @@
             "ig_img_5": {
               "type": "image",
               "settings": {
+                "image": "shopify://shop_images/9fcc8404b5bf4db21d1976beb361642010646e78.png",
                 "link": "https://www.instagram.com/",
                 "image_ratio": "square",
                 "width": "fill",
@@ -2866,7 +2871,7 @@
             "label": "Follow on Instagram",
             "link": "https://www.instagram.com/",
             "open_in_new_tab": true,
-            "style_class": "link",
+            "style_class": "button-link-arrow",
             "custom_button_background": "{{ settings.color_palette.foreground }}",
             "custom_button_text": "{{ settings.color_palette.background }}",
             "custom_button_border": "{{ settings.color_palette.background }}",
