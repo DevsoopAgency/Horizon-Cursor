@@ -19,6 +19,48 @@
   if section.settings.background_color != blank
     render 'contrast-override', background_color: section.settings.background_color, section_id: section.id
   endif
+
+  assign card_aspect = section.settings.card_aspect_ratio | default: 'adapt'
+  assign card_radius = section.settings.card_corner_radius | default: 0
+  assign card_height_custom = section.settings.custom_card_height | default: 437
+  assign tablet_height = section.settings.tablet_card_height | default: 380
+  assign mobile_layout = section.settings.mobile_layout | default: 'two_columns'
+
+  assign card_ratio = 'unset'
+  assign card_height_desktop = 'auto'
+  assign card_styles_active = false
+
+  case card_aspect
+    when 'figma_portrait'
+      assign card_styles_active = true
+      assign card_ratio = '9 / 16'
+      assign card_height_desktop = '437px'
+    when 'square'
+      assign card_styles_active = true
+      assign card_ratio = '1 / 1'
+      assign card_height_desktop = 'auto'
+    when 'custom'
+      assign card_styles_active = true
+      assign card_ratio = 'unset'
+      assign card_height_desktop = card_height_custom | append: 'px'
+  endcase
+
+  if card_radius > 0 and card_aspect != 'adapt'
+    assign card_styles_active = true
+  endif
+
+  assign section_classes = 'section section--' | append: section.settings.section_width
+  assign section_classes = section_classes | append: ' section-resource-list spacing-style gap-style'
+
+  if section.settings.background_color != blank
+    assign section_classes = section_classes | append: ' color-custom-' | append: section.id
+  endif
+
+  if card_styles_active
+    assign section_classes = section_classes | append: ' collection-list--styled-cards'
+  endif
+
+  assign section_classes = section_classes | append: ' collection-list--mobile-' | append: mobile_layout
 %}
 
 <div
@@ -26,14 +68,7 @@
 ></div>
 
 <div
-  class="
-    section
-    section--{{ section.settings.section_width }}
-    {% if section.settings.background_color != blank %}color-custom-{{ section.id }}{% endif %}
-    section-resource-list
-    spacing-style
-    gap-style
-  "
+  class="{{ section_classes }}"
   style="
     {% render 'spacing-style', settings: section.settings %}
     {% render 'gap-style', value: section.settings.gap %}
@@ -78,6 +113,137 @@
     test_id: 'collections-list-grid'
   %}
 </div>
+
+{% style %}
+  #shopify-section-{{ section.id }} {
+    --collection-card-aspect-ratio: {{ card_ratio }};
+    --collection-card-height-desktop: {{ card_height_desktop }};
+    --collection-card-height-tablet: {{ tablet_height }}px;
+    --collection-card-radius: {{ card_radius }}px;
+    --collection-card-content-padding: {{ section.settings.card_content_padding | default: 20 }}px;
+    --collection-card-content-gap: {{ section.settings.card_content_gap | default: 8 }}px;
+    --collection-card-title-size: {{ section.settings.card_title_font_size | default: 28 }}px;
+    --collection-card-title-weight: {{ section.settings.card_title_font_weight | default: 700 }};
+    --collection-card-subtitle-size: {{ section.settings.card_subtitle_font_size | default: 14 }}px;
+    --collection-card-subtitle-color: {{ section.settings.card_subtitle_color | default: 'rgba(255, 255, 255, 0.7)' }};
+    --collection-card-cta-size: {{ section.settings.card_cta_font_size | default: 12 }}px;
+    --collection-list-tablet-columns: {{ section.settings.tablet_columns | default: 3 }};
+    --collection-list-swipe-card-width: {{ section.settings.mobile_swipe_card_width | default: 75 }}%;
+  }
+
+  {% if card_styles_active and card_aspect != 'adapt' %}
+    #shopify-section-{{ section.id }} .collection-card.collection-card--image-bg {
+      --ratio: {{ card_ratio }};
+    }
+  {% endif %}
+{% endstyle %}
+
+{% stylesheet %}
+  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card {
+    --border-radius: var(--collection-card-radius);
+  }
+
+  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg .collection-card__inner,
+  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg .collection-card__image,
+  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg .resource-image {
+    border-radius: var(--collection-card-radius);
+  }
+
+  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg .overlay {
+    --overlay-border-radius: var(--collection-card-radius);
+  }
+
+  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card--image-bg .collection-card__content {
+    padding: var(--collection-card-content-padding);
+    gap: var(--collection-card-content-gap);
+    z-index: calc(var(--layer-flat) + 1);
+  }
+
+  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card__content > .text-block:first-child,
+  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card__content > .text-block:first-child p {
+    font-size: var(--collection-card-title-size);
+    font-weight: var(--collection-card-title-weight);
+    line-height: 1.2;
+  }
+
+  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card__content > .text-block:nth-child(2),
+  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card__content > .text-block:nth-child(2) p {
+    font-size: var(--collection-card-subtitle-size);
+    color: var(--collection-card-subtitle-color);
+    line-height: 1.4;
+  }
+
+  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card__content .button-link-arrow {
+    font-size: var(--collection-card-cta-size);
+  }
+
+  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg[data-aspect="figma_portrait"] {
+    aspect-ratio: 9 / 16;
+  }
+
+  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg[data-aspect="square"] {
+    aspect-ratio: 1 / 1;
+    height: auto;
+  }
+
+  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg[data-aspect="custom"] {
+    aspect-ratio: unset;
+  }
+
+  @media screen and (min-width: 991px) {
+    #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg[data-aspect="figma_portrait"],
+    #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg[data-aspect="custom"] {
+      height: var(--collection-card-height-desktop);
+    }
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 990px) {
+    #shopify-section-{{ section.id }} .resource-list--grid {
+      grid-template-columns: repeat(var(--collection-list-tablet-columns), 1fr);
+    }
+
+    #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg[data-aspect="figma_portrait"],
+    #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg[data-aspect="custom"] {
+      height: var(--collection-card-height-tablet);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    #shopify-section-{{ section.id }}.collection-list--mobile-one_column .resource-list--grid:not(.hidden--mobile) {
+      grid-template-columns: 1fr;
+    }
+
+    #shopify-section-{{ section.id }}.collection-list--mobile-two_columns .resource-list--grid:not(.hidden--mobile) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg[data-aspect="figma_portrait"],
+    #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg[data-aspect="square"],
+    #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg[data-aspect="custom"] {
+      height: auto;
+    }
+
+    #shopify-section-{{ section.id }}.collection-list--mobile-swipe_carousel .resource-list--grid:not(.hidden--mobile) {
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      grid-template-columns: unset;
+      scrollbar-width: none;
+    }
+
+    #shopify-section-{{ section.id }}.collection-list--mobile-swipe_carousel .resource-list--grid:not(.hidden--mobile)::-webkit-scrollbar {
+      display: none;
+    }
+
+    #shopify-section-{{ section.id }}.collection-list--mobile-swipe_carousel .resource-list--grid:not(.hidden--mobile) .resource-list__item {
+      flex: 0 0 var(--collection-list-swipe-card-width);
+      scroll-snap-align: start;
+      max-width: var(--collection-list-swipe-card-width);
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -245,6 +411,193 @@
       "step": 1,
       "default": 4,
       "visible_if": "{{ section.settings.layout_type == 'editorial' }}"
+    },
+    {
+      "type": "header",
+      "content": "Card Styles"
+    },
+    {
+      "type": "select",
+      "id": "card_aspect_ratio",
+      "label": "Card aspect ratio",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "Adapt to Image"
+        },
+        {
+          "value": "figma_portrait",
+          "label": "Figma Portrait 9:16/437px"
+        },
+        {
+          "value": "square",
+          "label": "Square 1:1"
+        },
+        {
+          "value": "custom",
+          "label": "Custom Height"
+        }
+      ],
+      "default": "adapt"
+    },
+    {
+      "type": "range",
+      "id": "custom_card_height",
+      "label": "Custom card height",
+      "min": 250,
+      "max": 600,
+      "step": 1,
+      "unit": "px",
+      "default": 437,
+      "visible_if": "{{ section.settings.card_aspect_ratio == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "card_corner_radius",
+      "label": "Card corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "card_title_font_size",
+      "label": "Title font size",
+      "min": 14,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "select",
+      "id": "card_title_font_weight",
+      "label": "Title font weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "600",
+          "label": "Semibold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "range",
+      "id": "card_subtitle_font_size",
+      "label": "Subtitle font size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "card_subtitle_color",
+      "label": "Subtitle color",
+      "alpha": true,
+      "default": "#ffffffb3"
+    },
+    {
+      "type": "range",
+      "id": "card_cta_font_size",
+      "label": "CTA font size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "card_content_gap",
+      "label": "Content vertical gap",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "card_content_padding",
+      "label": "Content padding",
+      "min": 0,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Responsive Layout"
+    },
+    {
+      "type": "range",
+      "id": "tablet_columns",
+      "label": "Tablet columns",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "default": 3,
+      "visible_if": "{{ section.settings.layout_type == 'grid' }}"
+    },
+    {
+      "type": "range",
+      "id": "tablet_card_height",
+      "label": "Tablet card height",
+      "min": 200,
+      "max": 600,
+      "step": 1,
+      "unit": "px",
+      "default": 380,
+      "visible_if": "{{ section.settings.layout_type == 'grid' }}"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile layout",
+      "options": [
+        {
+          "value": "one_column",
+          "label": "1 column stacked"
+        },
+        {
+          "value": "two_columns",
+          "label": "2 columns"
+        },
+        {
+          "value": "swipe_carousel",
+          "label": "Swipe carousel"
+        }
+      ],
+      "default": "two_columns",
+      "visible_if": "{{ section.settings.layout_type == 'grid' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_swipe_card_width",
+      "label": "Swipe card width",
+      "min": 60,
+      "max": 90,
+      "step": 1,
+      "unit": "%",
+      "default": 75,
+      "visible_if": "{{ section.settings.layout_type == 'grid' and section.settings.mobile_layout == 'swipe_carousel' }}"
     },
     {
       "type": "header",

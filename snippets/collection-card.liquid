@@ -49,6 +49,9 @@
     {% if block_settings.background_color != blank %} color-custom-{{ block.id }}{% endif %}
   "
   data-block-id="{{ block.id }}"
+  {% if section.settings.card_aspect_ratio != blank and section.settings.card_aspect_ratio != 'adapt' %}
+    data-aspect="{{ section.settings.card_aspect_ratio }}"
+  {% endif %}
   {% if onboarding %}
     data-placeholder="true"
   {% endif %}
