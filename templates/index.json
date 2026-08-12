@@ -425,7 +425,7 @@
             "align_baseline": true,
             "horizontal_alignment_flex_direction_column": "flex-start",
             "vertical_alignment_flex_direction_column": "flex-start",
-            "gap": 16,
+            "gap": 24,
             "width": "fill",
             "custom_width": 100,
             "width_mobile": "fill",
@@ -475,12 +475,12 @@
               "settings": {
                 "content_direction": "row",
                 "vertical_on_mobile": false,
-                "horizontal_alignment": "flex-end",
+                "horizontal_alignment": "center",
                 "vertical_alignment": "center",
-                "align_baseline": false,
+                "align_baseline": true,
                 "horizontal_alignment_flex_direction_column": "flex-start",
                 "vertical_alignment_flex_direction_column": "flex-start",
-                "gap": 20,
+                "gap": 28,
                 "width": "fill",
                 "custom_width": 100,
                 "width_mobile": "fill",
@@ -496,108 +496,173 @@
                 "border_radius": 0,
                 "padding-block-start": 0,
                 "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
+                "padding-inline-start": 12,
+                "padding-inline-end": 12
               },
               "blocks": {
                 "filter_all": {
                   "type": "button",
                   "settings": {
-                    "label": "All",
+                    "label": "ALL",
                     "link": "shopify://collections/all",
                     "open_in_new_tab": false,
-                    "style_class": "link",
+                    "style_class": "button-unstyled",
                     "width": "fit-content",
                     "custom_width": 100,
                     "width_mobile": "fit-content",
-                    "custom_width_mobile": 100
+                    "custom_width_mobile": 100,
+                    "link_text_color": "#ef0180"
                   },
                   "blocks": {}
                 },
-                "filter_hair": {
+                "filter_body": {
                   "type": "button",
                   "settings": {
-                    "label": "Hair Care",
+                    "label": "BODY",
                     "link": "shopify://collections/all",
                     "open_in_new_tab": false,
-                    "style_class": "link",
+                    "style_class": "button-unstyled",
                     "width": "fit-content",
                     "custom_width": 100,
                     "width_mobile": "fit-content",
-                    "custom_width_mobile": 100
+                    "custom_width_mobile": 100,
+                    "link_text_color": "#6b6b6b"
+                  },
+                  "blocks": {}
+                },
+                "filter_face": {
+                  "type": "button",
+                  "settings": {
+                    "label": "FACE",
+                    "link": "shopify://collections/all",
+                    "open_in_new_tab": false,
+                    "style_class": "button-unstyled",
+                    "width": "fit-content",
+                    "custom_width": 100,
+                    "width_mobile": "fit-content",
+                    "custom_width_mobile": 100,
+                    "link_text_color": "#6b6b6b"
+                  },
+                  "blocks": {}
+                },
+                "filter_eyes": {
+                  "type": "button",
+                  "settings": {
+                    "label": "EYES",
+                    "link": "shopify://collections/all",
+                    "open_in_new_tab": false,
+                    "style_class": "button-unstyled",
+                    "width": "fit-content",
+                    "custom_width": 100,
+                    "width_mobile": "fit-content",
+                    "custom_width_mobile": 100,
+                    "link_text_color": "#6b6b6b"
                   },
                   "blocks": {}
                 },
                 "filter_makeup": {
                   "type": "button",
                   "settings": {
-                    "label": "Makeup",
+                    "label": "MAKEUP",
                     "link": "shopify://collections/all",
                     "open_in_new_tab": false,
-                    "style_class": "link",
+                    "style_class": "button-unstyled",
                     "width": "fit-content",
                     "custom_width": 100,
                     "width_mobile": "fit-content",
-                    "custom_width_mobile": 100
+                    "custom_width_mobile": 100,
+                    "link_text_color": "#6b6b6b"
+                  },
+                  "blocks": {}
+                },
+                "filter_lips": {
+                  "type": "button",
+                  "settings": {
+                    "label": "LIPS",
+                    "link": "shopify://collections/all",
+                    "open_in_new_tab": false,
+                    "style_class": "button-unstyled",
+                    "width": "fit-content",
+                    "custom_width": 100,
+                    "width_mobile": "fit-content",
+                    "custom_width_mobile": 100,
+                    "link_text_color": "#6b6b6b"
                   },
                   "blocks": {}
                 },
                 "filter_skin": {
                   "type": "button",
                   "settings": {
-                    "label": "Skincare",
+                    "label": "SKIN",
                     "link": "shopify://collections/all",
                     "open_in_new_tab": false,
-                    "style_class": "link",
+                    "style_class": "button-unstyled",
                     "width": "fit-content",
                     "custom_width": 100,
                     "width_mobile": "fit-content",
-                    "custom_width_mobile": 100
+                    "custom_width_mobile": 100,
+                    "link_text_color": "#6b6b6b"
                   },
                   "blocks": {}
                 },
-                "filter_wellness": {
+                "filter_hair": {
                   "type": "button",
                   "settings": {
-                    "label": "Wellness",
+                    "label": "HAIR",
                     "link": "shopify://collections/all",
                     "open_in_new_tab": false,
-                    "style_class": "link",
+                    "style_class": "button-unstyled",
                     "width": "fit-content",
                     "custom_width": 100,
                     "width_mobile": "fit-content",
-                    "custom_width_mobile": 100
-                  },
-                  "blocks": {}
-                },
-                "filter_sets": {
-                  "type": "button",
-                  "settings": {
-                    "label": "Sets",
-                    "link": "shopify://collections/all",
-                    "open_in_new_tab": false,
-                    "style_class": "link",
-                    "width": "fit-content",
-                    "custom_width": 100,
-                    "width_mobile": "fit-content",
-                    "custom_width_mobile": 100
+                    "custom_width_mobile": 100,
+                    "link_text_color": "#6b6b6b"
                   },
                   "blocks": {}
                 }
               },
               "block_order": [
                 "filter_all",
-                "filter_hair",
+                "filter_body",
+                "filter_face",
+                "filter_eyes",
                 "filter_makeup",
+                "filter_lips",
                 "filter_skin",
-                "filter_wellness",
-                "filter_sets"
+                "filter_hair"
               ]
+            },
+            "best_sellers_view_all": {
+              "type": "text",
+              "name": "View all",
+              "settings": {
+                "text": "<p><a href=\"/collections/all\">VIEW ALL \u2192</a></p>",
+                "width": "fit-content",
+                "max_width": "normal",
+                "alignment": "right",
+                "type_preset": "custom",
+                "font": "var(--font-subheading--family)",
+                "font_size": "0.875rem",
+                "line_height": "normal",
+                "letter_spacing": "loose",
+                "case": "uppercase",
+                "wrap": "nowrap",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0,
+                "text_color": "#0a0a0a"
+              },
+              "blocks": {}
             }
           },
           "block_order": [
             "best_sellers_title",
-            "filter_row"
+            "filter_row",
+            "best_sellers_view_all"
           ]
         },
         "static-product-card": {
@@ -708,114 +773,216 @@
       }
     },
     "routine_made_simple": {
-      "type": "media-with-content",
+      "type": "section",
       "blocks": {
-        "media": {
-          "type": "_media-without-appearance",
-          "static": true,
+        "routine_row": {
+          "type": "group",
+          "name": "Routine row",
           "settings": {
-            "media_type": "image",
-            "link": "",
-            "video_loop": true,
-            "video_autoplay": true,
-            "image_position": "cover",
-            "video_position": "cover"
-          },
-          "blocks": {}
-        },
-        "content": {
-          "type": "_content-without-appearance",
-          "static": true,
-          "settings": {
+            "content_direction": "row",
+            "vertical_on_mobile": true,
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "center",
+            "align_baseline": false,
             "horizontal_alignment_flex_direction_column": "center",
             "vertical_alignment_flex_direction_column": "center",
-            "gap": 20
+            "gap": 75,
+            "width": "fill",
+            "custom_width": 100,
+            "width_mobile": "fill",
+            "custom_width_mobile": 100,
+            "height": "fill",
+            "custom_height": 100,
+            "background_media": "none",
+            "video_position": "cover",
+            "background_image_position": "cover",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0,
+            "toggle_overlay": false,
+            "overlay_color": "#00000026",
+            "overlay_style": "solid",
+            "gradient_direction": "to top",
+            "open_in_new_tab": false,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
           },
           "blocks": {
-            "routine_heading": {
-              "type": "text",
+            "routine_image": {
+              "type": "image",
+              "name": "Routine image",
               "settings": {
-                "text": "<h2>Your beauty routine made simple</h2>",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "center",
-                "type_preset": "h2",
-                "font": "var(--font-heading--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0,
-                "text_color": "#ffffff"
-              },
-              "blocks": {}
-            },
-            "routine_body": {
-              "type": "text",
-              "settings": {
-                "text": "<p>We're committed to making consciously crafted beauty essentials that are effortless and truly made for your everyday. Because beauty should be created with you in mind.</p>",
-                "width": "100%",
-                "max_width": "narrow",
-                "alignment": "center",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "0.875rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0,
-                "text_color": "#ffffff"
-              },
-              "blocks": {}
-            },
-            "routine_cta": {
-              "type": "button",
-              "settings": {
-                "label": "Shop Now",
-                "link": "shopify://collections/all",
-                "open_in_new_tab": false,
-                "style_class": "button-custom",
-                "width": "fit-content",
-                "custom_width": 100,
-                "width_mobile": "fit-content",
+                "link": "",
+                "image_ratio": "adapt",
+                "width": "custom",
+                "custom_width": 45,
+                "width_mobile": "fill",
                 "custom_width_mobile": 100,
-                "custom_button_background": "#ffffff",
-                "custom_button_text": "#0a0a0a",
-                "custom_button_border": "#ffffff"
+                "height": "fit",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_radius": 20,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
               },
               "blocks": {}
+            },
+            "routine_copy": {
+              "type": "group",
+              "name": "Routine copy",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": true,
+                "horizontal_alignment": "center",
+                "vertical_alignment": "center",
+                "align_baseline": false,
+                "horizontal_alignment_flex_direction_column": "center",
+                "vertical_alignment_flex_direction_column": "center",
+                "gap": 20,
+                "width": "custom",
+                "custom_width": 48,
+                "width_mobile": "fill",
+                "custom_width_mobile": 100,
+                "height": "fit",
+                "custom_height": 100,
+                "background_media": "none",
+                "video_position": "cover",
+                "background_image_position": "cover",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_radius": 0,
+                "toggle_overlay": false,
+                "overlay_color": "#00000026",
+                "overlay_style": "solid",
+                "gradient_direction": "to top",
+                "open_in_new_tab": false,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 16,
+                "padding-inline-end": 16
+              },
+              "blocks": {
+                "routine_heading": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<h2>Your beauty routine<br>made simple</h2>",
+                    "text_color": "#ffffff",
+                    "width": "100%",
+                    "max_width": "none",
+                    "alignment": "center",
+                    "type_preset": "custom",
+                    "font": "var(--font-heading--family)",
+                    "font_size": "3rem",
+                    "line_height": "tight",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "balance",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                },
+                "routine_body": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>We're committed to making consciously crafted beauty essentials that are effortless and truly made for your everyday. Because beauty should be created with you in mind.</p>",
+                    "text_color": "#ffffff",
+                    "width": "100%",
+                    "max_width": "narrow",
+                    "alignment": "center",
+                    "type_preset": "custom",
+                    "font": "var(--font-body--family)",
+                    "font_size": "0.875rem",
+                    "line_height": "loose",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                },
+                "routine_cta": {
+                  "type": "button",
+                  "settings": {
+                    "label": "Build A Box",
+                    "link": "shopify://collections/all",
+                    "open_in_new_tab": false,
+                    "style_class": "button-custom",
+                    "custom_button_background": "#ffffff",
+                    "custom_button_text": "#0a0a0a",
+                    "custom_button_border": "#ffffff",
+                    "width": "fit-content",
+                    "custom_width": 100,
+                    "width_mobile": "fit-content",
+                    "custom_width_mobile": 100
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "routine_heading",
+                "routine_body",
+                "routine_cta"
+              ]
             }
           },
           "block_order": [
-            "routine_heading",
-            "routine_body",
-            "routine_cta"
+            "routine_image",
+            "routine_copy"
           ]
         }
       },
+      "block_order": [
+        "routine_row"
+      ],
       "name": "Beauty routine",
       "settings": {
-        "media_position": "left",
-        "content_first_on_mobile": false,
-        "media_width": "medium",
-        "media_height": "60svh",
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "center",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 0,
         "section_width": "full-width",
-        "extend_media": false,
-        "background_color": "#0a0a0a",
+        "section_height": "fixed",
+        "section_height_custom": 50,
+        "section_height_px": 740,
+        "background_media": "none",
+        "background_color": "#000000",
+        "background_gradient_start": "#404040",
+        "background_gradient_end": "#000000",
+        "split_media_max_width": 565,
+        "split_content_max_width": 623,
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
         "padding-block-start": 0,
         "padding-block-end": 0
       }

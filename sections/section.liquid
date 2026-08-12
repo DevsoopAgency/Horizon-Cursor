@@ -214,6 +214,10 @@
         {
           "value": "custom",
           "label": "t:options.custom"
+        },
+        {
+          "value": "fixed",
+          "label": "Fixed (px)"
         }
       ],
       "default": ""
@@ -228,6 +232,17 @@
       "default": 50,
       "unit": "%",
       "visible_if": "{{ section.settings.section_height == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "section_height_px",
+      "label": "Height (px)",
+      "min": 200,
+      "max": 1200,
+      "step": 10,
+      "default": 700,
+      "unit": "px",
+      "visible_if": "{{ section.settings.section_height == 'fixed' }}"
     },
     {
       "type": "header",
@@ -259,6 +274,44 @@
       "label": "t:settings.background_color",
       "placeholder": "t:settings.default",
       "visible_if": "{{ section.settings.background_media == 'none' }}"
+    },
+    {
+      "type": "color",
+      "id": "background_gradient_start",
+      "label": "Gradient start",
+      "info": "Optional. When both gradient colors are set, they override solid background."
+    },
+    {
+      "type": "color",
+      "id": "background_gradient_end",
+      "label": "Gradient end"
+    },
+    {
+      "type": "header",
+      "content": "Split layout caps"
+    },
+    {
+      "type": "range",
+      "id": "split_media_max_width",
+      "label": "Media max width",
+      "min": 0,
+      "max": 900,
+      "step": 5,
+      "default": 0,
+      "unit": "px",
+      "info": "0 = off. Caps first image in a row (e.g. 565)."
+    },
+    {
+      "type": "range",
+      "id": "split_content_max_width",
+      "label": "Content max width",
+      "min": 0,
+      "max": 900,
+      "step": 5,
+      "default": 0,
+      "unit": "px",
+      "info": "0 = off. Caps content group beside media (e.g. 623).",
+      "visible_if": "{{ section.settings.split_media_max_width > 0 }}"
     },
     {
       "type": "video",
