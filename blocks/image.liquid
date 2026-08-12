@@ -18,14 +18,24 @@
   endif
 %}
 
+{% liquid
+  assign image_filter_class = ''
+  if block_settings.image_filter == 'grayscale'
+    assign image_filter_class = ' image-block--filter-grayscale'
+  endif
+%}
+
 {% capture class %}
-  image-block image-block--{{ block.id }} image-block--height-{{ block_settings.height }} spacing-style size-style
+  image-block image-block--{{ block.id }} image-block--height-{{ block_settings.height }} spacing-style size-style{{ image_filter_class }}
 {% endcapture %}
 
 {% capture style %}
   --ratio: {{ ratio }};
   {% render 'size-style', settings: block_settings %}
   {% render 'spacing-style', settings: block_settings %}
+  {% if block_settings.max_width_px > 0 %}
+    --image-max-width: {{ block_settings.max_width_px }}px;
+  {% endif %}
 {% endcapture %}
 
 {% capture image_border_style %}
@@ -109,6 +119,19 @@
   .image-block__image {
     object-fit: cover;
     aspect-ratio: var(--ratio);
+    width: 100%;
+    max-width: var(--image-max-width, 100%);
+    height: auto;
+  }
+
+  .image-block--filter-grayscale .image-block__image,
+  .image-block--filter-grayscale .image-block__placeholder {
+    filter: grayscale(100%);
+  }
+
+  .image-block[style*='--image-max-width'] {
+    width: var(--image-max-width);
+    max-width: 100%;
   }
 {% endstylesheet %}
 
@@ -233,6 +256,33 @@
       ],
       "default": "fit",
       "visible_if": "{{ block.settings.image_ratio == 'adapt' }}"
+    },
+    {
+      "type": "range",
+      "id": "max_width_px",
+      "label": "Max width",
+      "min": 0,
+      "max": 400,
+      "step": 5,
+      "unit": "px",
+      "default": 0,
+      "info": "0 disables. Use 90 for a DMCA-sized badge."
+    },
+    {
+      "type": "select",
+      "id": "image_filter",
+      "label": "Image filter",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "grayscale",
+          "label": "Grayscale"
+        }
+      ],
+      "default": "none"
     },
     {
       "type": "header",

@@ -64,7 +64,7 @@
         autocorrect="off"
         autocapitalize="off"
         autocomplete="email"
-        placeholder="{{ 'blocks.email_signup.placeholder' | t }}"
+        placeholder="{% if block_settings.placeholder != blank %}{{ block_settings.placeholder | escape }}{% else %}{{ 'blocks.email_signup.placeholder' | t }}{% endif %}"
         required
         {% if form.errors and form.id == blank %}
           autofocus
@@ -449,6 +449,12 @@
       "type": "text",
       "id": "heading",
       "label": "t:settings.text"
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Placeholder",
+      "info": "Leave blank to use the theme translation."
     },
     {
       "type": "color",

@@ -13,13 +13,19 @@
   {{ block.shopify_attributes }}
 >
   <span class="footer-utilities__text">
+    {%- liquid
+      assign copyright_shop_name = block_settings.shop_name_override | strip
+      if copyright_shop_name == blank
+        assign copyright_shop_name = shop.name
+      endif
+    -%}
     {%- if block_settings.copyright_format == 'full' -%}
       Copyright &copy; {{ 'now' | date: '%Y' }},
-      {{ shop.name | link_to: routes.root_url }}.
+      {{ copyright_shop_name | link_to: routes.root_url }}.
       All rights reserved.
     {%- else -%}
       &copy; {{ 'now' | date: '%Y' }}
-      {{ shop.name | link_to: routes.root_url -}}
+      {{ copyright_shop_name | link_to: routes.root_url -}}
     {%- endif -%}
     {%- if block_settings.show_powered_by -%}
       , {{ powered_by_link }}
@@ -61,6 +67,12 @@
         }
       ],
       "default": "default"
+    },
+    {
+      "type": "text",
+      "id": "shop_name_override",
+      "label": "Shop name override",
+      "info": "Leave blank to use the store name. Example: Planet Beauty"
     },
     {
       "type": "paragraph",

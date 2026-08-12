@@ -5,12 +5,18 @@
   assign menu = block_settings.menu
   assign heading = block_settings.heading
   assign show_as_accordion = block_settings.show_as_accordion
+  assign use_custom_links = block_settings.use_custom_links
+  assign custom_links_raw = block_settings.custom_links | strip
+  assign has_custom_links = false
+  if use_custom_links and custom_links_raw != blank
+    assign has_custom_links = true
+  endif
   if show_as_accordion == true and block_settings.accordion_dividers == true
     assign dividers_enabled = true
   endif
 %}
 
-{% if menu != blank or heading != blank %}
+{% if menu != blank or heading != blank or has_custom_links %}
   {% render 'contrast-override',
     background_color: block_settings.background_color,
     text_color: block_settings.text_color,
@@ -56,7 +62,7 @@
       {% endif %}
       {{ block.shopify_attributes }}
     >
-      <summary class="menu__heading{% if heading == blank and menu.title == blank %} menu__heading--empty{% endif %} {{ block_settings.heading_preset }}">
+      <summary class="menu__heading{% if heading == blank and menu.title == blank and has_custom_links == false %} menu__heading--empty{% endif %} {{ block_settings.heading_preset }}">
         <span class="menu__heading__default">{{ heading | default: menu.title }}</span>
         <span class="menu__heading__accordion">
           {{ heading | default: menu.title }}
@@ -75,11 +81,31 @@
       <nav
         class="details-content"
         {% if heading == blank %}
-          aria-label="{{ menu.title | escape }}"
+          aria-label="{{ menu.title | default: heading | escape }}"
         {% endif %}
       >
-        {% if menu %}
-          <ul class="list-unstyled">
+        <ul class="list-unstyled">
+          {% if has_custom_links %}
+            {% assign custom_links_normalized = custom_links_raw | strip | newline_to_br | replace: '<br/>', '@@' | replace: '<br />', '@@' | replace: '<br>', '@@' %}
+            {% assign custom_link_lines = custom_links_normalized | split: '@@' %}
+            {% for line in custom_link_lines %}
+              {% assign link_line = line | strip %}
+              {% if link_line != blank %}
+                {% assign link_parts = link_line | split: '|' %}
+                {% assign link_label = link_parts | first | strip %}
+                {% if link_parts.size > 1 %}
+                  {% assign link_url = link_parts[1] | strip %}
+                {% else %}
+                  {% assign link_url = '#' %}
+                {% endif %}
+                {% if link_label != blank %}
+                  <li class="menu__item {{ block_settings.link_preset }}">
+                    <a href="{{ link_url }}">{{ link_label }}</a>
+                  </li>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          {% elsif menu %}
             {% for link in menu.links %}
               <li class="menu__item {{ block_settings.link_preset }}">
                 <a href="{{ link.url }}">
@@ -87,8 +113,8 @@
                 </a>
               </li>
             {% endfor %}
-          </ul>
-        {% endif %}
+          {% endif %}
+        </ul>
       </nav>
     </details>
   {% endcapture %}
@@ -184,6 +210,20 @@
       "id": "menu",
       "label": "t:settings.menu",
       "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_custom_links",
+      "label": "Use custom links",
+      "default": false,
+      "info": "When enabled, Custom links replace the selected menu."
+    },
+    {
+      "type": "textarea",
+      "id": "custom_links",
+      "label": "Custom links",
+      "info": "One per line: Label|/path-or-url",
+      "visible_if": "{{ block.settings.use_custom_links == true }}"
     },
     {
       "type": "text",

@@ -1,5 +1,14 @@
 
-{% if shop.policies.size > 0 %}
+{% liquid
+  assign use_custom_policies = block.settings.use_custom_links
+  assign custom_policies_raw = block.settings.custom_links | strip
+  assign has_custom_policies = false
+  if use_custom_policies and custom_policies_raw != blank
+    assign has_custom_policies = true
+  endif
+%}
+
+{% if has_custom_policies or shop.policies.size > 0 %}
   {% if block.settings.layout == 'inline' %}
     <ul
       class="
@@ -15,15 +24,39 @@
       "
       {{ block.shopify_attributes }}
     >
-      {%- for policy in shop.policies -%}
-        {%- if policy != blank -%}
-          <li>
-            <a href="{{ policy.url }}" class="footer-utilities__text">
-              {{- policy.title | escape -}}
-            </a>
-          </li>
-        {%- endif -%}
-      {%- endfor -%}
+      {%- if has_custom_policies -%}
+        {%- assign custom_policies_normalized = custom_policies_raw | strip | newline_to_br | replace: '<br/>', '@@' | replace: '<br />', '@@' | replace: '<br>', '@@' -%}
+        {%- assign custom_policy_lines = custom_policies_normalized | split: '@@' -%}
+        {%- for line in custom_policy_lines -%}
+          {%- assign policy_line = line | strip -%}
+          {%- if policy_line != blank -%}
+            {%- assign policy_parts = policy_line | split: '|' -%}
+            {%- assign policy_label = policy_parts | first | strip -%}
+            {%- if policy_parts.size > 1 -%}
+              {%- assign policy_url = policy_parts[1] | strip -%}
+            {%- else -%}
+              {%- assign policy_url = '#' -%}
+            {%- endif -%}
+            {%- if policy_label != blank -%}
+              <li>
+                <a href="{{ policy_url }}" class="footer-utilities__text">
+                  {{- policy_label | escape -}}
+                </a>
+              </li>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- else -%}
+        {%- for policy in shop.policies -%}
+          {%- if policy != blank -%}
+            <li>
+              <a href="{{ policy.url }}" class="footer-utilities__text">
+                {{- policy.title | escape -}}
+              </a>
+            </li>
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
     </ul>
   {% else %}
     <anchored-popover-component
@@ -31,7 +64,7 @@
     >
       <button
         class="policy-list-trigger button-unstyled"
-        popovertarget="terms-policies-popover"
+        popovertarget="terms-policies-popover-{{ block.id }}"
         popovertargetaction="toggle"
         ref="trigger"
         style="
@@ -44,7 +77,7 @@
       </button>
       <div
         class="terms-policies-popover color-custom-popover"
-        id="terms-policies-popover"
+        id="terms-policies-popover-{{ block.id }}"
         popover="auto"
         ref="popover"
       >
@@ -55,18 +88,42 @@
             {% if block.settings.font_size != '' %}custom-font-size{% endif %}
           "
         >
-          {%- for policy in shop.policies -%}
-            {%- if policy != blank -%}
-              <li>
-                <a
-                  href="{{ policy.url }}"
-                  class="footer-utilities__text"
-                >
-                  {{- policy.title | escape -}}
-                </a>
-              </li>
-            {%- endif -%}
-          {%- endfor -%}
+          {%- if has_custom_policies -%}
+            {%- assign custom_policies_normalized = custom_policies_raw | strip | newline_to_br | replace: '<br/>', '@@' | replace: '<br />', '@@' | replace: '<br>', '@@' -%}
+            {%- assign custom_policy_lines = custom_policies_normalized | split: '@@' -%}
+            {%- for line in custom_policy_lines -%}
+              {%- assign policy_line = line | strip -%}
+              {%- if policy_line != blank -%}
+                {%- assign policy_parts = policy_line | split: '|' -%}
+                {%- assign policy_label = policy_parts | first | strip -%}
+                {%- if policy_parts.size > 1 -%}
+                  {%- assign policy_url = policy_parts[1] | strip -%}
+                {%- else -%}
+                  {%- assign policy_url = '#' -%}
+                {%- endif -%}
+                {%- if policy_label != blank -%}
+                  <li>
+                    <a href="{{ policy_url }}" class="footer-utilities__text">
+                      {{- policy_label | escape -}}
+                    </a>
+                  </li>
+                {%- endif -%}
+              {%- endif -%}
+            {%- endfor -%}
+          {%- else -%}
+            {%- for policy in shop.policies -%}
+              {%- if policy != blank -%}
+                <li>
+                  <a
+                    href="{{ policy.url }}"
+                    class="footer-utilities__text"
+                  >
+                    {{- policy.title | escape -}}
+                  </a>
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
         </ul>
       </div>
     </anchored-popover-component>
@@ -85,59 +142,58 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
-    gap: 0.5rem 1.5rem;
+    justify-content: flex-start;
+    gap: 8px 24px;
     margin: 0;
     color: var(--color-utilities, var(--color-foreground-muted));
     text-wrap: wrap;
     white-space: normal;
+  }
 
-    li {
-      margin: 0;
-    }
+  .policy_list--inline li {
+    margin: 0;
+  }
 
-    a {
-      color: inherit;
-      display: inline;
-      padding: 0;
-      width: auto;
-      font-size: var(--font-size, 0.75rem);
-      line-height: 1.75;
-      text-decoration: none;
-      text-transform: var(--text-transform, none);
-      white-space: nowrap;
-    }
+  .policy_list--inline a {
+    color: inherit;
+    display: inline;
+    padding: 0;
+    width: auto;
+    font-size: var(--font-size, 0.75rem);
+    line-height: 1.75;
+    text-decoration: none;
+    text-transform: var(--text-transform, none);
+    white-space: normal;
+  }
 
-    a:hover {
-      text-decoration: underline;
-    }
+  .policy_list--inline a:hover {
+    text-decoration: underline;
   }
 
   @media screen and (min-width: 750px) {
-    .utilities--blocks-2 .policy_list--inline {
+    .utilities--blocks-2 .policy_list--inline,
+    .utilities--layout-space-between .policy_list--inline {
       justify-content: flex-end;
     }
   }
 
-  .policy_list:not(.policy_list--inline) {
-    li {
-      border-radius: calc(var(--style-border-radius-popover) - 8px);
+  .policy_list:not(.policy_list--inline) li {
+    border-radius: calc(var(--style-border-radius-popover) - 8px);
+  }
 
-      a {
-        color: var(--color-foreground);
-        display: inline-block;
-        padding: 8px;
-        text-align: start;
-        width: 100%;
-        outline-color: #0000;
-        font-size: var(--font-size, 0.75rem);
-        text-transform: var(--text-transform, none);
-      }
+  .policy_list:not(.policy_list--inline) li a {
+    color: var(--color-foreground);
+    display: inline-block;
+    padding: 8px;
+    text-align: start;
+    width: 100%;
+    outline-color: #0000;
+    font-size: var(--font-size, 0.75rem);
+    text-transform: var(--text-transform, none);
+  }
 
-      &:is(:hover, :focus-within) {
-        background: rgb(var(--color-foreground-rgb) / 0.15);
-      }
-    }
+  .policy_list:not(.policy_list--inline) li:is(:hover, :focus-within) {
+    background: rgb(var(--color-foreground-rgb) / 0.15);
   }
 
   .terms-policies-popover {
@@ -217,6 +273,20 @@
     {
       "type": "paragraph",
       "content": "t:content.manage_policies"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_custom_links",
+      "label": "Use custom links",
+      "default": false,
+      "info": "When enabled, Custom links replace shop policies."
+    },
+    {
+      "type": "textarea",
+      "id": "custom_links",
+      "label": "Custom links",
+      "info": "One per line: Label|/path-or-url",
+      "visible_if": "{{ block.settings.use_custom_links == true }}"
     },
     {
       "type": "select",
