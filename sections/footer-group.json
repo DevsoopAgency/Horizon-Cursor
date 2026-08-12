@@ -150,11 +150,11 @@
               "settings": {
                 "image": "shopify://shop_images/image_12_1.png",
                 "link": "https://www.dmca.com/",
-                "image_ratio": "adapt",
+                "image_ratio": "square",
                 "width": "custom",
-                "custom_width": 100,
+                "custom_width": 14,
                 "width_mobile": "custom",
-                "custom_width_mobile": 100,
+                "custom_width_mobile": 39,
                 "height": "fit",
                 "max_width_px": 90,
                 "image_filter": "grayscale",
@@ -163,7 +163,7 @@
                 "border_opacity": 100,
                 "border_color": "",
                 "border_radius": 0,
-                "padding-block-start": 24,
+                "padding-block-start": 54,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
                 "padding-inline-end": 0
@@ -181,6 +181,7 @@
         "menu_company": {
           "type": "menu",
           "settings": {
+            "menu": "main-menu",
             "use_custom_links": true,
             "custom_links": "Store Locator|#\nAbout Us|#\nCareers|#\nContact Us|#\nWebsite Accessibility|#",
             "heading": "Company",
@@ -198,7 +199,7 @@
             "link_preset": "paragraph",
             "padding-block-start": 0,
             "padding-block-end": 0,
-            "padding-inline-start": 0,
+            "padding-inline-start": 66,
             "padding-inline-end": 0
           },
           "blocks": {}
@@ -206,6 +207,7 @@
         "menu_policies": {
           "type": "menu",
           "settings": {
+            "menu": "main-menu",
             "use_custom_links": true,
             "custom_links": "Shipping|#\nReturns|#\nPrice Match Guarantee|#\nSubscription policy|#",
             "heading": "Policies",
@@ -223,7 +225,7 @@
             "link_preset": "paragraph",
             "padding-block-start": 0,
             "padding-block-end": 0,
-            "padding-inline-start": 0,
+            "padding-inline-start": 50,
             "padding-inline-end": 0
           },
           "blocks": {}
@@ -231,6 +233,7 @@
         "menu_quick_links": {
           "type": "menu",
           "settings": {
+            "menu": "main-menu",
             "use_custom_links": true,
             "custom_links": "Best Selling Products|shopify://collections/all\nCoupon Exclusions|#\nAffiliate Marketing Program|#\nFAQ|#",
             "heading": "Quick Links",
@@ -248,7 +251,7 @@
             "link_preset": "paragraph",
             "padding-block-start": 0,
             "padding-block-end": 0,
-            "padding-inline-start": 0,
+            "padding-inline-start": 48,
             "padding-inline-end": 0
           },
           "blocks": {}
