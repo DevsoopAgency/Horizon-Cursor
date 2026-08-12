@@ -20,8 +20,31 @@
 %}
 
 <div class="section-background color-custom-{{ section_id }}"></div>
+{% liquid
+  assign mobile_row_layout = section.settings.mobile_row_layout | default: 'stack'
+  assign enable_mobile_type = false
+  if section.settings.mobile_heading_size > 0 or section.settings.mobile_subheading_size > 0
+    assign enable_mobile_type = true
+  endif
+  if section.settings.mobile_heading_align == 'left' or section.settings.mobile_heading_align == 'center' or section.settings.mobile_heading_align == 'right'
+    assign enable_mobile_type = true
+  endif
+  if section.settings.mobile_subheading_align == 'left' or section.settings.mobile_subheading_align == 'center' or section.settings.mobile_subheading_align == 'right'
+    assign enable_mobile_type = true
+  endif
+  if section.settings.mobile_cta_align == 'flex-start' or section.settings.mobile_cta_align == 'center' or section.settings.mobile_cta_align == 'flex-end'
+    assign enable_mobile_type = true
+  endif
+%}
 <div
-  class="section section--{{ section.settings.section_width }} color-custom-{{ section_id }}"
+  class="
+    section
+    section--{{ section.settings.section_width }}
+    color-custom-{{ section_id }}
+    {% if mobile_row_layout == 'carousel' %}section--mobile-carousel{% endif %}
+    {% if mobile_row_layout == 'grid' %}section--mobile-grid section--mobile-grid-{{ section.settings.mobile_columns | default: '2' }}{% endif %}
+    {% if enable_mobile_type %}section--mobile-type{% endif %}
+  "
   data-testid="ui-test-section"
 
   {% if request.visual_preview_mode %}
@@ -40,6 +63,30 @@
     {% if section.settings.section_height != '' %}
      --section-preview-height: 600px;
      {% endif %}
+    --mobile-carousel-card-width: {{ section.settings.mobile_carousel_card_width | default: 85 }}%;
+    --mobile-row-gap: {{ section.settings.mobile_row_gap | default: 12 }}px;
+    --mobile-grid-columns: {{ section.settings.mobile_columns | default: '2' }};
+    {% if section.settings.mobile_heading_size > 0 %}
+      --mobile-heading-size: {{ section.settings.mobile_heading_size }}px;
+    {% endif %}
+    {% if section.settings.mobile_subheading_size > 0 %}
+      --mobile-subheading-size: {{ section.settings.mobile_subheading_size }}px;
+    {% endif %}
+    {% if section.settings.mobile_heading_align != blank and section.settings.mobile_heading_align != 'inherit' %}
+      --mobile-heading-align: {{ section.settings.mobile_heading_align }};
+    {% endif %}
+    {% if section.settings.mobile_subheading_align != blank and section.settings.mobile_subheading_align != 'inherit' %}
+      --mobile-subheading-align: {{ section.settings.mobile_subheading_align }};
+    {% endif %}
+    {% if section.settings.mobile_cta_align != blank and section.settings.mobile_cta_align != 'inherit' %}
+      --mobile-cta-align: {{ section.settings.mobile_cta_align }};
+    {% endif %}
+    {% if section.settings.mobile_subheading_tracking != blank %}
+      --mobile-subheading-tracking: {{ section.settings.mobile_subheading_tracking }};
+    {% endif %}
+    {% if section.settings.mobile_subheading_nowrap %}
+      --mobile-subheading-wrap: nowrap;
+    {% endif %}
   "
 >
   <div class="custom-section-background">
@@ -107,5 +154,92 @@
 
   .custom-section-content {
     z-index: var(--layer-flat);
+  }
+
+  /* Mobile: horizontal peek carousel for top-level row groups */
+  @media screen and (max-width: 749px) {
+    .section--mobile-carousel > .custom-section-content,
+    .section--mobile-carousel .section-content-wrapper > .group-block {
+      overflow: visible;
+      max-width: 100%;
+    }
+
+    .section--mobile-carousel .section-content-wrapper > .group-block > .group-block-content.layout-panel-flex--row {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: flex-start;
+      align-items: stretch;
+      gap: var(--mobile-row-gap, 12px);
+      width: 100%;
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: 0;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-inline-end: calc(100% - var(--mobile-carousel-card-width, 85%));
+      touch-action: pan-x;
+    }
+
+    .section--mobile-carousel .section-content-wrapper > .group-block > .group-block-content.layout-panel-flex--row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .section--mobile-carousel .section-content-wrapper > .group-block > .group-block-content.layout-panel-flex--row > .group-block,
+    .section--mobile-carousel .section-content-wrapper > .group-block > .group-block-content.layout-panel-flex--row > .group-block.size-style,
+    .section--mobile-carousel .section-content-wrapper > .group-block > .group-block-content.layout-panel-flex--row > .group-block--width-fill {
+      flex: 0 0 var(--mobile-carousel-card-width, 85%);
+      flex-grow: 0;
+      flex-shrink: 0;
+      width: var(--mobile-carousel-card-width, 85%);
+      max-width: var(--mobile-carousel-card-width, 85%);
+      min-width: var(--mobile-carousel-card-width, 85%);
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+    }
+
+    .section--mobile-carousel .section-content-wrapper > .group-block > .group-block-content.layout-panel-flex--row > .group-block > .group-block-content {
+      height: 100%;
+    }
+
+    /* Mobile: N-column wrap grid for top-level row groups (e.g. IG) */
+    .section--mobile-grid .section-content-wrapper > .group-block > .group-block-content.layout-panel-flex--row:has(> .image-block) {
+      display: grid;
+      grid-template-columns: repeat(var(--mobile-grid-columns, 2), minmax(0, 1fr));
+      gap: var(--mobile-row-gap, 12px);
+      flex-direction: unset;
+      overflow: visible;
+    }
+
+    .section--mobile-grid .section-content-wrapper > .group-block > .group-block-content.layout-panel-flex--row:has(> .image-block) > .image-block {
+      flex: unset;
+      width: 100%;
+      max-width: none;
+      min-width: 0;
+    }
+
+    /* Mobile typography overrides (desktop unchanged) */
+    .section--mobile-type .section-content-wrapper > .group-block:first-child .text-block:first-child,
+    .section--mobile-type .section-content-wrapper > .group-block:first-child .text-block:first-child > * {
+      font-size: var(--mobile-heading-size, inherit);
+      text-align: var(--mobile-heading-align, inherit);
+      max-width: 100%;
+    }
+
+    .section--mobile-type .section-content-wrapper > .group-block:first-child .text-block:nth-child(2),
+    .section--mobile-type .section-content-wrapper > .group-block:first-child .text-block:nth-child(2) > * {
+      font-size: var(--mobile-subheading-size, inherit);
+      text-align: var(--mobile-subheading-align, inherit);
+      letter-spacing: var(--mobile-subheading-tracking, inherit);
+      max-width: 100%;
+      white-space: var(--mobile-subheading-wrap, normal);
+    }
+
+    .section--mobile-type .section-content-wrapper > .group-block:last-child .group-block-content {
+      align-items: var(--mobile-cta-align, inherit);
+      justify-content: var(--mobile-cta-align, inherit);
+    }
   }
 {% endstylesheet %}

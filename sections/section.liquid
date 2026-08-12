@@ -414,6 +414,202 @@
     },
     {
       "type": "header",
+      "content": "Mobile layout"
+    },
+    {
+      "type": "select",
+      "id": "mobile_row_layout",
+      "label": "Mobile row layout",
+      "options": [
+        {
+          "value": "stack",
+          "label": "Stack (default)"
+        },
+        {
+          "value": "carousel",
+          "label": "Carousel (peek)"
+        },
+        {
+          "value": "grid",
+          "label": "Grid"
+        }
+      ],
+      "default": "stack",
+      "info": "Applies to top-level row groups. Desktop layout is unchanged."
+    },
+    {
+      "type": "select",
+      "id": "mobile_columns",
+      "label": "Mobile columns",
+      "options": [
+        {
+          "value": "1",
+          "label": "t:options.one_number"
+        },
+        {
+          "value": "2",
+          "label": "t:options.two_number"
+        }
+      ],
+      "default": "2",
+      "visible_if": "{{ section.settings.mobile_row_layout == 'grid' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_carousel_card_width",
+      "label": "Carousel card width",
+      "min": 60,
+      "max": 95,
+      "step": 1,
+      "unit": "%",
+      "default": 85,
+      "visible_if": "{{ section.settings.mobile_row_layout == 'carousel' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_row_gap",
+      "label": "Mobile row gap",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 12,
+      "visible_if": "{{ section.settings.mobile_row_layout != 'stack' }}"
+    },
+    {
+      "type": "header",
+      "content": "Mobile typography"
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_size",
+      "label": "Mobile heading size",
+      "min": 0,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "info": "0 = keep desktop size. Applies to the first heading in the header group."
+    },
+    {
+      "type": "select",
+      "id": "mobile_heading_align",
+      "label": "Mobile heading align",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Same as desktop"
+        },
+        {
+          "value": "left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "right",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "range",
+      "id": "mobile_subheading_size",
+      "label": "Mobile subheading size",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "info": "0 = keep desktop size."
+    },
+    {
+      "type": "select",
+      "id": "mobile_subheading_align",
+      "label": "Mobile subheading align",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Same as desktop"
+        },
+        {
+          "value": "left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "right",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "mobile_subheading_tracking",
+      "label": "Mobile subheading letter spacing",
+      "options": [
+        {
+          "value": "",
+          "label": "Same as desktop"
+        },
+        {
+          "value": "normal",
+          "label": "Normal"
+        },
+        {
+          "value": "0.06em",
+          "label": "Slightly loose"
+        },
+        {
+          "value": "0.12em",
+          "label": "Loose"
+        },
+        {
+          "value": "0.18em",
+          "label": "Extra loose"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_subheading_nowrap",
+      "label": "Keep subheading on one line (mobile)",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "mobile_cta_align",
+      "label": "Mobile CTA align",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Same as desktop"
+        },
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "header",
       "content": "t:content.padding"
     },
     {

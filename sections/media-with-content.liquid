@@ -14,6 +14,16 @@
   if section.settings.media_height == 'auto'
     assign media_class_modifier = media_class_modifier | append: ' media-with-content--media-auto'
   endif
+
+  assign mobile_stack_order = section.settings.mobile_stack_order | default: 'media_first'
+  if mobile_stack_order == 'content_first'
+    assign media_class_modifier = media_class_modifier | append: ' media-with-content--mobile-content-first'
+  endif
+
+  assign mobile_media_height = section.settings.mobile_media_height | default: 'default'
+  if mobile_media_height == 'auto'
+    assign media_class_modifier = media_class_modifier | append: ' media-with-content--mobile-media-auto'
+  endif
 %}
 
 {% liquid
@@ -32,7 +42,9 @@
     {%- render 'spacing-style', settings: section.settings %}
     {% render 'border-override', settings: section.settings %}
     --media-height: {{ section.settings.media_height }};
-    {%- case section.settings.media_height %}
+    {%- case mobile_media_height %}
+      {% when 'auto' %}
+        --media-height-mobile: auto;
       {% when '50svh' %}
         --media-height-mobile: 30svh;
       {% when '60svh' %}
@@ -42,7 +54,18 @@
       {% when '100svh' %}
         --media-height-mobile: 100svh;
       {% else %}
-        --media-height-mobile: auto;
+        {%- case section.settings.media_height %}
+          {% when '50svh' %}
+            --media-height-mobile: 30svh;
+          {% when '60svh' %}
+            --media-height-mobile: 50svh;
+          {% when '80svh' %}
+            --media-height-mobile: 70svh;
+          {% when '100svh' %}
+            --media-height-mobile: 100svh;
+          {% else %}
+            --media-height-mobile: auto;
+        {% endcase -%}
     {% endcase -%}
 
     {% if section.settings.media_height != 'auto' %}
@@ -52,6 +75,12 @@
       --media-border-radius: {{ section.settings.media_border_radius }}px;
       --media-inset-padding: {{ section.settings.media_padding }}px;
     {% endif %}
+    {% if section.settings.mobile_media_border_radius > 0 %}
+      --media-border-radius-mobile: {{ section.settings.mobile_media_border_radius }}px;
+    {% endif %}
+    --mwc-mobile-content-pad-block: {{ section.settings.mobile_content_padding_block | default: 32 }}px;
+    --mwc-mobile-content-pad-inline: {{ section.settings.mobile_content_padding_inline | default: 20 }}px;
+    --mwc-mobile-content-gap: {{ section.settings.mobile_content_gap | default: 16 }}px;
   "
   {% if request.visual_preview_mode %}
     data-shopify-visual-preview
@@ -275,6 +304,54 @@
     font-size: 0.75rem;
     font-weight: 600;
   }
+
+  /* Mobile stack: content above media (desktop unchanged) */
+  @media screen and (max-width: 749px) {
+    .media-with-content.media-with-content--mobile-content-first {
+      grid-template-areas: 'content content content' 'media media media';
+    }
+
+    .section--page-width.media-with-content--mobile-content-first {
+      grid-template-areas: 'margin-left content margin-right' 'margin-left media margin-right';
+    }
+
+    .media-with-content.media-with-content--media-extend.media-with-content--mobile-content-first {
+      grid-template-areas: 'margin-left content margin-right' 'media media media';
+    }
+
+    .media-with-content--mobile-content-first .media-with-content__content > .group-block-content {
+      padding-block: var(--mwc-mobile-content-pad-block, calc(2 * var(--page-margin)));
+      padding-inline: var(--mwc-mobile-content-pad-inline, var(--page-margin));
+      gap: var(--mwc-mobile-content-gap, 16px);
+    }
+
+    .media-with-content--mobile-media-auto .media-block {
+      min-height: 0;
+      overflow: visible;
+    }
+
+    .media-with-content--mobile-media-auto .media-block__media,
+    .media-with-content--mobile-media-auto .media-block__media-link .media-block__media {
+      position: relative;
+      inset: auto;
+      height: auto;
+      width: 100%;
+      object-fit: cover;
+    }
+
+    .media-with-content--mobile-media-auto .media-block__media-link {
+      display: block;
+      height: auto;
+    }
+
+    .media-with-content .media-block {
+      border-radius: var(--media-border-radius-mobile, var(--media-border-radius, 0));
+    }
+
+    .media-with-content .media-block__media {
+      border-radius: inherit;
+    }
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -397,6 +474,99 @@
       "id": "background_color",
       "label": "t:settings.background_color",
       "placeholder": "t:settings.default"
+    },
+    {
+      "type": "header",
+      "content": "Mobile layout"
+    },
+    {
+      "type": "select",
+      "id": "mobile_stack_order",
+      "label": "Stack order",
+      "options": [
+        {
+          "value": "media_first",
+          "label": "Media then content"
+        },
+        {
+          "value": "content_first",
+          "label": "Content then media"
+        }
+      ],
+      "default": "media_first",
+      "info": "Desktop media position is unchanged."
+    },
+    {
+      "type": "select",
+      "id": "mobile_media_height",
+      "label": "Mobile media height",
+      "options": [
+        {
+          "value": "default",
+          "label": "Match desktop"
+        },
+        {
+          "value": "auto",
+          "label": "t:options.auto"
+        },
+        {
+          "value": "50svh",
+          "label": "t:options.small"
+        },
+        {
+          "value": "60svh",
+          "label": "t:options.medium"
+        },
+        {
+          "value": "80svh",
+          "label": "t:options.large"
+        },
+        {
+          "value": "100svh",
+          "label": "t:options.full_screen"
+        }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "range",
+      "id": "mobile_media_border_radius",
+      "label": "Mobile media radius",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_content_padding_block",
+      "label": "Mobile content padding (top/bottom)",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "mobile_content_padding_inline",
+      "label": "Mobile content padding (sides)",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "mobile_content_gap",
+      "label": "Mobile content gap",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 16
     },
     {
       "type": "header",

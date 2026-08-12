@@ -10,7 +10,13 @@
   class="section-background{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
 ></div>
 <div
-  class="section section--{{ section.settings.section_width }}{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
+  class="
+    section
+    section--{{ section.settings.section_width }}
+    {% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}
+    {% if section.settings.hide_dmca_on_mobile %}footer--hide-dmca-mobile{% endif %}
+    {% if section.settings.mobile_menu_columns %}footer--mobile-menus-{{ section.settings.mobile_menu_columns }}{% endif %}
+  "
 >
   {% liquid
     assign total_blocks = section.blocks.size
@@ -48,6 +54,8 @@
       --grid-columns: {{ grid_columns }};
       --last-row-count: {{ last_row_count }};
       --tablet-last-row-count: {{ tablet_last_row_count }};
+      --footer-mobile-menu-gap: {{ section.settings.mobile_menu_gap | default: 16 }}px;
+      --footer-mobile-stack-gap: {{ section.settings.mobile_stack_gap | default: 40 }}px;
     "
   >
     {% content_for 'blocks' %}
@@ -95,6 +103,33 @@
     .footer-content .layout-panel-flex--row > .menu {
       flex: 1 1 0;
       min-width: 0;
+    }
+  }
+
+  /* Mobile: newsletter stacked above equal menu columns */
+  @media screen and (max-width: 749px) {
+    .footer-content > .group-block > .group-block-content.layout-panel-flex.mobile-column {
+      gap: var(--footer-mobile-stack-gap, 40px);
+    }
+
+    .footer-content .layout-panel-flex--row:has(> .menu) {
+      flex-flow: row nowrap;
+      align-items: flex-start;
+      gap: var(--footer-mobile-menu-gap, 16px);
+    }
+
+    .footer-content .layout-panel-flex--row > .menu {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .footer--mobile-menus-1 .footer-content .layout-panel-flex--row:has(> .menu) {
+      flex-flow: column nowrap;
+    }
+
+    .footer--hide-dmca-mobile .dmca-badge,
+    .footer--hide-dmca-mobile [class*='dmca'] {
+      display: none;
     }
   }
 
@@ -232,6 +267,54 @@
       "id": "background_color",
       "label": "t:settings.background_color",
       "default": "{{ settings.color_palette.foreground }}"
+    },
+    {
+      "type": "header",
+      "content": "Mobile layout"
+    },
+    {
+      "type": "select",
+      "id": "mobile_menu_columns",
+      "label": "Mobile menu layout",
+      "options": [
+        {
+          "value": "1",
+          "label": "Stacked"
+        },
+        {
+          "value": "3",
+          "label": "3 columns"
+        }
+      ],
+      "default": "3",
+      "info": "Desktop menu layout is unchanged."
+    },
+    {
+      "type": "range",
+      "id": "mobile_menu_gap",
+      "label": "Mobile menu gap",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ section.settings.mobile_menu_columns == '3' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_stack_gap",
+      "label": "Mobile newsletter / menus gap",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_dmca_on_mobile",
+      "label": "Hide DMCA badge on mobile",
+      "default": true
     },
     {
       "type": "header",

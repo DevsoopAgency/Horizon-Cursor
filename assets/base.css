@@ -2235,6 +2235,37 @@ main > .shopify-section:first-child .section:not(.disable-section-top-offset) {
   border-radius: 50%;
 }
 
+/* Customer reviews mobile carousel — beat .group-block--width-fill { flex: 1 } */
+@media screen and (max-width: 749px) {
+  [id$='__customer_reviews'] .section--mobile-carousel .section-content-wrapper > .group-block > .group-block-content.layout-panel-flex--row {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: var(--mobile-row-gap, 12px);
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-inline-end: calc(100% - var(--mobile-carousel-card-width, 85%));
+    touch-action: pan-x;
+  }
+
+  [id$='__customer_reviews'] .section--mobile-carousel .section-content-wrapper > .group-block > .group-block-content.layout-panel-flex--row::-webkit-scrollbar {
+    display: none;
+  }
+
+  [id$='__customer_reviews'] .section--mobile-carousel .section-content-wrapper > .group-block > .group-block-content.layout-panel-flex--row > .group-block--width-fill,
+  [id$='__customer_reviews'] .section--mobile-carousel .section-content-wrapper > .group-block > .group-block-content.layout-panel-flex--row > .group-block.size-style {
+    flex: 0 0 var(--mobile-carousel-card-width, 85%) !important;
+    width: var(--mobile-carousel-card-width, 85%) !important;
+    max-width: var(--mobile-carousel-card-width, 85%) !important;
+    min-width: var(--mobile-carousel-card-width, 85%) !important;
+    scroll-snap-align: start;
+  }
+}
+
 /* Instagram feed: equal-width portrait cards that fill the row */
 [id$='__instagram_feed'] .section.section--full-width > .custom-section-content {
   padding-inline: max(1.25rem, calc((100vw - min(1440px, 100vw - 2.5rem)) / 2));
@@ -2298,6 +2329,12 @@ main > .shopify-section:first-child .section:not(.disable-section-top-offset) {
     width: 100%;
   }
 
+  [id$='__instagram_feed'].section--mobile-grid .layout-panel-flex--row:has(> .image-block) > .image-block,
+  [id$='__instagram_feed'] .section--mobile-grid .layout-panel-flex--row:has(> .image-block) > .image-block {
+    flex: unset;
+    width: 100%;
+  }
+
   [id$='__instagram_feed'] .layout-panel-flex--row > .image-block:hover {
     transform: none;
     box-shadow: none;
@@ -2306,6 +2343,11 @@ main > .shopify-section:first-child .section:not(.disable-section-top-offset) {
   [id$='__instagram_feed'] .image-block:hover .image-block__image,
   [id$='__instagram_feed'] .image-block:hover .placeholder-image {
     transform: none;
+  }
+
+  [id$='__instagram_feed'] .section--mobile-grid .image-block .image-block__image,
+  [id$='__instagram_feed'] .section--mobile-grid .image-block .placeholder-image {
+    aspect-ratio: 1 / 1;
   }
 }
 

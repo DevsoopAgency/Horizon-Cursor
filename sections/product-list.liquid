@@ -5,6 +5,12 @@
   if section.settings.background_color != blank
     render 'contrast-override', background_color: section.settings.background_color, section_id: section.id
   endif
+
+  assign mobile_card_border = section.settings.mobile_card_border | default: 'none'
+  assign mobile_card_border_width = section.settings.mobile_card_border_width | default: 1
+  assign mobile_card_border_opacity = section.settings.mobile_card_border_opacity | default: 100
+  assign mobile_card_border_radius = section.settings.mobile_card_border_radius | default: 10
+  assign mobile_card_image_padding = section.settings.mobile_card_image_padding | default: 8
 %}
 
 <div
@@ -19,10 +25,18 @@
     section-resource-list
     spacing-style
     gap-style
+    {% if section.settings.layout_type == 'carousel' and section.settings.grid_on_mobile %}product-list--mobile-grid{% endif %}
   "
   style="
     {% render 'spacing-style', settings: section.settings %}
     {% render 'gap-style', value: section.settings.gap %}
+    --pl-mobile-card-border: {{ mobile_card_border }};
+    --pl-mobile-card-border-width: {{ mobile_card_border_width }}px;
+    --pl-mobile-card-border-opacity: {{ mobile_card_border_opacity | times: 0.01 }};
+    --pl-mobile-card-border-color: {{ section.settings.mobile_card_border_color | default: '#e5e5e5' }};
+    --pl-mobile-card-border-radius: {{ mobile_card_border_radius }}px;
+    --pl-mobile-card-bg: {{ section.settings.mobile_card_background | default: 'transparent' }};
+    --pl-mobile-card-image-padding: {{ mobile_card_image_padding }}px;
   "
 >
   <div class="section-resource-list__header{% if section.settings.show_category_menu and section.settings.category_menu != blank %} product-list-header--with-menu{% endif %}">
@@ -217,6 +231,40 @@
       gap: 1rem;
     }
   }
+
+  /* Mobile grid card look (desktop carousel unchanged) */
+  @media screen and (max-width: 749px) {
+    .product-list--mobile-grid .section-resource-list__header .button-unstyled {
+      text-decoration-line: underline;
+      text-decoration-color: currentcolor;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.35em;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .product-list--mobile-grid .resource-list--grid-mobile-fixed .card-gallery {
+      border-style: var(--pl-mobile-card-border, none);
+      border-width: var(--pl-mobile-card-border-width, 1px);
+      border-color: color-mix(
+        in srgb,
+        var(--pl-mobile-card-border-color, #e5e5e5) calc(var(--pl-mobile-card-border-opacity, 1) * 100%),
+        transparent
+      );
+      border-radius: var(--pl-mobile-card-border-radius, 10px);
+      background-color: var(--pl-mobile-card-bg, transparent);
+      padding: var(--pl-mobile-card-image-padding, 8px);
+      overflow: hidden;
+    }
+
+    .product-list--mobile-grid .resource-list--grid-mobile-fixed .card-gallery img,
+    .product-list--mobile-grid .resource-list--grid-mobile-fixed .card-gallery .product-media {
+      border-radius: calc(var(--pl-mobile-card-border-radius, 10px) * 0.6);
+    }
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -303,6 +351,14 @@
       "visible_if": "{{ section.settings.layout_type != 'carousel' }}"
     },
     {
+      "type": "checkbox",
+      "id": "grid_on_mobile",
+      "label": "Grid on mobile",
+      "default": false,
+      "info": "Desktop stays a carousel; mobile becomes a product grid.",
+      "visible_if": "{{ section.settings.layout_type == 'carousel' }}"
+    },
+    {
       "type": "range",
       "id": "max_products",
       "label": "t:settings.product_count",
@@ -336,7 +392,7 @@
         }
       ],
       "default": "2",
-      "visible_if": "{{ section.settings.layout_type == 'grid' and section.settings.carousel_on_mobile == false }}"
+      "visible_if": "{{ section.settings.layout_type == 'grid' and section.settings.carousel_on_mobile == false or section.settings.grid_on_mobile }}"
     },
     {
       "type": "select",
@@ -353,7 +409,7 @@
         }
       ],
       "default": "60cqw",
-      "visible_if": "{{ section.settings.layout_type == 'carousel' or section.settings.carousel_on_mobile == true }}"
+      "visible_if": "{{ section.settings.layout_type == 'carousel' and section.settings.grid_on_mobile == false or section.settings.carousel_on_mobile == true }}"
     },
     {
       "type": "range",
@@ -375,7 +431,87 @@
       "step": 1,
       "unit": "px",
       "default": 8,
-      "visible_if": "{{ section.settings.layout_type == 'grid'}}"
+      "visible_if": "{{ section.settings.layout_type == 'grid' or section.settings.grid_on_mobile }}"
+    },
+    {
+      "type": "header",
+      "content": "Mobile card style",
+      "visible_if": "{{ section.settings.grid_on_mobile }}"
+    },
+    {
+      "type": "select",
+      "id": "mobile_card_border",
+      "label": "Image border",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "solid",
+          "label": "t:options.solid"
+        }
+      ],
+      "default": "solid",
+      "visible_if": "{{ section.settings.grid_on_mobile }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_border_width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "Border thickness",
+      "default": 1,
+      "visible_if": "{{ section.settings.grid_on_mobile and section.settings.mobile_card_border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_border_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "Border opacity",
+      "default": 100,
+      "visible_if": "{{ section.settings.grid_on_mobile and section.settings.mobile_card_border != 'none' }}"
+    },
+    {
+      "type": "color",
+      "id": "mobile_card_border_color",
+      "label": "Border color",
+      "default": "#e5e5e5",
+      "visible_if": "{{ section.settings.grid_on_mobile and section.settings.mobile_card_border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 10,
+      "visible_if": "{{ section.settings.grid_on_mobile }}"
+    },
+    {
+      "type": "color",
+      "id": "mobile_card_background",
+      "label": "Image background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.grid_on_mobile }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_image_padding",
+      "label": "Image padding",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 8,
+      "visible_if": "{{ section.settings.grid_on_mobile }}"
     },
     {
       "type": "header",

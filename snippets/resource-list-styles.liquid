@@ -84,4 +84,20 @@
     color: var(--color-foreground);
     text-decoration: none;
   }
+
+  /* Force exact mobile column count (skip mid-size container column bumping) */
+  .resource-list--grid-mobile-fixed.resource-list--grid {
+    grid-template-columns: var(--resource-list-columns-mobile);
+
+    @media screen and (min-width: 750px) {
+      grid-template-columns: var(--resource-list-columns-mobile);
+    }
+
+    @container resource-list (max-width: 449px),
+      resource-list (min-width: 450px) and (max-width: 749px),
+      resource-list (min-width: 750px),
+      resource-list (min-width: 1200px) {
+      grid-template-columns: var(--resource-list-columns-mobile);
+    }
+  }
 {% endstylesheet %}

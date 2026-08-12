@@ -27,7 +27,7 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--gap);
     text-wrap: nowrap;
     border-top: var(--border-width) solid var(--divider-color, var(--color-border));
@@ -49,11 +49,13 @@
   }
 
   .utilities > * {
-    text-align: center;
+    text-align: left;
+    width: 100%;
 
     @media screen and (min-width: 750px) {
       text-align: left;
       justify-self: start;
+      width: auto;
     }
   }
 
