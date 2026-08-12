@@ -249,6 +249,75 @@
     },
     {
       "type": "header",
+      "content": "t:content.mobile_typography",
+      "visible_if": "{{ block.settings.style_class == 'button-link-arrow' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_mobile_typography",
+      "label": "t:settings.custom_mobile_typography",
+      "default": false,
+      "info": "t:info.custom_mobile_layout",
+      "visible_if": "{{ block.settings.style_class == 'button-link-arrow' }}"
+    },
+    {
+      "type": "select",
+      "id": "font_size_mobile",
+      "label": "t:settings.mobile_size",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "10px",
+          "label": "10px"
+        },
+        {
+          "value": "11px",
+          "label": "11px"
+        },
+        {
+          "value": "12px",
+          "label": "12px"
+        },
+        {
+          "value": "13px",
+          "label": "13px"
+        },
+        {
+          "value": "14px",
+          "label": "14px"
+        },
+        {
+          "value": "15px",
+          "label": "15px"
+        },
+        {
+          "value": "16px",
+          "label": "16px"
+        },
+        {
+          "value": "18px",
+          "label": "18px"
+        }
+      ],
+      "default": "",
+      "visible_if": "{{ block.settings.style_class == 'button-link-arrow' and block.settings.custom_mobile_typography }}"
+    },
+    {
+      "type": "range",
+      "id": "letter_spacing_mobile",
+      "label": "t:settings.letter_spacing",
+      "min": 0,
+      "max": 4,
+      "step": 0.1,
+      "unit": "px",
+      "default": 0.7,
+      "visible_if": "{{ block.settings.style_class == 'button-link-arrow' and block.settings.custom_mobile_typography }}"
+    },
+    {
+      "type": "header",
       "content": "t:content.size"
     },
     {

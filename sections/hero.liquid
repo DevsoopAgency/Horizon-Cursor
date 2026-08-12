@@ -128,35 +128,37 @@
 {% capture media_slot_1 %}
   {%- if media_1 == 'image' and media_1_mobile == 'image' -%}
     {%- comment -%} Both desktop and mobile are images. Assume similar images, and this is art direction: use picture element. {%- endcomment -%}
-    <picture
-      data-testid="hero-picture-1"
-      class="hero__media"
-    >
-      <source
-        media="(max-width: 749px)"
-        srcset="
-          {%-  for mobile_width in mobile_widths_array -%}
-            {{ section.settings.image_1_mobile | image_url: width: mobile_width }} {{ mobile_width }}w{% unless forloop.last %},{% endunless %}
-          {%- endfor -%}
-        "
-        sizes="{{ sizes_mobile }}"
-        width="{{ section.settings.image_1_mobile.width }}"
-        height="{{ section.settings.image_1_mobile.height }}"
+    <div class="hero__media-wrapper">
+      <picture
+        data-testid="hero-picture-1"
+        class="hero__media"
       >
-      {{
-        section.settings.image_1
-        | image_url: width: 3840
-        | image_tag:
-          width: section.settings.image_1.width,
-          widths: widths,
-          height: section.settings.image_1.height,
-          alt: section.settings.image_1.alt,
-          class: 'hero__media',
-          sizes: sizes,
-          fetchpriority: fetch_priority,
-          data-testid: 'hero-desktop-image-1'
-      }}
-    </picture>
+        <source
+          media="(max-width: 749px)"
+          srcset="
+            {%-  for mobile_width in mobile_widths_array -%}
+              {{ section.settings.image_1_mobile | image_url: width: mobile_width }} {{ mobile_width }}w{% unless forloop.last %},{% endunless %}
+            {%- endfor -%}
+          "
+          sizes="{{ sizes_mobile }}"
+          width="{{ section.settings.image_1_mobile.width }}"
+          height="{{ section.settings.image_1_mobile.height }}"
+        >
+        {{
+          section.settings.image_1
+          | image_url: width: 3840
+          | image_tag:
+            width: section.settings.image_1.width,
+            widths: widths,
+            height: section.settings.image_1.height,
+            alt: section.settings.image_1.alt,
+            class: 'hero__media',
+            sizes: sizes,
+            fetchpriority: fetch_priority,
+            data-testid: 'hero-desktop-image-1'
+        }}
+      </picture>
+    </div>
   {%- elsif media_1 == 'image' -%}
     <div class="{{ media_wrapper_desktop_class }}">
       {{
@@ -232,35 +234,37 @@
 {% capture media_slot_2 %}
   {%- if media_2 == 'image' and media_2_mobile == 'image' -%}
     {%- comment -%} Both desktop and mobile are images. Assume this is art direction: use picture element.  {%- endcomment -%}
-    <picture
-      class="hero__media"
-      data-testid="hero-picture-2"
-    >
-      <source
-        media="(max-width: 749px)"
-        srcset="
-          {%-  for mobile_width in mobile_widths_array -%}
-            {{ section.settings.image_2_mobile | image_url: width: mobile_width }} {{ mobile_width }}w{% unless forloop.last%},{% endunless %}
-          {%- endfor -%}
-        "
-        sizes="{{ sizes_mobile }}"
-        width="{{ section.settings.image_2_mobile.width }}"
-        height="{{ section.settings.image_2_mobile.height }}"
+    <div class="hero__media-wrapper">
+      <picture
+        class="hero__media"
+        data-testid="hero-picture-2"
       >
-      {{
-        section.settings.image_2
-        | image_url: width: 3840
-        | image_tag:
-          width: section.settings.image_2.width,
-          widths: widths,
-          height: section.settings.image_2.height,
-          alt: section.settings.image_2.alt,
-          class: 'hero__media',
-          sizes: sizes,
-          fetchpriority: fetch_priority,
-          data-testid: 'hero-desktop-image-2'
-      }}
-    </picture>
+        <source
+          media="(max-width: 749px)"
+          srcset="
+            {%-  for mobile_width in mobile_widths_array -%}
+              {{ section.settings.image_2_mobile | image_url: width: mobile_width }} {{ mobile_width }}w{% unless forloop.last%},{% endunless %}
+            {%- endfor -%}
+          "
+          sizes="{{ sizes_mobile }}"
+          width="{{ section.settings.image_2_mobile.width }}"
+          height="{{ section.settings.image_2_mobile.height }}"
+        >
+        {{
+          section.settings.image_2
+          | image_url: width: 3840
+          | image_tag:
+            width: section.settings.image_2.width,
+            widths: widths,
+            height: section.settings.image_2.height,
+            alt: section.settings.image_2.alt,
+            class: 'hero__media',
+            sizes: sizes,
+            fetchpriority: fetch_priority,
+            data-testid: 'hero-desktop-image-2'
+        }}
+      </picture>
+    </div>
   {%- elsif media_2 == 'image' -%}
     <div class="{{ media_wrapper_desktop_class }}">
       {{
@@ -465,11 +469,28 @@
   if section.settings.background_color != blank
     render 'contrast-override', background_color: section.settings.background_color, section_id: section.id, skip_contrast: true
   endif
+
+  assign has_banner_content = false
+  for block in section.blocks
+    if block.type == 'banner-content'
+      assign has_banner_content = true
+    endif
+  endfor
 -%}
 
 <div
   id="Hero-{{ section.id }}"
-  class="hero{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}{% if section.blocks.size == 0 and section.settings.section_height == 'auto' %} hero--no-blocks-auto-height{% endif %}{% if section.settings.section_height == 'adaptive' %} hero--height-adaptive{% endif %}{% if section.settings.stack_media_on_mobile %} hero--stack-mobile{% endif %}{% if section.settings.mobile_content_layout == 'stack' %} hero--stack-content-mobile{% endif %}"
+  class="
+    hero
+    {% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}
+    {% if section.blocks.size == 0 and section.settings.section_height == 'auto' %} hero--no-blocks-auto-height{% endif %}
+    {% if section.settings.section_height == 'adaptive' %} hero--height-adaptive{% endif %}
+    {% if section.settings.stack_media_on_mobile %} hero--stack-mobile{% endif %}
+    {% if section.settings.mobile_content_layout == 'stack' %} hero--stack-content-mobile{% endif %}
+    {% if media_count == 2 %} hero--dual-media{% endif %}
+    {% if has_banner_content %} hero--has-banner{% endif %}
+    hero--mobile-height-{{ section.settings.mobile_height | default: 'adapt' }}
+  "
   style="
     --hero-border-style: {{ section.settings.border }};
     --hero-border-width: {{ section.settings.border_width }}px;
@@ -479,6 +500,7 @@
     --hero-mobile-stack-pad-bottom: {{ section.settings.mobile_stack_padding_bottom | default: 16 }}px;
     --hero-mobile-stack-pad-inline: {{ section.settings.mobile_stack_padding_inline | default: 24 }}px;
     --hero-mobile-stack-gap: {{ section.settings.mobile_stack_gap | default: 8 }}px;
+    --hero-content-safe-inset: max(var(--page-margin, 1rem), 1.5rem);
     {% if section.settings.section_height == 'custom' %}
       --hero-min-height: {{ section.settings.section_height_custom }}svh;
     {% elsif section.settings.section_height == "full-screen" %}
@@ -487,6 +509,11 @@
       --hero-min-height: auto;
     {% else %}
       --hero-min-height: var(--section-height-{{ section.settings.section_height }});
+    {% endif %}
+    {% if section.settings.mobile_height == 'small' or section.settings.mobile_height == 'medium' or section.settings.mobile_height == 'large' %}
+      --hero-min-height-mobile: var(--section-height-{{ section.settings.mobile_height }});
+    {% else %}
+      --hero-min-height-mobile: auto;
     {% endif %}
     {% if hero_media_aspect_ratio != blank %}--hero-media-aspect-ratio: {{ hero_media_aspect_ratio }};{% endif %}
   "
@@ -497,6 +524,57 @@
     data-blur-shadow="true"
   {% endif %}
 >
+  {% style %}
+    #Hero-{{ section.id }} {
+      --hero-content-safe-inset: max(var(--page-margin, 1rem), 1.5rem);
+    }
+
+    @media screen and (min-width: 750px) and (max-width: 989px) {
+      #Hero-{{ section.id }} {
+        --hero-content-safe-inset: max(var(--page-margin, 1rem), 1.25rem);
+      }
+    }
+
+    @media screen and (min-width: 990px) {
+      #Hero-{{ section.id }} {
+        --hero-content-safe-inset: max(var(--page-margin, 1rem), 2rem);
+      }
+    }
+
+    @media screen and (max-width: 749px) {
+      {% if section.settings.mobile_height == 'small' or section.settings.mobile_height == 'medium' or section.settings.mobile_height == 'large' %}
+        #Hero-{{ section.id }} {
+          --hero-min-height-mobile: var(--section-height-{{ section.settings.mobile_height }});
+          height: calc(var(--hero-min-height-mobile) - var(--hero-height-offset));
+          min-height: calc(var(--hero-min-height-mobile) - var(--hero-height-offset));
+        }
+
+        #Hero-{{ section.id }} .hero__container {
+          height: 100%;
+          min-height: 100%;
+        }
+
+        {% if has_banner_content %}
+          #Hero-{{ section.id }} .hero__content-wrapper {
+            display: block !important;
+            position: absolute !important;
+            inset: 0 !important;
+            height: 100% !important;
+            width: 100% !important;
+          }
+
+          #Hero-{{ section.id }} .hero__content-wrapper > * {
+            position: absolute !important;
+            inset: 0 !important;
+            height: 100% !important;
+            width: 100% !important;
+            margin: 0 !important;
+          }
+        {% endif %}
+      {% endif %}
+    }
+  {% endstyle %}
+
   {% if section.settings.blurred_reflection %}
     {% unless has_only_video %}
       <div
@@ -535,8 +613,10 @@
       ></a>
     {%- endif -%}
     <div
-      class="hero__media-grid"
+      class="hero__media-grid{% if media_count == 2 %} hero__media-grid--dual{% endif %}"
       style="--hero-media-count: {{ media_count }};--hero-media-count-mobile: {{ media_count_mobile }};"
+      data-media-count="{{ media_count }}"
+      data-media-count-mobile="{{ media_count_mobile }}"
       data-testid="hero-media-wrapper"
     >
       {% liquid
@@ -608,6 +688,46 @@
     z-index: var(--layer-flat);
   }
 
+  /*
+    Banner overlay: kill layout-panel-flex centering.
+    Shopify wraps the banner in .shopify-block; that wrapper collapses when the
+    banner is absolute, then flex justify:center parks the group mid-hero.
+    Force wrapper + shopify-block to fill the hero so Top/Middle/Bottom work.
+  */
+  .hero.hero--has-banner:not(.hero--stack-content-mobile):not(.hero--height-adaptive) .hero__content-wrapper,
+  .hero:not(.hero--stack-content-mobile):not(.hero--height-adaptive) .hero__content-wrapper:has(.banner-content) {
+    display: block !important;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    z-index: var(--layer-flat);
+  }
+
+  .hero.hero--has-banner:not(.hero--stack-content-mobile):not(.hero--height-adaptive) .hero__content-wrapper > *,
+  .hero:not(.hero--stack-content-mobile):not(.hero--height-adaptive)
+    .hero__content-wrapper:has(.banner-content)
+    > * {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+
+  /* Overlay without banner-content: still fill section height */
+  .hero:not(.hero--has-banner):not(.hero--stack-content-mobile):not(.hero--height-adaptive)
+    .hero__content-wrapper:not(:has(.banner-content)) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    z-index: var(--layer-flat);
+  }
+
   .hero__content-wrapper .group-block-content {
     position: relative;
   }
@@ -617,7 +737,25 @@
     inset: 0;
     display: grid;
     grid-column: 1 / -1;
-    grid-template-columns: repeat(var(--hero-media-count, 1), 1fr);
+    grid-template-columns: repeat(var(--hero-media-count, 1), minmax(0, 1fr));
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Dual media: equal 50/50 columns — never collapse/overlap image_2 */
+  .hero__media-grid--dual,
+  .hero__media-grid[data-media-count='2'],
+  .hero.hero--dual-media .hero__media-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .hero__media-grid--dual > .hero__media-wrapper,
+  .hero__media-grid[data-media-count='2'] > .hero__media-wrapper,
+  .hero.hero--dual-media .hero__media-grid > .hero__media-wrapper {
+    min-width: 0;
+    width: 100%;
+    height: 100%;
+    flex: 1 1 50%;
   }
 
   .hero--auto .hero__media {
@@ -651,6 +789,15 @@
   }
 
   .hero--height-adaptive .hero__media-wrapper {
+    position: relative;
+    inset: unset;
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+  }
+
+  /* Single media still fills the adaptive grid area */
+  .hero--height-adaptive:not(.hero--dual-media) .hero__media-wrapper {
     position: absolute;
     inset: 0;
     height: 100%;
@@ -662,6 +809,26 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  /* Dual adaptive: each cell owns its media — no absolute inset:0 over the full grid */
+  .hero--height-adaptive.hero--dual-media .hero__media-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .hero--height-adaptive.hero--dual-media .hero__media-wrapper {
+    position: relative;
+    inset: unset;
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    aspect-ratio: auto;
+  }
+
+  .hero--height-adaptive.hero--dual-media .hero__media {
+    position: absolute;
+    inset: 0;
   }
 
   .hero--height-adaptive .hero__content-wrapper {
@@ -692,22 +859,66 @@
     left: auto;
     top: auto;
     transform: none;
-    width: min(var(--banner-content-width), calc(100% - 2rem));
+    width: min(var(--banner-content-width), calc(100% - (2 * var(--hero-content-safe-inset, 1.5rem))));
     margin-inline-start: clamp(
-      0px,
+      var(--hero-content-safe-inset, 1.5rem),
       calc(var(--banner-content-x) - (var(--banner-content-width) / 2)),
-      max(0px, 100% - var(--banner-content-width))
+      max(
+        var(--hero-content-safe-inset, 1.5rem),
+        calc(100% - var(--banner-content-width) - var(--hero-content-safe-inset, 1.5rem))
+      )
     );
   }
 
   @media screen and (max-width: 749px) {
     .hero--height-adaptive .banner-content__slot {
-      width: min(var(--banner-content-width-mobile), calc(100% - 2rem));
+      width: min(var(--banner-content-width-mobile), calc(100% - (2 * var(--hero-content-safe-inset, 1.5rem))));
       margin-inline-start: clamp(
-        0px,
+        var(--hero-content-safe-inset, 1.5rem),
         calc(var(--banner-content-x-mobile) - (var(--banner-content-width-mobile) / 2)),
-        max(0px, 100% - var(--banner-content-width-mobile))
+        max(
+          var(--hero-content-safe-inset, 1.5rem),
+          calc(100% - var(--banner-content-width-mobile) - var(--hero-content-safe-inset, 1.5rem))
+        )
       );
+    }
+  }
+
+  /* Tablet: fluid type/gap — no edge-stick, no hard breaks */
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    .hero {
+      --hero-content-safe-inset: max(var(--page-margin, 1rem), 1.25rem);
+    }
+
+    .hero .banner-content__inner {
+      gap: clamp(0.75rem, 2vw, var(--banner-content-gap, 1.5rem));
+    }
+
+    .hero .banner-content__slot {
+      width: min(var(--banner-content-width), calc(100% - (2 * var(--hero-content-safe-inset))));
+    }
+
+    .hero .banner-content__inner .text-block,
+    .hero .banner-content__inner .text-block > * {
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      hyphens: auto;
+    }
+
+    .hero .banner-content__inner :is(h1, h2, h3, .h1, .h2, .h3) {
+      font-size: clamp(1.75rem, 4.2vw, 3.25rem);
+      line-height: 1.15;
+    }
+  }
+
+  /* Desktop: keep left gutter so text never touches viewport edge */
+  @media screen and (min-width: 990px) {
+    .hero {
+      --hero-content-safe-inset: max(var(--page-margin, 1rem), 2rem);
+    }
+
+    .hero .banner-content__slot {
+      width: min(var(--banner-content-width), calc(100% - (2 * var(--hero-content-safe-inset))));
     }
   }
 
@@ -749,6 +960,66 @@
   }
 
   @media screen and (max-width: 749px) {
+    /* Fixed mobile heights need a real height so absolute/flex overlay can fill the section */
+    .hero.hero--mobile-height-small,
+    .hero.hero--mobile-height-medium,
+    .hero.hero--mobile-height-large {
+      height: calc(var(--hero-min-height-mobile) - var(--hero-height-offset));
+      min-height: calc(var(--hero-min-height-mobile) - var(--hero-height-offset));
+    }
+
+    .hero.hero--height-adaptive.hero--mobile-height-small,
+    .hero.hero--height-adaptive.hero--mobile-height-medium,
+    .hero.hero--height-adaptive.hero--mobile-height-large {
+      height: auto;
+      min-height: calc(var(--hero-min-height-mobile) - var(--hero-height-offset));
+    }
+
+    .hero.hero--mobile-height-small .hero__container,
+    .hero.hero--mobile-height-medium .hero__container,
+    .hero.hero--mobile-height-large .hero__container {
+      min-height: 100%;
+      height: 100%;
+    }
+
+    .hero.hero--has-banner:not(.hero--stack-content-mobile):not(.hero--height-adaptive) .hero__content-wrapper,
+    .hero:not(.hero--stack-content-mobile):not(.hero--height-adaptive) .hero__content-wrapper:has(.banner-content) {
+      display: block !important;
+      position: absolute;
+      inset: 0;
+      height: 100%;
+      min-height: 100%;
+    }
+
+    .hero.hero--has-banner:not(.hero--stack-content-mobile):not(.hero--height-adaptive) .hero__content-wrapper > *,
+    .hero:not(.hero--stack-content-mobile):not(.hero--height-adaptive)
+      .hero__content-wrapper:has(.banner-content)
+      > * {
+      position: absolute !important;
+      inset: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .hero:not(.hero--has-banner):not(.hero--stack-content-mobile):not(.hero--height-adaptive)
+      .hero__content-wrapper:not(:has(.banner-content)) {
+      position: absolute;
+      inset: 0;
+      height: 100%;
+      min-height: 100%;
+    }
+
+    /* Large + stack: stretch to fit centered text on top + media below; grow if needed */
+    .hero.hero--mobile-height-large.hero--stack-content-mobile {
+      height: auto;
+    }
+
+    .hero.hero--mobile-height-large.hero--stack-content-mobile .hero__container {
+      min-height: inherit;
+      height: auto;
+      justify-content: space-between;
+    }
+
     .hero__media-wrapper--desktop {
       display: none;
     }
@@ -758,7 +1029,11 @@
     }
 
     .hero__media-grid {
-      grid-template-columns: repeat(var(--hero-media-count-mobile, 1), 1fr);
+      grid-template-columns: repeat(var(--hero-media-count-mobile, 1), minmax(0, 1fr));
+    }
+
+    .hero:not(.hero--stack-mobile) .hero__media-grid[data-media-count-mobile='2'] {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
 
     /* Mobile stacking */
@@ -781,6 +1056,12 @@
       gap: var(--hero-mobile-stack-gap, 8px);
     }
 
+    .hero.hero--mobile-height-small.hero--stack-content-mobile .hero__container,
+    .hero.hero--mobile-height-medium.hero--stack-content-mobile .hero__container,
+    .hero.hero--mobile-height-large.hero--stack-content-mobile .hero__container {
+      min-height: inherit;
+    }
+
     .hero--stack-content-mobile .hero__content-wrapper {
       position: relative;
       inset: unset;
@@ -794,6 +1075,10 @@
       padding-block-end: var(--hero-mobile-stack-pad-bottom, 16px);
       padding-inline: var(--hero-mobile-stack-pad-inline, 24px);
       box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
     }
 
     .hero--stack-content-mobile .hero__media-grid {
@@ -866,10 +1151,12 @@
       margin-inline-end: auto;
     }
 
+    .hero--stack-content-mobile .banner-content--align-mobile-center .banner-content__inner,
     .hero--stack-content-mobile .banner-content--align-mobile-center .text-block,
     .hero--stack-content-mobile .banner-content--align-mobile-center .text-block > * {
       --text-align: center;
       text-align: center;
+      align-items: center;
     }
 
     .hero--stack-content-mobile .banner-content--align-mobile-center .button-block,
@@ -1384,7 +1671,7 @@
     {
       "type": "select",
       "id": "section_height",
-      "label": "t:settings.height",
+      "label": "t:settings.desktop_height",
       "options": [
         {
           "value": "auto",
@@ -1416,7 +1703,7 @@
         }
       ],
       "default": "medium",
-      "info": "Adaptive keeps the media’s natural height as a minimum and grows with taller content."
+      "info": "Desktop height only. Mobile uses Mobile height below."
     },
     {
       "type": "range",
@@ -1428,6 +1715,31 @@
       "default": 50,
       "unit": "%",
       "visible_if": "{{ section.settings.section_height == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "mobile_height",
+      "label": "t:settings.mobile_height",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "t:options.adaptive"
+        },
+        {
+          "value": "small",
+          "label": "t:options.small"
+        },
+        {
+          "value": "medium",
+          "label": "t:options.medium"
+        },
+        {
+          "value": "large",
+          "label": "t:options.large"
+        }
+      ],
+      "default": "adapt",
+      "info": "Applies only at max-width 749px. Does not change desktop height. Large stretches to fit stacked text + media."
     },
     {
       "type": "header",
@@ -1585,6 +1897,7 @@
         "horizontal_alignment_flex_direction_column": "center",
         "gap": 16,
         "section_height": "large",
+        "mobile_height": "adapt",
         "padding-block-start": 40,
         "padding-block-end": 40,
         "toggle_overlay": true,
@@ -1629,6 +1942,7 @@
         "vertical_alignment_flex_direction_column": "space-between",
         "gap": 32,
         "section_height": "large",
+        "mobile_height": "adapt",
         "padding-block-start": 0,
         "padding-block-end": 40,
         "toggle_overlay": true,
@@ -1778,6 +2092,7 @@
         "vertical_alignment_flex_direction_column": "flex-end",
         "gap": 16,
         "section_height": "large",
+        "mobile_height": "adapt",
         "padding-block-start": 40,
         "padding-block-end": 40,
         "toggle_overlay": true,

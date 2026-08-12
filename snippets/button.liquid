@@ -54,6 +54,12 @@
         margin-block-end: var(--btn-space-bottom-mobile);
         margin-inline-start: var(--btn-space-left-mobile);
         margin-inline-end: var(--btn-space-right-mobile);
+        {% if block_settings.custom_mobile_typography %}
+          {% if block_settings.font_size_mobile != blank %}
+            font-size: {{ block_settings.font_size_mobile }};
+          {% endif %}
+          letter-spacing: {{ block_settings.letter_spacing_mobile | default: 0.7 }}px;
+        {% endif %}
       }
     }
   {% endstyle %}

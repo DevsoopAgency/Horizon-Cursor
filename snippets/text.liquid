@@ -100,6 +100,115 @@
   </{{ element }}>
 {% endif %}
 
+{% if block_settings.custom_mobile_layout %}
+  {% liquid
+    assign mobile_type = 'body'
+    assign mobile_font_size = block_settings.font_size_mobile
+    assign mobile_line_height = block_settings.line_height_mobile
+    assign mobile_letter_spacing = block_settings.letter_spacing_mobile
+    assign mobile_case = block_settings.case_mobile
+    assign mobile_align = block_settings.alignment_mobile | default: 'center'
+    assign mobile_width = block_settings.width_mobile | default: '100%'
+    assign mobile_max_width = block_settings.max_width_mobile
+    assign mobile_pad_top = block_settings['padding-block-start-mobile'] | default: 0
+    assign mobile_pad_bottom = block_settings['padding-block-end-mobile'] | default: 0
+    assign mobile_pad_left = block_settings['padding-inline-start-mobile'] | default: 0
+    assign mobile_pad_right = block_settings['padding-inline-end-mobile'] | default: 0
+    assign mobile_margin_top = block_settings['margin-block-start-mobile'] | default: 0
+    assign mobile_margin_bottom = block_settings['margin-block-end-mobile'] | default: 0
+    assign mobile_text_color = block_settings.text_color_mobile
+
+    if mobile_font_size != blank
+      assign mobile_font_size_value = mobile_font_size | split: 'rem' | first | times: 1.0
+      if mobile_font_size_value >= 3
+        assign mobile_type = 'display'
+      elsif mobile_font_size_value >= 1.25
+        assign mobile_type = 'heading'
+      endif
+    elsif type != blank
+      assign mobile_type = type
+    endif
+  %}
+  {% style %}
+    @media screen and (max-width: 749px) {
+      .text-block--{{ block.id }} {
+        width: {{ mobile_width }};
+        {% if mobile_max_width == 'none' %}
+          max-width: 100%;
+        {% elsif mobile_max_width != blank %}
+          --max-width: var(--max-width--{{ mobile_type }}-{{ mobile_max_width }});
+        {% endif %}
+        --text-align: {{ mobile_align }};
+        --padding-block-start: {{ mobile_pad_top }}px;
+        --padding-block-end: {{ mobile_pad_bottom }}px;
+        --padding-inline-start: {{ mobile_pad_left }}px;
+        --padding-inline-end: {{ mobile_pad_right }}px;
+        margin-block-start: {{ mobile_margin_top }}px;
+        margin-block-end: {{ mobile_margin_bottom }}px;
+        {% if mobile_text_color != blank %}
+          --color: {{ mobile_text_color }};
+          --color-rgb: {{ mobile_text_color.rgb }};
+          color: var(--color);
+        {% endif %}
+        {% if mobile_font_size != blank %}
+          --font-size: {{ mobile_font_size }};
+          font-size: var(--font-size);
+        {% endif %}
+        {% if mobile_line_height != blank %}
+          --line-height: var(--line-height--{{ mobile_type }}-{{ mobile_line_height }});
+          line-height: var(--line-height);
+        {% endif %}
+        {% if mobile_letter_spacing != blank %}
+          --letter-spacing: var(--letter-spacing--{{ mobile_type }}-{{ mobile_letter_spacing }});
+          letter-spacing: var(--letter-spacing);
+        {% endif %}
+        {% if mobile_case != blank %}
+          --text-transform: {{ mobile_case }};
+          text-transform: var(--text-transform);
+        {% endif %}
+        align-items: {% if mobile_align == 'center' %}center{% elsif mobile_align == 'right' %}flex-end{% else %}flex-start{% endif %};
+      }
+
+      .text-block--{{ block.id }} > * {
+        width: {{ mobile_width }};
+        text-align: {{ mobile_align }};
+        {% if mobile_font_size != blank %}
+          font-size: var(--font-size);
+        {% endif %}
+        {% if mobile_line_height != blank %}
+          line-height: var(--line-height);
+        {% endif %}
+        {% if mobile_letter_spacing != blank %}
+          letter-spacing: var(--letter-spacing);
+        {% endif %}
+        {% if mobile_case != blank %}
+          text-transform: var(--text-transform);
+        {% endif %}
+        {% if mobile_text_color != blank %}
+          color: var(--color);
+        {% endif %}
+      }
+
+      {% if mobile_align == 'center' %}
+        .text-block--{{ block.id }},
+        .text-block--{{ block.id }} > * {
+          margin-inline: auto;
+        }
+      {% elsif mobile_align == 'right' %}
+        .text-block--{{ block.id }} > * {
+          margin-inline-start: auto;
+          margin-inline-end: 0;
+        }
+      {% else %}
+        .text-block--{{ block.id }} > * {
+          margin-inline-start: 0;
+          margin-inline-end: auto;
+        }
+      {% endif %}
+    }
+  {% endstyle %}
+{% endif %}
+
 {% stylesheet %}
   :root {
     --text-align-default: left;

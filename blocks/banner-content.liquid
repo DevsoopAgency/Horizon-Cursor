@@ -1,6 +1,47 @@
 {% liquid
   assign s = block.settings
   assign gap = s.gap | default: 20
+  assign mobile_position = s.mobile_vertical_position | default: 'top'
+  assign mobile_offset = s.mobile_offset_y | default: 0
+
+  case mobile_position
+    when 'top'
+      assign y_mobile = 0
+      assign justify_mobile = 'flex-start'
+      assign use_custom_spacer = false
+      assign anchor_mobile = 'top'
+    when 'middle'
+      assign y_mobile = 0
+      assign justify_mobile = 'center'
+      assign use_custom_spacer = false
+      assign anchor_mobile = 'center'
+    when 'bottom'
+      assign y_mobile = 0
+      assign justify_mobile = 'flex-end'
+      assign use_custom_spacer = false
+      assign anchor_mobile = 'bottom'
+    else
+      assign y_mobile = s.y_position_mobile | default: 12
+      assign justify_mobile = 'flex-start'
+      assign use_custom_spacer = true
+      assign anchor_mobile = s.mobile_vertical_anchor | default: 'top'
+      if s.mobile_vertical_anchor == 'center'
+        assign justify_mobile = 'center'
+        assign use_custom_spacer = false
+      elsif s.mobile_vertical_anchor == 'bottom'
+        assign justify_mobile = 'flex-end'
+        assign use_custom_spacer = false
+      endif
+  endcase
+
+  case s.text_alignment_mobile
+    when 'flex-end'
+      assign align_mobile = 'flex-end'
+    when 'flex-start'
+      assign align_mobile = 'flex-start'
+    else
+      assign align_mobile = 'center'
+  endcase
 %}
 
 <div
@@ -9,15 +50,22 @@
     banner-content--{{ block.id }}
     banner-content--align-{{ s.text_alignment }}
     banner-content--align-mobile-{{ s.text_alignment_mobile }}
+    banner-content--mobile-pos-{{ mobile_position }}
+    {% if use_custom_spacer %}banner-content--mobile-spacer{% endif %}
   "
+  data-mobile-anchor="{{ anchor_mobile | default: 'top' }}"
   style="
     --banner-content-x: {{ s.x_position }}%;
     --banner-content-y: {{ s.y_position }}%;
     --banner-content-width: {{ s.content_width }}px;
     --banner-content-x-mobile: {{ s.x_position_mobile }}%;
-    --banner-content-y-mobile: {{ s.y_position_mobile }}%;
+    --banner-content-y-mobile: {{ y_mobile }}%;
+    --banner-content-justify-mobile: {{ justify_mobile }};
+    --banner-content-align-mobile: {{ align_mobile }};
+    --banner-content-offset-y-mobile: {{ mobile_offset }}px;
     --banner-content-width-mobile: {{ s.content_width_mobile }}px;
     --banner-content-gap: {{ gap }}px;
+    --banner-content-gap-mobile: {{ s.gap_mobile | default: gap }}px;
   "
   {{ block.shopify_attributes }}
 >
@@ -28,10 +76,89 @@
   </div>
 </div>
 
+{% style %}
+  /* Block-scoped mobile pin — beats desktop center (top: 50% + translate -50%) */
+  @media screen and (max-width: 749px) {
+    .banner-content--{{ block.id }} {
+      position: absolute !important;
+      inset: 0 !important;
+      display: block !important;
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 100% !important;
+      padding: 0 !important;
+      pointer-events: none !important;
+      box-sizing: border-box !important;
+    }
+
+    .banner-content--{{ block.id }} .banner-content__slot {
+      position: absolute !important;
+      left: 50% !important;
+      right: auto !important;
+      width: min(var(--banner-content-width-mobile), calc(100% - 2 * var(--hero-content-safe-inset, 1rem))) !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      pointer-events: auto !important;
+      box-sizing: border-box !important;
+    }
+
+    .banner-content--{{ block.id }}.banner-content--mobile-pos-top .banner-content__slot {
+      top: var(--hero-content-safe-inset, 1rem) !important;
+      bottom: auto !important;
+      transform: translateX(-50%) translateY(var(--banner-content-offset-y-mobile, 0px)) !important;
+    }
+
+    .banner-content--{{ block.id }}.banner-content--mobile-pos-middle .banner-content__slot {
+      top: 50% !important;
+      bottom: auto !important;
+      transform: translate(-50%, -50%) translateY(var(--banner-content-offset-y-mobile, 0px)) !important;
+    }
+
+    .banner-content--{{ block.id }}.banner-content--mobile-pos-bottom .banner-content__slot {
+      top: auto !important;
+      bottom: var(--hero-content-safe-inset, 1rem) !important;
+      transform: translateX(-50%) translateY(var(--banner-content-offset-y-mobile, 0px)) !important;
+    }
+
+    .banner-content--{{ block.id }}.banner-content--mobile-pos-custom .banner-content__slot {
+      top: var(--banner-content-y-mobile, 12%) !important;
+      bottom: auto !important;
+      transform: translateX(-50%) translateY(var(--banner-content-offset-y-mobile, 0px)) !important;
+    }
+
+    .banner-content--{{ block.id }}.banner-content--mobile-pos-custom[data-mobile-anchor='center'] .banner-content__slot {
+      transform: translate(-50%, -50%) translateY(var(--banner-content-offset-y-mobile, 0px)) !important;
+    }
+
+    .banner-content--{{ block.id }}.banner-content--mobile-pos-custom[data-mobile-anchor='bottom'] .banner-content__slot {
+      top: auto !important;
+      bottom: calc(100% - var(--banner-content-y-mobile, 12%)) !important;
+      transform: translateX(-50%) translateY(var(--banner-content-offset-y-mobile, 0px)) !important;
+    }
+
+    .banner-content--{{ block.id }} .banner-content__inner {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: var(--banner-content-gap-mobile, 16px) !important;
+      width: 100% !important;
+      align-items: var(--banner-content-align-mobile, center) !important;
+    }
+
+    .banner-content--{{ block.id }} .banner-content__inner > *,
+    .banner-content--{{ block.id }} .banner-content__inner .text-block,
+    .banner-content--{{ block.id }} .banner-content__inner .text-block > *,
+    .banner-content--{{ block.id }} .banner-content__inner :is(.button, .button-link-arrow, .button-unstyled) {
+      margin-block: 0 !important;
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+    }
+  }
+{% endstyle %}
+
 {% stylesheet %}
   /*
-    Overlay mode (default): fill the content area and pin the slot at x/y.
-    Adaptive heroes override this so the slot stays in-flow and can size height.
+    Desktop: absolute pin at x/y (center-anchored).
+    Mobile: block-scoped {% style %} above overrides — Top/Middle/Bottom.
   */
   .banner-content {
     position: absolute;
@@ -42,11 +169,19 @@
 
   .banner-content__slot {
     position: absolute;
-    left: var(--banner-content-x);
+    left: clamp(
+      calc(var(--hero-content-safe-inset, var(--page-margin, 1rem)) + (var(--banner-content-width) / 2)),
+      var(--banner-content-x),
+      calc(100% - var(--hero-content-safe-inset, var(--page-margin, 1rem)) - (var(--banner-content-width) / 2))
+    );
     top: var(--banner-content-y);
-    width: min(var(--banner-content-width), calc(100% - 2rem));
+    width: min(
+      var(--banner-content-width),
+      calc(100% - (2 * var(--hero-content-safe-inset, var(--page-margin, 1rem))))
+    );
     transform: translate(-50%, -50%);
     pointer-events: auto;
+    box-sizing: border-box;
   }
 
   .banner-content__inner {
@@ -54,6 +189,7 @@
     flex-direction: column;
     gap: var(--banner-content-gap, 20px);
     width: 100%;
+    max-width: 100%;
   }
 
   .banner-content--align-flex-start .banner-content__inner {
@@ -88,11 +224,17 @@
     left: auto;
     top: auto;
     transform: none;
-    width: min(var(--banner-content-width), calc(100% - 2rem));
+    width: min(
+      var(--banner-content-width),
+      calc(100% - (2 * var(--hero-content-safe-inset, var(--page-margin, 1rem))))
+    );
     margin-inline-start: clamp(
-      0px,
+      var(--hero-content-safe-inset, var(--page-margin, 1rem)),
       calc(var(--banner-content-x) - (var(--banner-content-width) / 2)),
-      max(0px, 100% - var(--banner-content-width))
+      max(
+        var(--hero-content-safe-inset, var(--page-margin, 1rem)),
+        calc(100% - var(--banner-content-width) - var(--hero-content-safe-inset, var(--page-margin, 1rem)))
+      )
     );
   }
 
@@ -102,23 +244,13 @@
   }
 
   @media screen and (max-width: 749px) {
-    .banner-content__slot {
-      left: var(--banner-content-x-mobile);
-      top: var(--banner-content-y-mobile);
-      width: min(var(--banner-content-width-mobile), calc(100% - 2rem));
-      transform: translate(-50%, -50%);
+    .banner-content--align-mobile-center .banner-content__inner {
+      align-items: center;
+      text-align: center;
     }
 
-    .hero--height-adaptive .banner-content__slot {
-      left: auto;
-      top: auto;
-      transform: none;
-      width: min(var(--banner-content-width-mobile), calc(100% - 2rem));
-      margin-inline-start: clamp(
-        0px,
-        calc(var(--banner-content-x-mobile) - (var(--banner-content-width-mobile) / 2)),
-        max(0px, 100% - var(--banner-content-width-mobile))
-      );
+    .banner-content--align-mobile-center .banner-content__inner :is(.button, .button-link-arrow, .button-unstyled) {
+      margin-inline: auto !important;
     }
 
     .banner-content--align-mobile-flex-start .banner-content__inner {
@@ -126,14 +258,25 @@
       text-align: left;
     }
 
-    .banner-content--align-mobile-center .banner-content__inner {
-      align-items: center;
-      text-align: center;
-    }
-
     .banner-content--align-mobile-flex-end .banner-content__inner {
       align-items: flex-end;
       text-align: right;
+    }
+
+    .hero--height-adaptive .banner-content {
+      position: relative !important;
+      inset: auto !important;
+      min-height: 12rem;
+      height: auto !important;
+    }
+
+    .hero--height-adaptive .banner-content__slot {
+      position: relative !important;
+      left: auto !important;
+      top: auto !important;
+      transform: none !important;
+      width: min(var(--banner-content-width-mobile), 100%) !important;
+      margin-inline: auto !important;
     }
   }
 {% endstylesheet %}
@@ -183,7 +326,7 @@
       "step": 1,
       "unit": "%",
       "default": 50,
-      "info": "Y position applies when hero height is fixed. Adaptive height sizes to content instead."
+      "info": "Desktop only. Pins the center of the content. Requires a fixed hero height (not Adaptive)."
     },
     {
       "type": "range",
@@ -230,6 +373,76 @@
       "content": "t:content.mobile_layout"
     },
     {
+      "type": "select",
+      "id": "mobile_vertical_position",
+      "label": "t:settings.mobile_vertical_position",
+      "options": [
+        {
+          "value": "top",
+          "label": "t:options.top"
+        },
+        {
+          "value": "middle",
+          "label": "t:options.center"
+        },
+        {
+          "value": "bottom",
+          "label": "t:options.bottom"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "top",
+      "info": "t:info.mobile_vertical_position"
+    },
+    {
+      "type": "range",
+      "id": "y_position_mobile",
+      "label": "t:settings.y_position",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 12,
+      "info": "t:info.y_position_mobile_custom",
+      "visible_if": "{{ block.settings.mobile_vertical_position == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "mobile_vertical_anchor",
+      "label": "t:settings.mobile_vertical_anchor",
+      "options": [
+        {
+          "value": "top",
+          "label": "t:options.top"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "bottom",
+          "label": "t:options.bottom"
+        }
+      ],
+      "default": "top",
+      "info": "t:info.mobile_vertical_anchor",
+      "visible_if": "{{ block.settings.mobile_vertical_position == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_offset_y",
+      "label": "t:settings.mobile_offset_y",
+      "min": -80,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 16,
+      "info": "t:info.mobile_offset_y"
+    },
+    {
       "type": "range",
       "id": "x_position_mobile",
       "label": "t:settings.x_position",
@@ -241,17 +454,6 @@
     },
     {
       "type": "range",
-      "id": "y_position_mobile",
-      "label": "t:settings.y_position",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "%",
-      "default": 28,
-      "info": "Y position applies when hero height is fixed. Adaptive height sizes to content instead."
-    },
-    {
-      "type": "range",
       "id": "content_width_mobile",
       "label": "t:settings.content_width",
       "min": 160,
@@ -259,6 +461,17 @@
       "step": 8,
       "unit": "px",
       "default": 360
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 16,
+      "info": "Space between heading, body, and CTA on mobile only."
     },
     {
       "type": "select",
@@ -291,9 +504,13 @@
         "content_width": 400,
         "text_alignment": "flex-start",
         "gap": 20,
+        "mobile_vertical_position": "top",
+        "y_position_mobile": 12,
+        "mobile_vertical_anchor": "top",
+        "mobile_offset_y": 16,
         "x_position_mobile": 50,
-        "y_position_mobile": 28,
         "content_width_mobile": 360,
+        "gap_mobile": 16,
         "text_alignment_mobile": "center"
       },
       "blocks": [
