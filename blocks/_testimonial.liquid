@@ -1,0 +1,262 @@
+{% assign bs = block.settings %}
+
+{% liquid
+  assign quote_icon_width = bs.quote_icon_width | default: 40
+  assign avatar_size = bs.avatar_size | default: 44
+%}
+
+<article
+  class="testimonial-card"
+  style="
+    --testimonial-quote-icon-width: {{ quote_icon_width }}px;
+    --testimonial-avatar-size: {{ avatar_size }}px;
+  "
+  {{ block.shopify_attributes }}
+>
+  <div class="testimonial-card__quote-icon" aria-hidden="true">
+    {% if bs.quote_icon != blank %}
+      {{
+        bs.quote_icon
+        | image_url: width: 160
+        | image_tag:
+          class: 'testimonial-card__quote-icon-img',
+          widths: '40, 80, 120, 160',
+          sizes: 'var(--testimonial-quote-icon-width)',
+          loading: 'lazy',
+          alt: ''
+      }}
+    {% else %}
+      <svg
+        class="testimonial-card__quote-icon-svg"
+        width="{{ quote_icon_width }}"
+        height="{{ quote_icon_width }}"
+        viewBox="0 0 48 36"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        focusable="false"
+      >
+        <path
+          d="M4 14.5C4 8.7 8.7 4 14.5 4v6.5c-2.5 0-4.5 2-4.5 4.5V18H16v14H4V14.5zm28 0C32 8.7 36.7 4 42.5 4v6.5c-2.5 0-4.5 2-4.5 4.5V18H44v14H32V14.5z"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linejoin="round"
+        />
+      </svg>
+    {% endif %}
+  </div>
+
+  {% if bs.review_text != blank %}
+    <div class="testimonial-card__body rte">
+      {{ bs.review_text }}
+    </div>
+  {% endif %}
+
+  <div class="testimonial-card__author">
+    <div class="testimonial-card__avatar">
+      {% if bs.avatar_image != blank %}
+        {{
+          bs.avatar_image
+          | image_url: width: 160
+          | image_tag:
+            class: 'testimonial-card__avatar-img',
+            widths: '60, 88, 120, 160',
+            sizes: 'var(--testimonial-avatar-size)',
+            loading: 'lazy',
+            alt: bs.author_name | escape
+        }}
+      {% else %}
+        {{ 'image' | placeholder_svg_tag: 'testimonial-card__avatar-placeholder' }}
+      {% endif %}
+    </div>
+
+    <div class="testimonial-card__author-text">
+      {% if bs.author_name != blank %}
+        <p class="testimonial-card__author-name">{{ bs.author_name | escape }}</p>
+      {% endif %}
+      {% if bs.author_location != blank %}
+        <p class="testimonial-card__author-location">{{ bs.author_location | escape }}</p>
+      {% endif %}
+    </div>
+  </div>
+</article>
+
+{% stylesheet %}
+  .testimonial-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: var(--testimonial-card-height, 333px);
+    height: 100%;
+    padding: var(--testimonial-card-padding, 32px);
+    background-color: var(--testimonial-card-bg, #fce4ef);
+    border-radius: var(--testimonial-card-radius, 16px);
+    color: var(--testimonial-text-color, #000000);
+    gap: 16px;
+  }
+
+  .testimonial-card__quote-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    color: var(--testimonial-quote-icon-color, #ef0180);
+    line-height: 0;
+  }
+
+  .testimonial-card__quote-icon-img,
+  .testimonial-card__quote-icon-svg {
+    display: block;
+    width: var(--testimonial-quote-icon-width, 40px);
+    height: auto;
+    max-width: 100%;
+  }
+
+  .testimonial-card__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    margin: 0;
+  }
+
+  .testimonial-card__body > *:first-child {
+    margin-block-start: 0;
+  }
+
+  .testimonial-card__body > *:last-child {
+    margin-block-end: 0;
+  }
+
+  .testimonial-card__body p {
+    margin: 0;
+    color: inherit;
+  }
+
+  .testimonial-card__author {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    margin-block-start: auto;
+  }
+
+  .testimonial-card__avatar {
+    flex-shrink: 0;
+    width: var(--testimonial-avatar-size, 44px);
+    height: var(--testimonial-avatar-size, 44px);
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: rgb(0 0 0 / 0.06);
+  }
+
+  .testimonial-card__avatar-img,
+  .testimonial-card__avatar-placeholder {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .testimonial-card__author-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .testimonial-card__author-name,
+  .testimonial-card__author-location {
+    margin: 0;
+    color: inherit;
+  }
+
+  .testimonial-card__author-name {
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1.3;
+  }
+
+  .testimonial-card__author-location {
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 1.3;
+    opacity: 0.8;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Testimonial",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Quote icon"
+    },
+    {
+      "type": "image_picker",
+      "id": "quote_icon",
+      "label": "Quote icon",
+      "info": "Optional. Leave empty to use the default quote mark."
+    },
+    {
+      "type": "range",
+      "id": "quote_icon_width",
+      "label": "Quote icon width",
+      "min": 20,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Review"
+    },
+    {
+      "type": "richtext",
+      "id": "review_text",
+      "label": "Review text",
+      "default": "<p>I've been using this for 8 weeks and my skin has never looked better. The texture is luxurious and I wake up with a visible glow. Worth every penny — this is now my forever moisturizer.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Customer"
+    },
+    {
+      "type": "image_picker",
+      "id": "avatar_image",
+      "label": "Avatar image"
+    },
+    {
+      "type": "range",
+      "id": "avatar_size",
+      "label": "Avatar size",
+      "min": 30,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 44
+    },
+    {
+      "type": "text",
+      "id": "author_name",
+      "label": "Author name",
+      "default": "Sarah M."
+    },
+    {
+      "type": "text",
+      "id": "author_location",
+      "label": "Author location",
+      "default": "Los Angeles, CA"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonial"
+    }
+  ]
+}
+{% endschema %}
