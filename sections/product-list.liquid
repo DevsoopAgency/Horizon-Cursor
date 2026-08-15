@@ -37,6 +37,7 @@
     --pl-mobile-card-border-radius: {{ mobile_card_border_radius }}px;
     --pl-mobile-card-bg: {{ section.settings.mobile_card_background | default: 'transparent' }};
     --pl-mobile-card-image-padding: {{ mobile_card_image_padding }}px;
+    --peek-next-slide-size: {{ section.settings.carousel_peek | default: 48 }}px;
   "
 >
   <div class="section-resource-list__header{% if section.settings.show_category_menu and section.settings.category_menu != blank %} product-list-header--with-menu{% endif %}">
@@ -205,6 +206,10 @@
   .product-list-category-menu__link--active,
   .product-list-category-menu__item:first-child .product-list-category-menu__link {
     color: var(--pl-menu-active, #e6007a);
+    text-decoration-line: underline;
+    text-decoration-color: var(--pl-menu-active, #e6007a);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.4em;
   }
 
   .product-list-category-menu__item:not(:first-child) .product-list-category-menu__link {
@@ -213,6 +218,27 @@
 
   .product-list-category-menu__item:not(:first-child) .product-list-category-menu__link:hover {
     color: var(--pl-menu-active, #e6007a);
+  }
+
+  .section-resource-list__header .button-unstyled {
+    text-decoration-line: underline;
+    text-decoration-color: currentcolor;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.35em;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* Keep image borders clipped cleanly inside carousel slides */
+  .section-resource-list .resource-list__carousel .card-gallery {
+    background-color: #ffffff;
+  }
+
+  .section-resource-list .resource-list__carousel .resource-list__slide {
+    overflow: visible;
   }
 
   @media screen and (max-width: 989px) {
@@ -421,6 +447,18 @@
       "unit": "px",
       "default": 8,
       "visible_if": "{{ section.settings.layout_type == 'grid' or section.settings.layout_type == 'carousel' }}"
+    },
+    {
+      "type": "range",
+      "id": "carousel_peek",
+      "label": "Carousel peek (last item overflow)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "info": "How much of the next product shows past the edge.",
+      "visible_if": "{{ section.settings.layout_type == 'carousel' or section.settings.carousel_on_mobile == true }}"
     },
     {
       "type": "range",
