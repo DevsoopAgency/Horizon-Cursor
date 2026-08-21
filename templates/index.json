@@ -2609,6 +2609,7 @@
             "custom_button_border": "{{ settings.color_palette.background }}",
             "link_text_color": "",
             "link_underline": true,
+            "alignment": "right",
             "spacing_top": 0,
             "spacing_bottom": 0,
             "spacing_left": 0,

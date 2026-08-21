@@ -76,6 +76,7 @@
     size-style
     {{ block_settings.style_class }}
     {{ block_settings.style_class }}--{{ block.id }}
+    button-align-{{ block_settings.alignment | default: 'left' }}
     {% if is_link_arrow and block_settings.link_underline == false %} button-link-arrow--no-underline{% endif %}
   "
   style="{% render 'size-style', settings: block_settings %}"
@@ -94,6 +95,18 @@
 </a>
 
 {% stylesheet %}
+  .button-align-left {
+    align-self: flex-start;
+  }
+
+  .button-align-center {
+    align-self: center;
+  }
+
+  .button-align-right {
+    align-self: flex-end;
+  }
+
   .button-link-arrow {
     display: inline-flex;
     align-items: center;

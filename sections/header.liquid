@@ -459,6 +459,26 @@
     text-underline-offset: 3px;
   }
 
+  /* Nav carets (Figma) — skip Sale / Bestseller */
+  #shopify-section-{{ section.id }} .menu-list__link.has-caret .menu-list__link-title,
+  #shopify-section-{{ section.id }} .menu-list__item.has-caret {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  #shopify-section-{{ section.id }} .menu-list__link.has-caret .menu-list__link-title::after,
+  #shopify-section-{{ section.id }} .menu-list__item.has-caret::after {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    margin-inline-start: 4px;
+    border-inline-end: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-1.5px) rotate(45deg);
+    flex-shrink: 0;
+  }
+
   /* Keep header columns on one line; never clip cart badge */
   #shopify-section-{{ section.id }} .header__columns {
     flex-wrap: nowrap;

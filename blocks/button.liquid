@@ -96,6 +96,26 @@
       "visible_if": "{{ block.settings.style_class == 'button-link-arrow' }}"
     },
     {
+      "type": "select",
+      "id": "alignment",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "right",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "left"
+    },
+    {
       "type": "header",
       "content": "Button Spacing",
       "visible_if": "{{ block.settings.style_class == 'button-link-arrow' }}"

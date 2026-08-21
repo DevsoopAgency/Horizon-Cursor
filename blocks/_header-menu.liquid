@@ -52,12 +52,19 @@
                 if highlight_target != blank and link_title_normalized == highlight_target
                   assign link_is_highlighted = true
                 endif
+                assign show_caret = true
+                if link_is_highlighted
+                  assign show_caret = false
+                endif
+                if link_title_normalized == 'bestseller' or link_title_normalized == 'best sellers' or link_title_normalized == 'best seller'
+                  assign show_caret = false
+                endif
               %}
               <li>
                 <a
                   href="{{ link.url }}"
                   id="MenuItem-{{ link.handle }}"
-                  class="menu-list__item{% if link_is_highlighted %} is-highlighted{% endif %}"
+                  class="menu-list__item{% if link_is_highlighted %} is-highlighted{% endif %}{% if show_caret %} has-caret{% endif %}"
                   {% if link.current %}
                     aria-current="page"
                   {% endif %}
@@ -108,6 +115,13 @@
           if highlight_target != blank and link_title_normalized == highlight_target
             assign link_is_highlighted = true
           endif
+          assign show_caret = true
+          if link_is_highlighted
+            assign show_caret = false
+          endif
+          if link_title_normalized == 'bestseller' or link_title_normalized == 'best sellers' or link_title_normalized == 'best seller'
+            assign show_caret = false
+          endif
         %}
         <li
           role="presentation"
@@ -120,7 +134,7 @@
           <a
             href="{{ link.url }}"
             data-skip-node-update="true"
-            class="menu-list__link{% if link.active %} menu-list__link--active{% endif %}{% if link_is_highlighted %} is-highlighted{% endif %}"
+            class="menu-list__link{% if link.active %} menu-list__link--active{% endif %}{% if link_is_highlighted %} is-highlighted{% endif %}{% if show_caret %} has-caret{% endif %}"
             {%- if link.links != blank -%}
               aria-controls="submenu-{{ forloop.index }}"
               aria-haspopup="true"
@@ -175,7 +189,7 @@
       >
         <button
           role="listitem"
-          class="menu-list__link button-unstyled"
+          class="menu-list__link button-unstyled has-caret"
           aria-haspopup="true"
           aria-expanded="false"
           ref="menuitem"
@@ -271,6 +285,9 @@
     }
 
     & a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.125em;
       color: var(--color-foreground);
     }
   }
