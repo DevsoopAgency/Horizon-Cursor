@@ -34,12 +34,17 @@
   </div>
 
   {% capture list_items %}
+    {% liquid
+      assign rendered_count = 0
+      assign shown_ids = ','
+    %}
     {% if section.settings.collection != blank and shop.products_count != 0 %}
       {% paginate section.settings.collection.products by max_items %}
         {% for product in section.settings.collection.products limit: max_items %}
-        <div
-          class="resource-list__item"
-        >
+          {% if rendered_count > 0 %}
+            <!--@list/split-->
+          {% endif %}
+          <div class="resource-list__item">
             {% content_for 'block',
               type: '_product-card',
               id: 'static-product-card',
@@ -47,20 +52,94 @@
               product_view_context: 'collection'
             %}
           </div>
-
-          {% unless forloop.last %}
-            <!--@list/split-->
-          {% endunless %}
+          {% liquid
+            assign rendered_count = rendered_count | plus: 1
+            assign shown_ids = shown_ids | append: product.id | append: ','
+          %}
         {% endfor %}
       {% endpaginate %}
+
+      {% liquid
+        assign shown_ids = ','
+        assign rendered_count = 0
+        for product in section.settings.collection.products limit: max_items
+          assign shown_ids = shown_ids | append: product.id | append: ','
+          assign rendered_count = rendered_count | plus: 1
+        endfor
+
+        assign auto_fill = false
+        if section.settings.fill_from_catalog
+          assign auto_fill = true
+        endif
+        if section.settings.layout_type == 'carousel' and rendered_count <= section.settings.columns
+          assign auto_fill = true
+        endif
+      %}
+
+      {% if section.settings.additional_collections != blank and rendered_count < max_items %}
+        {% for extra_collection in section.settings.additional_collections %}
+          {% if rendered_count >= max_items %}
+            {% break %}
+          {% endif %}
+          {% for product in extra_collection.products %}
+            {% if rendered_count >= max_items %}
+              {% break %}
+            {% endif %}
+            {% assign id_key = ',' | append: product.id | append: ',' %}
+            {% unless shown_ids contains id_key %}
+              {% if rendered_count > 0 %}
+                <!--@list/split-->
+              {% endif %}
+              <div class="resource-list__item">
+                {% content_for 'block',
+                  type: '_product-card',
+                  id: 'static-product-card',
+                  closest.product: product,
+                  product_view_context: 'collection'
+                %}
+              </div>
+              {% liquid
+                assign rendered_count = rendered_count | plus: 1
+                assign shown_ids = shown_ids | append: product.id | append: ','
+              %}
+            {% endunless %}
+          {% endfor %}
+        {% endfor %}
+      {% endif %}
+
+      {% if auto_fill and rendered_count < max_items %}
+        {% for product in collections.all.products %}
+          {% if rendered_count >= max_items %}
+            {% break %}
+          {% endif %}
+          {% assign id_key = ',' | append: product.id | append: ',' %}
+          {% if product.price == 0 %}
+            {% continue %}
+          {% endif %}
+          {% unless shown_ids contains id_key %}
+            {% if rendered_count > 0 %}
+              <!--@list/split-->
+            {% endif %}
+            <div class="resource-list__item">
+              {% content_for 'block',
+                type: '_product-card',
+                id: 'static-product-card',
+                closest.product: product,
+                product_view_context: 'collection'
+              %}
+            </div>
+            {% liquid
+              assign rendered_count = rendered_count | plus: 1
+              assign shown_ids = shown_ids | append: product.id | append: ','
+            %}
+          {% endunless %}
+        {% endfor %}
+      {% endif %}
     {% else %}
       {% for i in (1..max_items) %}
-        <div
-          class="resource-list__item"
-        >
-            {% content_for 'block', type: '_product-card', id: 'static-product-card', closest.product: null %}
+        <div class="resource-list__item">
+          {% content_for 'block', type: '_product-card', id: 'static-product-card', closest.product: null %}
         </div>
-
         {% unless forloop.last %}
           <!--@list/split-->
         {% endunless %}
@@ -285,6 +364,21 @@
       "label": "Peek next product",
       "default": true,
       "info": "Shows a partial next card at the edge. Turn off to fit the column count with full cards only.",
+      "visible_if": "{{ section.settings.layout_type == 'carousel' or section.settings.carousel_on_mobile == true }}"
+    },
+    {
+      "type": "collection_list",
+      "id": "additional_collections",
+      "label": "Additional collections",
+      "limit": 5,
+      "info": "Products from these collections are appended after the main collection so the carousel can scroll."
+    },
+    {
+      "type": "checkbox",
+      "id": "fill_from_catalog",
+      "label": "Fill from catalog",
+      "default": false,
+      "info": "If there still aren't enough products to scroll, add other store products.",
       "visible_if": "{{ section.settings.layout_type == 'carousel' or section.settings.carousel_on_mobile == true }}"
     },
     {
