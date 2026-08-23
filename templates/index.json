@@ -441,16 +441,20 @@
               "blocks": {}
             },
             "category_subtitle": {
-              "type": "text",
+              "type": "collection-subtitle",
               "name": "Subtitle",
               "settings": {
-                "text": "<p>Explore our collection</p>",
+                "default_subtitle": "",
+                "subtitle_1": "Serums, Moisturizers & More",
+                "subtitle_2": "Foundation, Lips & Eyes",
+                "subtitle_3": "Perfumes & Body Mists",
+                "subtitle_4": "Treatments & Styling",
+                "subtitle_5": "Professional-Grade Devices",
                 "width": "fit-content",
                 "max_width": "normal",
                 "alignment": "left",
                 "type_preset": "rte",
                 "font": "var(--font-body--family)",
-                "weight": "",
                 "font_size": "",
                 "line_height": "normal",
                 "letter_spacing": "normal",
