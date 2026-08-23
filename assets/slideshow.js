@@ -295,7 +295,21 @@ export class Slideshow extends Component {
     slide.setAttribute('aria-hidden', 'false');
 
     if (this.#scroll) {
-      this.#scroll.to(slide, { instant });
+      const scroller = this.refs.scroller;
+      const isMultiSlideJump = Math.abs(index - current) > 1;
+
+      // Mandatory scroll-snap + smooth scroll often stops at the next snap point
+      // instead of the requested slide. Drop snap for the programmatic jump.
+      if (scroller && isMultiSlideJump && !instant) {
+        const previousSnap = scroller.style.scrollSnapType;
+        scroller.style.scrollSnapType = 'none';
+        this.#scroll.to(slide, { instant });
+        this.#scroll.finished.finally(() => {
+          scroller.style.scrollSnapType = previousSnap;
+        });
+      } else {
+        this.#scroll.to(slide, { instant });
+      }
     }
 
     this.current = this.slides?.indexOf(slide) || 0;

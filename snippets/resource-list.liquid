@@ -11,6 +11,7 @@
   @param {number} slide_count - Number of slides for carousel layouts
   @param {string} content_type - Type of content: 'products' | 'collections' | 'articles'
   @param {string} [test_id] - Data test ID for the main resource list
+  @param {boolean} [carousel_contained] - Fit the column count with no peek or full-bleed overflow (default: false)
 
   @example
   {% render 'resource-list',
@@ -42,6 +43,7 @@
   assign slide_count = slide_count | default: 0
   assign content_type = content_type | default: 'collections'
   assign test_id = test_id | default: ''
+  assign carousel_contained = carousel_contained | default: false
 
   unless settings != empty
     echo '<!-- Error: settings parameter required for resource-list snippet -->'
@@ -77,11 +79,17 @@
 
     when 'carousel'
       assign resource_list_classes = 'resource-list__carousel'
+      if carousel_contained
+        assign resource_list_classes = resource_list_classes | append: ' resource-list__carousel--contained'
+      endif
       capture resource_list_styles
         echo '--resource-list-column-gap-desktop: ' | append: columns_gap | append: 'px;'
         echo '--column-count: ' | append: columns | append: ';'
         echo '--column-count-mobile: 1;'
         echo '--mobile-card-size: ' | append: mobile_card_size | append: ';'
+        if carousel_contained
+          echo '--peek-next-slide-size: 0px;'
+        endif
       endcapture
 
     when 'editorial'
@@ -100,7 +108,7 @@
 <div
   class="
     resource-list
-    {% if settings.layout_type == 'carousel' %}
+    {% if settings.layout_type == 'carousel' and carousel_contained == false %}
       force-full-width
     {% endif %}
     {% if settings.carousel_on_mobile and settings.layout_type != 'carousel' %}
@@ -126,7 +134,8 @@
         slides: list_items_array,
         slide_count: slide_count,
         settings: settings,
-        slide_width_max: slide_width_max
+        slide_width_max: slide_width_max,
+        contained: carousel_contained
       %}
 
     {% when 'editorial' %}
@@ -172,7 +181,8 @@
       slides: list_items_array,
       slide_count: slide_count,
       settings: settings,
-      slide_width_max: slide_width_max
+      slide_width_max: slide_width_max,
+      contained: carousel_contained
     %}
   </div>
 {% endif %}
