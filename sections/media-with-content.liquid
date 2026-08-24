@@ -55,6 +55,15 @@
     assign media_class_modifier = media_class_modifier | append: ' media-with-content--align-mobile-' | append: section.settings.text_alignment_mobile
   endif
 
+  assign mobile_heading_size = section.settings.content_heading_size_mobile | times: 1
+  if mobile_heading_size == 0 and section.settings.media_height == 'custom' and section.settings.media_vertical_alignment == 'center' and section.settings.content_button_border_radius == 100
+    assign mobile_heading_size = 32
+  endif
+
+  if mobile_heading_size > 0
+    assign media_class_modifier = media_class_modifier | append: ' media-with-content--heading-mobile'
+  endif
+
   assign has_custom_background = false
   assign background_for_contrast = section.settings.background_color
 
@@ -151,6 +160,7 @@
     --padding-right-mobile: {{ section.settings.content_padding_right_mobile | default: 0 }}px;
     --content-panel-bg: {{ section.settings.color_background | default: 'transparent' }};
     --content-max-width: {{ section.settings.content_max_width | default: 504 }}px;
+    --media-with-content-heading-mobile: {{ mobile_heading_size | default: 0 }}px;
     --spotlight-heading-size: {{ section.settings.heading_size_desktop | default: 48 }}px;
     --spotlight-heading-size-tablet: {{ section.settings.heading_size_tablet | default: 36 }}px;
     --spotlight-heading-size-mobile: {{ section.settings.heading_size_mobile | default: 28 }}px;
@@ -369,6 +379,7 @@
 
     @media screen and (min-width: 750px) {
       margin-inline: var(--media-with-content-media-inset);
+      margin-block: var(--media-with-content-media-inset);
       width: calc(100% - (var(--media-with-content-media-inset) * 2));
     }
   }
@@ -532,6 +543,13 @@
       align-items: center;
       text-align: center;
       margin-inline: auto;
+    }
+  }
+
+  .media-with-content--heading-mobile .media-with-content__content :is(h2, .h2) {
+    @media screen and (max-width: 749px) {
+      font-size: var(--media-with-content-heading-mobile);
+      --font-size: var(--media-with-content-heading-mobile);
     }
   }
 
@@ -893,6 +911,17 @@
       "min": 0,
       "max": 100,
       "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "content_heading_size_mobile",
+      "label": "Heading size on mobile",
+      "info": "Overrides the heading font size below 750px. 0 keeps the desktop size.",
+      "min": 0,
+      "max": 72,
+      "step": 1,
       "unit": "px",
       "default": 0
     },
