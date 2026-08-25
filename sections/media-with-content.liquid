@@ -31,6 +31,14 @@
     assign media_class_modifier = media_class_modifier | append: ' media-with-content--height-fixed'
   endif
 
+  if section.settings.media_width_custom > 0
+    assign media_class_modifier = media_class_modifier | append: ' media-with-content--width-custom-desktop'
+  endif
+
+  if section.settings.media_width_custom_mobile > 0
+    assign media_class_modifier = media_class_modifier | append: ' media-with-content--width-custom-mobile'
+  endif
+
   if section.settings.custom_content_padding
     assign media_class_modifier = media_class_modifier | append: ' media-with-content--custom-content-padding'
   endif
@@ -102,6 +110,8 @@
     --media-with-content-media-inset: {{ section.settings.media_inset | default: 0 }}px;
     --media-with-content-media-inset-mobile: {{ section.settings.media_inset_mobile | default: section.settings.media_inset | default: 0 }}px;
     --media-with-content-media-radius: {{ section.settings.media_border_radius | default: 0 }}px;
+    --media-with-content-media-width: {{ section.settings.media_width_custom | default: 0 }}px;
+    --media-with-content-media-width-mobile: {{ section.settings.media_width_custom_mobile | default: 0 }}px;
     --media-with-content-button-radius: {{ section.settings.content_button_border_radius | default: 0 }}px;
     {%- case section.settings.media_height %}
       {% when '50svh' %}
@@ -381,6 +391,42 @@
       margin-inline: var(--media-with-content-media-inset);
       margin-block: var(--media-with-content-media-inset);
       width: calc(100% - (var(--media-with-content-media-inset) * 2));
+    }
+  }
+
+  .media-with-content--width-custom-desktop .media-block {
+    @media screen and (min-width: 750px) {
+      width: var(--media-with-content-media-width);
+      max-width: 100%;
+      justify-self: start;
+    }
+  }
+
+  .media-with-content--width-custom-desktop.media-with-content--media-right .media-block {
+    @media screen and (min-width: 750px) {
+      justify-self: end;
+    }
+  }
+
+  .media-with-content--width-custom-desktop.media-with-content--media-framed .media-block {
+    @media screen and (min-width: 750px) {
+      width: var(--media-with-content-media-width);
+      max-width: calc(100% - (var(--media-with-content-media-inset) * 2));
+    }
+  }
+
+  .media-with-content--width-custom-mobile .media-block {
+    @media screen and (max-width: 749px) {
+      width: var(--media-with-content-media-width-mobile);
+      max-width: 100%;
+      justify-self: center;
+    }
+  }
+
+  .media-with-content--width-custom-mobile.media-with-content--media-framed .media-block {
+    @media screen and (max-width: 749px) {
+      width: var(--media-with-content-media-width-mobile);
+      max-width: calc(100% - (var(--media-with-content-media-inset-mobile) * 2));
     }
   }
 
@@ -717,8 +763,8 @@
     {
       "type": "range",
       "id": "media_height_custom",
-      "label": "Desktop height",
-      "info": "Exact height of the image on desktop.",
+      "label": "Image height",
+      "info": "Exact height of the picture on desktop.",
       "min": 160,
       "max": 1000,
       "step": 10,
@@ -729,14 +775,36 @@
     {
       "type": "range",
       "id": "media_height_custom_mobile",
-      "label": "Mobile height",
-      "info": "Exact height of the image on mobile.",
+      "label": "Image height on mobile",
+      "info": "Exact height of the picture on mobile.",
       "min": 120,
       "max": 800,
       "step": 10,
       "unit": "px",
       "default": 320,
       "visible_if": "{{ section.settings.media_height == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "media_width_custom",
+      "label": "Image width",
+      "info": "Exact width of the picture on desktop. 0 fills the column.",
+      "min": 0,
+      "max": 1000,
+      "step": 10,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "media_width_custom_mobile",
+      "label": "Image width on mobile",
+      "info": "Exact width of the picture on mobile. 0 fills the column.",
+      "min": 0,
+      "max": 800,
+      "step": 10,
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "header",
