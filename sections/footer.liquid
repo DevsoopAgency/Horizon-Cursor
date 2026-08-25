@@ -96,6 +96,8 @@
       {% if has_isolated_grid_item_desktop %}footer-content--isolated-grid-item-desktop{% endif %}
       {% if has_isolated_grid_item_tablet %}footer-content--isolated-grid-item-tablet{% endif %}
       {% if section.settings.columns_ratio == 'newsletter_wide' %}footer-content--newsletter-wide{% endif %}
+      {% if section.settings.mobile_layout == 'two_col_menus' %}footer-content--mobile-two-col{% endif %}
+      {% if section.settings.hide_media_on_mobile %}footer-content--hide-media-mobile{% endif %}
     "
     style="
       {% render 'spacing-style', settings: section.settings %}
@@ -151,6 +153,41 @@
     }
 
     .footer-content--isolated-grid-item-desktop > :last-child {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .footer-content {
+      min-height: 0;
+    }
+
+    .footer-content .menu .menu__details {
+      padding-inline: 0;
+    }
+
+    .footer-content--hide-media-mobile .logo-block,
+    .footer-content--hide-media-mobile .image-block {
+      display: none;
+    }
+
+    .footer-content--mobile-two-col {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 24px;
+      row-gap: 40px;
+      align-items: start;
+    }
+
+    .footer-content--mobile-two-col .menu--links-plain .menu__item a {
+      color: #ffffff;
+    }
+
+    .footer-content--mobile-two-col > .group-block,
+    .footer-content--mobile-two-col > .logo-block {
+      grid-column: 1 / -1;
+    }
+
+    .footer-content--mobile-two-col > .menu:last-child {
       grid-column: 1 / -1;
     }
   }
@@ -296,6 +333,29 @@
         }
       ],
       "default": "1"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile layout",
+      "options": [
+        {
+          "value": "default",
+          "label": "Match column count"
+        },
+        {
+          "value": "two_col_menus",
+          "label": "Two-column menus"
+        }
+      ],
+      "default": "default",
+      "info": "Two-column menus: first group full width, COMPANY | POLICIES, last menu full width. Desktop is unchanged."
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_media_on_mobile",
+      "label": "Hide logo and images on mobile",
+      "default": false
     },
     {
       "type": "range",
