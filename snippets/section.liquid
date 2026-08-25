@@ -108,4 +108,18 @@
   .custom-section-content {
     z-index: var(--layer-flat);
   }
+
+  @media screen and (max-width: 749px) {
+    .section-content-wrapper {
+      min-width: 0;
+      max-width: 100%;
+      overflow-x: hidden;
+      overflow-x: clip;
+    }
+
+    .section-content-wrapper > * {
+      min-width: 0;
+      max-width: 100%;
+    }
+  }
 {% endstylesheet %}

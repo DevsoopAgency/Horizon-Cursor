@@ -229,6 +229,14 @@
       "visible_if": "{{ section.settings.layout_type != 'carousel' }}"
     },
     {
+      "type": "checkbox",
+      "id": "grid_on_mobile",
+      "label": "Grid on mobile",
+      "default": false,
+      "info": "Replaces the carousel with a product grid below 750px. Desktop carousel is unchanged.",
+      "visible_if": "{{ section.settings.layout_type == 'carousel' }}"
+    },
+    {
       "type": "range",
       "id": "max_products",
       "label": "t:settings.product_count",
@@ -262,7 +270,7 @@
         }
       ],
       "default": "2",
-      "visible_if": "{{ section.settings.layout_type == 'grid' and section.settings.carousel_on_mobile == false }}"
+      "visible_if": "{{ section.settings.layout_type == 'grid' and section.settings.carousel_on_mobile == false or section.settings.grid_on_mobile }}"
     },
     {
       "type": "select",
@@ -301,7 +309,7 @@
       "step": 1,
       "unit": "px",
       "default": 8,
-      "visible_if": "{{ section.settings.layout_type == 'grid'}}"
+      "visible_if": "{{ section.settings.layout_type == 'grid' or section.settings.grid_on_mobile }}"
     },
     {
       "type": "header",

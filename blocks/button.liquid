@@ -116,6 +116,30 @@
       "default": "left"
     },
     {
+      "type": "select",
+      "id": "alignment_mobile",
+      "label": "Mobile alignment",
+      "options": [
+        {
+          "value": "",
+          "label": "Same as desktop"
+        },
+        {
+          "value": "left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "right",
+          "label": "t:options.right"
+        }
+      ],
+      "default": ""
+    },
+    {
       "type": "header",
       "content": "Button Spacing",
       "visible_if": "{{ block.settings.style_class == 'button-link-arrow' }}"

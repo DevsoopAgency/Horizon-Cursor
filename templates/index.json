@@ -1021,6 +1021,7 @@
         "collection": "best-seller",
         "layout_type": "carousel",
         "carousel_on_mobile": false,
+        "grid_on_mobile": true,
         "max_products": 24,
         "columns": 6,
         "mobile_columns": "2",
@@ -1396,6 +1397,7 @@
         "collection": "top-picks",
         "layout_type": "carousel",
         "carousel_on_mobile": false,
+        "grid_on_mobile": true,
         "max_products": 24,
         "columns": 6,
         "mobile_columns": "2",
@@ -2385,8 +2387,8 @@
               "type": "text",
               "settings": {
                 "text": "<h2>@planetbeautyofficial</h2>",
-                "width": "fit-content",
-                "max_width": "normal",
+                "width": "100%",
+                "max_width": "none",
                 "alignment": "left",
                 "type_preset": "h2",
                 "font": "var(--font-body--family)",
@@ -2403,7 +2405,12 @@
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
-                "padding-inline-end": 0
+                "padding-inline-end": 0,
+                "custom_mobile_layout": true,
+                "width_mobile": "100%",
+                "alignment_mobile": "left",
+                "font_size_mobile": "1.5rem",
+                "max_width_mobile": "none"
               },
               "blocks": {}
             },
@@ -2444,6 +2451,7 @@
           "settings": {
             "content_direction": "row",
             "vertical_on_mobile": true,
+            "mobile_columns": "2",
             "horizontal_alignment": "space-between",
             "vertical_alignment": "center",
             "align_baseline": false,
@@ -2630,6 +2638,7 @@
             "link_text_color": "",
             "link_underline": true,
             "alignment": "right",
+            "alignment_mobile": "center",
             "spacing_top": 0,
             "spacing_bottom": 0,
             "spacing_left": 0,

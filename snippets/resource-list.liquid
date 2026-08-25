@@ -33,6 +33,7 @@
   - bento_gap: Gap for bento layout in pixels
   - mobile_card_size: Mobile card size for carousel
   - carousel_on_mobile: Boolean for mobile carousel fallback
+  - grid_on_mobile: Boolean for mobile grid fallback when layout is carousel
 {%- enddoc -%}
 
 {% liquid
@@ -114,6 +115,9 @@
     {% if settings.carousel_on_mobile and settings.layout_type != 'carousel' %}
       hidden--mobile
     {% endif %}
+    {% if settings.grid_on_mobile and settings.layout_type == 'carousel' %}
+      hidden--mobile
+    {% endif %}
     {{ resource_list_classes }}
   "
   style="{{ resource_list_styles }}"
@@ -149,6 +153,30 @@
       {% endcase %}
   {% endcase %}
 </div>
+
+{% comment %} Mobile grid for carousel layouts {% endcomment %}
+{% if settings.layout_type == 'carousel' and settings.grid_on_mobile %}
+  <div
+    class="
+      resource-list
+      hidden--desktop
+      resource-list--grid
+      resource-list--mobile-grid
+    "
+    style="
+      --resource-list-column-gap-desktop: {{ columns_gap }}px;
+      --resource-list-row-gap-desktop: {{ rows_gap }}px;
+      --resource-list-columns: repeat({{ columns }}, 1fr);
+      --resource-list-columns-mobile: repeat({{ mobile_columns }}, 1fr);
+      --column-count-mobile: {{ mobile_columns }};
+    "
+    {% if test_id %}
+      data-testid="{{ test_id }}-mobile"
+    {% endif %}
+  >
+    {{ list_items }}
+  </div>
+{% endif %}
 
 {% comment %} Mobile carousel for non-carousel layouts {% endcomment %}
 {% if settings.layout_type != 'carousel' and settings.carousel_on_mobile %}

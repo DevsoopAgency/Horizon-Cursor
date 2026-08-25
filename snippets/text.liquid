@@ -136,6 +136,9 @@
     @media screen and (max-width: 749px) {
       .text-block--{{ block.id }} {
         width: {{ mobile_width }};
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        word-break: break-word;
         {% if mobile_max_width == 'none' %}
           max-width: 100%;
         {% elsif mobile_max_width != blank %}
@@ -172,8 +175,12 @@
         align-items: {% if mobile_align == 'center' %}center{% elsif mobile_align == 'right' %}flex-end{% else %}flex-start{% endif %};
       }
 
-      .text-block--{{ block.id }} > * {
+      .text-block--{{ block.id }} > *,
+      .text-block.text-block--{{ block.id }} :is(h1, h2, h3, h4, h5, h6) {
         width: {{ mobile_width }};
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        word-break: break-word;
         text-align: {{ mobile_align }};
         {% if mobile_font_size != blank %}
           font-size: var(--font-size);
@@ -191,6 +198,16 @@
           color: var(--color);
         {% endif %}
       }
+
+      {% if mobile_font_size != blank %}
+        .text-block.h1.text-block--{{ block.id }} > *,
+        .text-block.h2.text-block--{{ block.id }} > *,
+        .text-block.h3.text-block--{{ block.id }} > *,
+        .text-block.h4.text-block--{{ block.id }} > *,
+        .text-block.text-block--{{ block.id }} :is(h1, h2, h3, h4, h5, h6) {
+          font-size: {{ mobile_font_size }};
+        }
+      {% endif %}
 
       {% if mobile_align == 'center' %}
         .text-block--{{ block.id }},

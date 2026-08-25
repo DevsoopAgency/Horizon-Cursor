@@ -15,6 +15,9 @@
       assign group_extra_class = group_extra_class | append: ' group-block--stats-divider'
     endif
   endif
+  if block.settings.mobile_columns == '2'
+    assign group_extra_class = group_extra_class | append: ' group-block--mobile-cols-2'
+  endif
 %}
 
 {% render 'group',
@@ -128,6 +131,33 @@
   .group-block--stats > .group-block-content > .group-block {
     min-width: 0;
   }
+
+  .group-block--mobile-cols-2 {
+    @media screen and (max-width: 749px) {
+      min-width: 0;
+      max-width: 100%;
+    }
+  }
+
+  .group-block--mobile-cols-2 > .group-block-content {
+    @media screen and (max-width: 749px) {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--gap);
+      align-items: stretch;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
+  }
+
+  .group-block--mobile-cols-2 > .group-block-content > * {
+    @media screen and (max-width: 749px) {
+      min-width: 0;
+      max-width: 100%;
+      width: 100%;
+    }
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -172,6 +202,23 @@
       "label": "t:settings.vertical_on_mobile",
       "default": true,
       "visible_if": "{{ block.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "mobile_columns",
+      "label": "Mobile columns",
+      "options": [
+        {
+          "value": "1",
+          "label": "1 column"
+        },
+        {
+          "value": "2",
+          "label": "2 columns"
+        }
+      ],
+      "default": "1",
+      "info": "On mobile, keep a 2-column grid instead of stacking. Desktop layout is unchanged."
     },
     {
       "type": "select",

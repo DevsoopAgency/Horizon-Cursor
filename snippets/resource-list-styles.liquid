@@ -84,4 +84,10 @@
     color: var(--color-foreground);
     text-decoration: none;
   }
+
+  @media screen and (max-width: 749px) {
+    .resource-list--grid.resource-list--mobile-grid {
+      grid-template-columns: var(--resource-list-columns-mobile);
+    }
+  }
 {% endstylesheet %}
