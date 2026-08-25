@@ -98,6 +98,7 @@
         "speed": 5,
         "movement_direction": "reverse",
         "gap_between_elements": 40,
+        "slideshow_on_mobile": true,
         "section_width": "full-width",
         "background_color": "#0a0a0a",
         "divider_width": 0,

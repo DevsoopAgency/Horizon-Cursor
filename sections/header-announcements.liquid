@@ -2,8 +2,12 @@
 {% liquid
   assign layout_style = section.settings.layout_style | default: 'slideshow'
   assign is_marquee = false
+  assign slideshow_on_mobile = false
   if layout_style == 'marquee'
     assign is_marquee = true
+    if section.settings.slideshow_on_mobile
+      assign slideshow_on_mobile = true
+    endif
   endif
 %}
 
@@ -36,6 +40,7 @@
     section--{{ section.settings.section_width }}
     color-custom-{{ section.id }}
     {% if is_marquee %}announcement-bar--marquee{% endif %}
+    {% if slideshow_on_mobile %}announcement-bar--mobile-slideshow{% endif %}
   "
   style="
     {% render 'spacing-padding', settings: section.settings %};
@@ -250,6 +255,48 @@
       transform: translate3d(-50%, 0, 0);
     }
   }
+
+  @media screen and (max-width: 749px) {
+    .announcement-bar--mobile-slideshow.announcement-bar--marquee marquee-component:not([data-disabled]) .marquee__wrapper,
+    .announcement-bar--mobile-slideshow .marquee__wrapper {
+      animation: none;
+      transform: none;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .announcement-bar--mobile-slideshow .marquee__content,
+    .announcement-bar--mobile-slideshow .marquee__repeated-items {
+      min-width: 0;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .announcement-bar--mobile-slideshow .marquee__content[aria-hidden='true'],
+    .announcement-bar--mobile-slideshow .marquee__wrapper > .marquee__content:not(:first-child),
+    .announcement-bar--mobile-slideshow .marquee__repeated-items:not(:first-child),
+    .announcement-bar--mobile-slideshow .marquee__repeated-items > *:not(:first-child) {
+      display: none;
+    }
+
+    .announcement-bar--mobile-slideshow .announcement-bar__marquee-item {
+      width: 100%;
+      max-width: 100%;
+      padding-inline: 1rem;
+    }
+
+    .announcement-bar--mobile-slideshow .announcement-bar__marquee-item .announcement-bar__text {
+      display: block;
+      width: 100%;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .announcement-bar--mobile-slideshow .announcement-bar__marquee-item .announcement-bar__text::after {
+      content: none;
+      margin: 0;
+    }
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -316,6 +363,13 @@
       "step": 1,
       "unit": "px",
       "default": 40,
+      "visible_if": "{{ section.settings.layout_style == 'marquee' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "slideshow_on_mobile",
+      "label": "t:settings.slideshow_on_mobile",
+      "default": false,
       "visible_if": "{{ section.settings.layout_style == 'marquee' }}"
     },
     {
