@@ -11,6 +11,20 @@
   shopify_attributes: block.shopify_attributes
 %}
 
+{% stylesheet %}
+  /* Shopify wraps nested theme blocks in .shopify-block (width: 100%). Keep link CTAs clustered in a row. */
+  .media-with-content__content .layout-panel-flex--row:has(> .shopify-block > .button-link-arrow) {
+    flex-wrap: nowrap;
+  }
+
+  .media-with-content__content .layout-panel-flex--row > .shopify-block:has(> .button-link-arrow),
+  .media-with-content__content .layout-panel-flex--row > .shopify-block:has(> .button-unstyled) {
+    width: auto;
+    max-width: 100%;
+    flex: 0 0 auto;
+  }
+{% endstylesheet %}
+
 {% schema %}
 {
   "name": "t:names.content",

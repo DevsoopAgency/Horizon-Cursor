@@ -152,13 +152,15 @@
     gap: 6px;
     width: fit-content;
     padding: 0;
+    padding-block-end: 2px;
     border: none;
+    border-bottom: 1px solid currentcolor;
     border-radius: 0;
     background: transparent;
     color: currentcolor;
     font-family: var(--font-body--family);
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 700;
     letter-spacing: 0.7px;
     line-height: 1.2;
     text-transform: uppercase;
@@ -166,8 +168,13 @@
   }
 
   .button-link-arrow__label {
-    border-bottom: 1px solid currentcolor;
-    padding-block-end: 2px;
+    border-bottom: none;
+    padding-block-end: 0;
+  }
+
+  .button-link-arrow--no-underline {
+    border-bottom: none;
+    padding-block-end: 0;
   }
 
   .button-link-arrow--no-underline .button-link-arrow__label {

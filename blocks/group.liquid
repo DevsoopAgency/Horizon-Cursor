@@ -40,10 +40,24 @@
     min-width: 0;
   }
 
+  /* Don't let grid shrink crush 100K+ / labels onto two lines. */
+  .group-block--stats > .group-block-content > * {
+    min-width: min-content;
+  }
+
+  .group-block--stats .text-block,
+  .group-block--stats .text-block > * {
+    white-space: nowrap;
+    text-wrap: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
+    max-inline-size: none;
+  }
+
   .group-block--stats.group-block--stats-desktop-2 > .group-block-content {
     @media screen and (min-width: 991px) {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(min-content, 1fr));
       gap: var(--gap);
     }
   }
@@ -51,7 +65,7 @@
   .group-block--stats.group-block--stats-desktop-3 > .group-block-content {
     @media screen and (min-width: 991px) {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(min-content, 1fr));
       gap: var(--gap);
     }
   }
@@ -59,7 +73,7 @@
   .group-block--stats.group-block--stats-desktop-4 > .group-block-content {
     @media screen and (min-width: 991px) {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(min-content, 1fr));
       gap: var(--gap);
     }
   }
@@ -67,7 +81,16 @@
   .group-block--stats.group-block--stats-tablet-columns_2 > .group-block-content {
     @media screen and (min-width: 750px) and (max-width: 990px) {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(min-content, 1fr));
+      gap: var(--gap);
+      overflow-x: visible;
+    }
+  }
+
+  .group-block--stats.group-block--stats-tablet-columns_3 > .group-block-content {
+    @media screen and (min-width: 750px) and (max-width: 990px) {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(min-content, 1fr));
       gap: var(--gap);
       overflow-x: visible;
     }
@@ -89,7 +112,7 @@
     display: none;
   }
 
-  .group-block--stats.group-block--stats-tablet-scroll > .group-block-content > .group-block {
+  .group-block--stats.group-block--stats-tablet-scroll > .group-block-content > * {
     @media screen and (min-width: 750px) and (max-width: 990px) {
       flex: 0 0 40%;
       min-width: 160px;
@@ -100,6 +123,15 @@
     @media screen and (max-width: 749px) {
       display: flex;
       flex-flow: column nowrap;
+      gap: var(--gap);
+      overflow-x: visible;
+    }
+  }
+
+  .group-block--stats.group-block--stats-mobile-columns_3 > .group-block-content {
+    @media screen and (max-width: 749px) {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(min-content, 1fr));
       gap: var(--gap);
       overflow-x: visible;
     }
@@ -121,15 +153,11 @@
     display: none;
   }
 
-  .group-block--stats.group-block--stats-mobile-scroll > .group-block-content > .group-block {
+  .group-block--stats.group-block--stats-mobile-scroll > .group-block-content > * {
     @media screen and (max-width: 749px) {
       flex: 0 0 70%;
       min-width: 140px;
     }
-  }
-
-  .group-block--stats > .group-block-content > .group-block {
-    min-width: 0;
   }
 
   .group-block--mobile-cols-2 {
@@ -680,6 +708,10 @@
           "label": "2 columns"
         },
         {
+          "value": "columns_3",
+          "label": "3 columns"
+        },
+        {
           "value": "scroll",
           "label": "Scroll"
         }
@@ -695,6 +727,10 @@
         {
           "value": "stacked",
           "label": "1 column stacked"
+        },
+        {
+          "value": "columns_3",
+          "label": "3 columns"
         },
         {
           "value": "scroll",
