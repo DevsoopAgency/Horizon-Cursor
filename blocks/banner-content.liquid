@@ -77,9 +77,9 @@
 </div>
 
 {% style %}
-  /* Block-scoped mobile pin — beats desktop center (top: 50% + translate -50%) */
+  /* Overlay pin — skipped when the hero stacks content above media */
   @media screen and (max-width: 749px) {
-    .banner-content--{{ block.id }} {
+    .hero:not(.hero--stack-content-mobile) .banner-content--{{ block.id }} {
       position: absolute !important;
       inset: 0 !important;
       display: block !important;
@@ -91,7 +91,7 @@
       box-sizing: border-box !important;
     }
 
-    .banner-content--{{ block.id }} .banner-content__slot {
+    .hero:not(.hero--stack-content-mobile) .banner-content--{{ block.id }} .banner-content__slot {
       position: absolute !important;
       left: 50% !important;
       right: auto !important;
@@ -102,35 +102,35 @@
       box-sizing: border-box !important;
     }
 
-    .banner-content--{{ block.id }}.banner-content--mobile-pos-top .banner-content__slot {
+    .hero:not(.hero--stack-content-mobile) .banner-content--{{ block.id }}.banner-content--mobile-pos-top .banner-content__slot {
       top: var(--hero-content-safe-inset, 1rem) !important;
       bottom: auto !important;
       transform: translateX(-50%) translateY(var(--banner-content-offset-y-mobile, 0px)) !important;
     }
 
-    .banner-content--{{ block.id }}.banner-content--mobile-pos-middle .banner-content__slot {
+    .hero:not(.hero--stack-content-mobile) .banner-content--{{ block.id }}.banner-content--mobile-pos-middle .banner-content__slot {
       top: 50% !important;
       bottom: auto !important;
       transform: translate(-50%, -50%) translateY(var(--banner-content-offset-y-mobile, 0px)) !important;
     }
 
-    .banner-content--{{ block.id }}.banner-content--mobile-pos-bottom .banner-content__slot {
+    .hero:not(.hero--stack-content-mobile) .banner-content--{{ block.id }}.banner-content--mobile-pos-bottom .banner-content__slot {
       top: auto !important;
       bottom: var(--hero-content-safe-inset, 1rem) !important;
       transform: translateX(-50%) translateY(var(--banner-content-offset-y-mobile, 0px)) !important;
     }
 
-    .banner-content--{{ block.id }}.banner-content--mobile-pos-custom .banner-content__slot {
+    .hero:not(.hero--stack-content-mobile) .banner-content--{{ block.id }}.banner-content--mobile-pos-custom .banner-content__slot {
       top: var(--banner-content-y-mobile, 12%) !important;
       bottom: auto !important;
       transform: translateX(-50%) translateY(var(--banner-content-offset-y-mobile, 0px)) !important;
     }
 
-    .banner-content--{{ block.id }}.banner-content--mobile-pos-custom[data-mobile-anchor='center'] .banner-content__slot {
+    .hero:not(.hero--stack-content-mobile) .banner-content--{{ block.id }}.banner-content--mobile-pos-custom[data-mobile-anchor='center'] .banner-content__slot {
       transform: translate(-50%, -50%) translateY(var(--banner-content-offset-y-mobile, 0px)) !important;
     }
 
-    .banner-content--{{ block.id }}.banner-content--mobile-pos-custom[data-mobile-anchor='bottom'] .banner-content__slot {
+    .hero:not(.hero--stack-content-mobile) .banner-content--{{ block.id }}.banner-content--mobile-pos-custom[data-mobile-anchor='bottom'] .banner-content__slot {
       top: auto !important;
       bottom: calc(100% - var(--banner-content-y-mobile, 12%)) !important;
       transform: translateX(-50%) translateY(var(--banner-content-offset-y-mobile, 0px)) !important;
@@ -144,13 +144,43 @@
       align-items: var(--banner-content-align-mobile, center) !important;
     }
 
-    .banner-content--{{ block.id }} .banner-content__inner > *,
+    /* Kill leftover desktop text margins so gap owns inter-item space.
+       Do NOT zero button margins — mobile top/bottom spacing must win. */
+    .banner-content--{{ block.id }} .banner-content__inner > *:not(:has(.button, .button-link-arrow, .button-unstyled)),
     .banner-content--{{ block.id }} .banner-content__inner .text-block,
-    .banner-content--{{ block.id }} .banner-content__inner .text-block > *,
-    .banner-content--{{ block.id }} .banner-content__inner :is(.button, .button-link-arrow, .button-unstyled) {
+    .banner-content--{{ block.id }} .banner-content__inner .text-block > * {
       margin-block: 0 !important;
       margin-top: 0 !important;
       margin-bottom: 0 !important;
+    }
+
+    .banner-content--{{ block.id }} .banner-content__inner :is(.button, .button-link-arrow, .button-unstyled) {
+      margin-block-start: var(--btn-space-top-mobile, 0px) !important;
+    }
+
+    /* Stack: in-flow, so button bottom spacing is a real gap above the image */
+    .hero--stack-content-mobile .banner-content--{{ block.id }} {
+      position: relative !important;
+      inset: auto !important;
+      display: block !important;
+      width: 100% !important;
+      height: auto !important;
+      min-height: 0 !important;
+      padding: 0 !important;
+      pointer-events: auto !important;
+    }
+
+    .hero--stack-content-mobile .banner-content--{{ block.id }} .banner-content__slot {
+      position: relative !important;
+      left: auto !important;
+      right: auto !important;
+      top: auto !important;
+      bottom: auto !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 auto !important;
+      transform: none !important;
+      pointer-events: auto !important;
     }
   }
 {% endstyle %}
@@ -250,7 +280,8 @@
     }
 
     .banner-content--align-mobile-center .banner-content__inner :is(.button, .button-link-arrow, .button-unstyled) {
-      margin-inline: auto !important;
+      margin-inline-start: auto !important;
+      margin-inline-end: auto !important;
     }
 
     .banner-content--align-mobile-flex-start .banner-content__inner {

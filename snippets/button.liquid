@@ -50,16 +50,33 @@
 
     @media screen and (max-width: 749px) {
       .button-link-arrow--{{ block.id }} {
-        margin-block-start: var(--btn-space-top-mobile);
-        margin-block-end: var(--btn-space-bottom-mobile);
-        margin-inline-start: var(--btn-space-left-mobile);
-        margin-inline-end: var(--btn-space-right-mobile);
+        margin-block-start: var(--btn-space-top-mobile) !important;
+        margin-block-end: var(--btn-space-bottom-mobile) !important;
+        margin-inline-start: var(--btn-space-left-mobile) !important;
+        margin-inline-end: var(--btn-space-right-mobile) !important;
         {% if block_settings.custom_mobile_typography %}
           {% if block_settings.font_size_mobile != blank %}
             font-size: {{ block_settings.font_size_mobile }};
           {% endif %}
           letter-spacing: {{ block_settings.letter_spacing_mobile | default: 0.7 }}px;
         {% endif %}
+      }
+
+      /* Stack: real gap above the image */
+      .hero--stack-content-mobile .banner-content__inner > *:has(.button-link-arrow--{{ block.id }}) {
+        padding-block-end: {{ block_settings.spacing_bottom_mobile | default: 0 }}px !important;
+      }
+
+      /*
+        Overlay: products are the background — margin/padding is invisible on top of them.
+        Bottom spacing lifts the copy off the media (1px on the slider = 1px up).
+      */
+      #Hero-{{ section.id }}:not(.hero--stack-content-mobile)
+        .banner-content:has(.button-link-arrow--{{ block.id }})
+        .banner-content__slot {
+        transform: translateX(-50%)
+          translateY(calc(var(--banner-content-offset-y-mobile, 0px) - {{ block_settings.spacing_bottom_mobile | default: 0 }}px))
+          !important;
       }
     }
   {% endstyle %}

@@ -142,8 +142,8 @@
   {% style %}
     @media screen and (max-width: 749px) {
       .text-block--{{ block.id }} {
-        width: {{ mobile_width }};
-        max-width: 100%;
+        width: {{ mobile_width }} !important;
+        max-width: 100% !important;
         overflow-wrap: anywhere;
         word-break: break-word;
         {% if mobile_max_width == 'none' %}
@@ -152,10 +152,14 @@
           --max-width: var(--max-width--{{ mobile_type }}-{{ mobile_max_width }});
         {% endif %}
         --text-align: {{ mobile_align }};
-        --padding-block-start: {{ mobile_pad_top }}px;
-        --padding-block-end: {{ mobile_pad_bottom }}px;
-        --padding-inline-start: {{ mobile_pad_left }}px;
-        --padding-inline-end: {{ mobile_pad_right }}px;
+        --padding-block-start: {{ mobile_pad_top }}px !important;
+        --padding-block-end: {{ mobile_pad_bottom }}px !important;
+        --padding-inline-start: {{ mobile_pad_left }}px !important;
+        --padding-inline-end: {{ mobile_pad_right }}px !important;
+        padding-block-start: {{ mobile_pad_top }}px !important;
+        padding-block-end: {{ mobile_pad_bottom }}px !important;
+        padding-inline-start: {{ mobile_pad_left }}px !important;
+        padding-inline-end: {{ mobile_pad_right }}px !important;
         margin-block-start: {{ mobile_margin_top }}px;
         margin-block-end: {{ mobile_margin_bottom }}px;
         {% if mobile_text_color != blank %}
@@ -184,8 +188,8 @@
 
       .text-block--{{ block.id }} > *,
       .text-block.text-block--{{ block.id }} :is(h1, h2, h3, h4, h5, h6) {
-        width: {{ mobile_width }};
-        max-width: 100%;
+        width: {{ mobile_width }} !important;
+        max-width: 100% !important;
         overflow-wrap: anywhere;
         word-break: break-word;
         text-align: {{ mobile_align }};
@@ -220,6 +224,13 @@
         .text-block--{{ block.id }},
         .text-block--{{ block.id }} > * {
           margin-inline: auto;
+          text-align: center !important;
+          --text-align: center;
+        }
+        .text-block--{{ block.id }} {
+          align-items: center !important;
+          padding-inline-start: {{ mobile_pad_left }}px !important;
+          padding-inline-end: {{ mobile_pad_right }}px !important;
         }
       {% elsif mobile_align == 'right' %}
         .text-block--{{ block.id }} > * {

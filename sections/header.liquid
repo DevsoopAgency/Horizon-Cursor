@@ -364,6 +364,14 @@
     --header-mobile-icon-gap: {{ section.settings.header_mobile_icon_gap | default: 4 }}px;
   }
 
+  @media screen and (max-width: 749px) {
+    {% if section.settings.custom_mobile_header and section.settings.hide_search_mobile %}
+      #shopify-section-{{ section.id }} .search-action {
+        display: none !important;
+      }
+    {% endif %}
+  }
+
   {% if cart_badge_bg != blank or cart_badge_text_color != blank or cart_bubble_color_override %}
   #shopify-section-{{ section.id }} {
     --cart-bubble-background: {{ cart_bubble_background | default: cart_badge_bg | default: '#E03F7E' }};

@@ -502,6 +502,7 @@
     --hero-mobile-stack-gap: {{ section.settings.mobile_stack_gap | default: 8 }}px;
     --hero-overlay-pad-top-mobile: {{ section.settings.mobile_overlay_pad_top | default: 0 }}px;
     --hero-overlay-pad-inline-mobile: {{ section.settings.mobile_overlay_pad_inline | default: 0 }}px;
+    --hero-overlay-reserve-bottom: {{ section.settings.mobile_overlay_reserve_bottom | default: 0 }}%;
     --hero-mobile-media-fit: {{ section.settings.mobile_media_fit | default: 'cover' }};
     --hero-mobile-media-position: {{ section.settings.mobile_media_position | default: 'center center' }};
     --hero-content-safe-inset: max(var(--page-margin, 1rem), 1.5rem);
@@ -563,8 +564,21 @@
             top: {{ section.settings.mobile_overlay_pad_top }}px !important;
           }
         {% endif %}
+
+        {% if section.settings.mobile_overlay_reserve_bottom > 0 %}
+          #Hero-{{ section.id }} .banner-content--mobile-pos-top .banner-content__slot,
+          #Hero-{{ section.id }} .banner-content--mobile-pos-custom .banner-content__slot {
+            bottom: {{ section.settings.mobile_overlay_reserve_bottom }}% !important;
+          }
+
+          #Hero-{{ section.id }} .banner-content__inner {
+            justify-content: flex-start !important;
+            height: 100%;
+          }
+        {% endif %}
       {% endif %}
 
+      {% if section.settings.mobile_content_layout != 'stack' %}
       {% if section.settings.mobile_height == 'small' or section.settings.mobile_height == 'medium' or section.settings.mobile_height == 'large' %}
         #Hero-{{ section.id }} {
           --hero-min-height-mobile: var(--section-height-{{ section.settings.mobile_height }});
@@ -594,6 +608,7 @@
             margin: 0 !important;
           }
         {% endif %}
+      {% endif %}
       {% endif %}
     }
   {% endstyle %}
@@ -1472,6 +1487,18 @@
       "unit": "px",
       "default": 0,
       "info": "t:info.mobile_overlay_pad_inline",
+      "visible_if": "{{ section.settings.mobile_content_layout == 'overlay' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_overlay_reserve_bottom",
+      "label": "t:settings.mobile_overlay_reserve_bottom",
+      "min": 0,
+      "max": 70,
+      "step": 1,
+      "unit": "%",
+      "default": 0,
+      "info": "t:info.mobile_overlay_reserve_bottom",
       "visible_if": "{{ section.settings.mobile_content_layout == 'overlay' }}"
     },
     {
