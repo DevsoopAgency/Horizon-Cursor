@@ -81,6 +81,62 @@
   #shopify-section-{{ section.id }} .text-block.custom-typography[style*='--font-heading--family'] {
     font-family: var(--font-heading--family), serif;
   }
+
+  {% if section.settings.email_max_width > 0 %}
+    #shopify-section-{{ section.id }} .email-signup-block {
+      max-width: {{ section.settings.email_max_width }}px;
+      min-width: 0;
+      width: 100%;
+    }
+
+    @media screen and (max-width: 749px) {
+      #shopify-section-{{ section.id }} .email-signup-block {
+        max-width: none;
+      }
+    }
+  {% endif %}
+
+  {% if section.settings.email_compact %}
+    #shopify-section-{{ section.id }} .email-signup-block {
+      --arrow-button-size-integrated: 18px;
+      --arrow-icon-size-small: 16px;
+    }
+
+    #shopify-section-{{ section.id }} .email-signup__input-group--underline {
+      box-shadow: none;
+      margin-block-end: 0;
+      border-bottom: 1px solid var(--color-input-border, #fff);
+      align-items: center;
+    }
+
+    #shopify-section-{{ section.id }} .email-signup__input-group--underline:focus-within {
+      border-bottom-color: var(--color-input-text, #fff);
+    }
+
+    #shopify-section-{{ section.id }} .email-signup__input-group .email-signup__input--underline {
+      padding: 4px 0 8px;
+      font-weight: 400;
+    }
+
+    #shopify-section-{{ section.id }} .email-signup__input::placeholder {
+      color: rgb(var(--color-input-text-rgb, 255 255 255) / 0.45);
+      font-weight: 400;
+    }
+
+    #shopify-section-{{ section.id }} .email-signup__button-icon {
+      padding: 0;
+    }
+
+    #shopify-section-{{ section.id }} .email-signup__input--underline + .email-signup__button--integrated.email-signup__button--arrow {
+      width: 18px;
+      height: 18px;
+    }
+
+    #shopify-section-{{ section.id }} .email-signup__input--underline + .email-signup__button--integrated.email-signup__button--arrow > .email-signup__button-icon {
+      width: 16px;
+      height: 16px;
+    }
+  {% endif %}
 {% endstyle %}
 
 <div
@@ -389,6 +445,24 @@
       "unit": "px",
       "default": 0,
       "info": "Applies to body loose tracking inside this footer. 1px ≈ .05em at 12px."
+    },
+    {
+      "type": "range",
+      "id": "email_max_width",
+      "label": "Email field max width",
+      "min": 0,
+      "max": 600,
+      "step": 10,
+      "unit": "px",
+      "default": 0,
+      "info": "0 is full column width. 280 matches the Figma footer."
+    },
+    {
+      "type": "checkbox",
+      "id": "email_compact",
+      "label": "Compact email underline",
+      "default": false,
+      "info": "1px hairline, 18px arrow, muted placeholder. Off keeps the stock Horizon field."
     },
     {
       "type": "color",

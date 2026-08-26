@@ -116,6 +116,9 @@
               "settings": {
                 "width": "fill",
                 "custom_width": 100,
+                "max_width_px": 280,
+                "input_density": "compact",
+                "arrow_size": 18,
                 "heading": "",
                 "placeholder": "Email",
                 "heading_text_color": "",
@@ -276,6 +279,8 @@
         "menu_heading_size": 12,
         "menu_link_size": 14,
         "subtitle_letter_spacing": 1,
+        "email_max_width": 280,
+        "email_compact": true,
         "background_color": "#000000",
         "padding-block-start": 60,
         "padding-block-end": 40

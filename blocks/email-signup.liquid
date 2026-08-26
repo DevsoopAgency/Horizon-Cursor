@@ -6,13 +6,23 @@
   if block_settings.input_style == 'custom'
     assign is_custom_input = true
   endif
+
+  assign is_compact = false
+  if block_settings.input_density == 'compact'
+    assign is_compact = true
+  endif
 %}
 {% render 'button-custom-styles', block_settings: block_settings, block_id: block.id %}
 <div
-  class="email-signup-block size-style spacing-style"
+  class="email-signup-block size-style spacing-style{% if is_compact %} email-signup-block--compact{% endif %}{% if block_settings.max_width_px > 0 %} email-signup-block--constrained{% endif %}"
   style="
     {% render 'size-style', settings: block_settings %}
     {% render 'spacing-style', settings: block_settings %}
+    {% if block_settings.max_width_px > 0 %}--email-signup-max-width: {{ block_settings.max_width_px }}px;{% endif %}
+    {% if block_settings.arrow_size > 0 %}
+      --arrow-button-size-integrated: {{ block_settings.arrow_size }}px;
+      --arrow-icon-size-small: {{ block_settings.arrow_size }}px;
+    {% endif %}
   "
   {{ block.shopify_attributes }}
 >
@@ -140,11 +150,47 @@
     --arrow-icon-size-small: 24px;
 
     min-width: fit-content;
+    max-width: var(--email-signup-max-width, none);
 
     @media screen and (max-width: 749px) {
       width: 100%;
       min-width: unset;
+      max-width: none;
     }
+  }
+
+  .email-signup-block--constrained {
+    min-width: 0;
+  }
+
+  .email-signup-block--compact {
+    --arrow-button-size-integrated: 18px;
+    --arrow-icon-size-small: 16px;
+  }
+
+  .email-signup-block--compact .email-signup__input-group--underline {
+    box-shadow: none;
+    margin-block-end: 0;
+    border-bottom: 1px solid var(--color-input-border);
+    align-items: center;
+  }
+
+  .email-signup-block--compact .email-signup__input-group--underline:focus-within {
+    border-bottom-color: var(--color-input-text);
+  }
+
+  .email-signup-block--compact .email-signup__input-group .email-signup__input--underline {
+    padding: 4px 0 8px;
+    font-weight: 400;
+  }
+
+  .email-signup-block--compact .email-signup__input::placeholder {
+    color: rgb(var(--color-input-text-rgb) / 0.45);
+    font-weight: 400;
+  }
+
+  .email-signup-block--compact .email-signup__button-icon {
+    padding: 0;
   }
 
   .email-signup__heading {
@@ -440,6 +486,46 @@
       "unit": "%",
       "default": 100,
       "visible_if": "{{ block.settings.width == \"custom\" }}"
+    },
+    {
+      "type": "range",
+      "id": "max_width_px",
+      "label": "Max width",
+      "min": 0,
+      "max": 600,
+      "step": 10,
+      "unit": "px",
+      "default": 0,
+      "info": "0 uses the width setting only. 280 matches the Figma footer field."
+    },
+    {
+      "type": "select",
+      "id": "input_density",
+      "label": "Input density",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "compact",
+          "label": "Compact"
+        }
+      ],
+      "default": "default",
+      "info": "Compact: 1px hairline underline, smaller arrow, muted placeholder."
+    },
+    {
+      "type": "range",
+      "id": "arrow_size",
+      "label": "Arrow size",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.display_type == \"arrow\" }}",
+      "info": "0 uses the default arrow size. 18 matches the Figma footer."
     },
     {
       "type": "header",
