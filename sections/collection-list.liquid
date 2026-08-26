@@ -50,7 +50,7 @@
   endif
 
   assign section_classes = 'section section--' | append: section.settings.section_width
-  assign section_classes = section_classes | append: ' section-resource-list spacing-style gap-style'
+  assign section_classes = section_classes | append: ' section-resource-list spacing-style gap-style collection-list'
 
   if section.settings.background_color != blank
     assign section_classes = section_classes | append: ' color-custom-' | append: section.id
@@ -139,103 +139,116 @@
 {% endstyle %}
 
 {% stylesheet %}
-  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card {
+  .collection-list.collection-list--styled-cards .collection-card {
     --border-radius: var(--collection-card-radius);
   }
 
-  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg .collection-card__inner,
-  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg .collection-card__image,
-  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg .resource-image {
+  .collection-list.collection-list--styled-cards .collection-card.collection-card--image-bg .collection-card__inner,
+  .collection-list.collection-list--styled-cards .collection-card.collection-card--image-bg .collection-card__image,
+  .collection-list.collection-list--styled-cards .collection-card.collection-card--image-bg .resource-image {
     border-radius: var(--collection-card-radius);
   }
 
-  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg .overlay {
+  .collection-list.collection-list--styled-cards .collection-card.collection-card--image-bg .overlay {
     --overlay-border-radius: var(--collection-card-radius);
   }
 
-  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card--image-bg .collection-card__content {
+  .collection-list.collection-list--styled-cards .collection-card--image-bg .collection-card__content {
     padding: var(--collection-card-content-padding);
     gap: var(--collection-card-content-gap);
   }
 
-  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card__content > .text-block:first-child,
-  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card__content > .text-block:first-child p {
+  .collection-list.collection-list--styled-cards .collection-card__content > .text-block:first-child,
+  .collection-list.collection-list--styled-cards .collection-card__content > .text-block:first-child p {
     font-size: var(--collection-card-title-size);
     font-weight: var(--collection-card-title-weight);
     line-height: 1.2;
   }
 
-  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card__content > .text-block:nth-child(2),
-  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card__content > .text-block:nth-child(2) p {
+  .collection-list.collection-list--styled-cards .collection-card__content > .text-block:nth-child(2),
+  .collection-list.collection-list--styled-cards .collection-card__content > .text-block:nth-child(2) p {
     font-size: var(--collection-card-subtitle-size);
     color: var(--collection-card-subtitle-color);
     line-height: 1.4;
   }
 
-  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card__content .button-link-arrow {
+  .collection-list.collection-list--styled-cards .collection-card__content .button-link-arrow {
     font-size: var(--collection-card-cta-size);
   }
 
-  #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg {
+  .collection-list.collection-list--styled-cards .collection-card.collection-card--image-bg {
     aspect-ratio: var(--collection-card-aspect-ratio, var(--ratio));
   }
 
   @media screen and (min-width: 991px) {
-    #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg {
+    .collection-list.collection-list--styled-cards .collection-card.collection-card--image-bg {
       height: var(--collection-card-height-desktop);
     }
 
-    #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg[data-aspect="square"],
-    #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card--image-bg[data-aspect="square"] {
+    .collection-list.collection-list--styled-cards .collection-card.collection-card--image-bg[data-aspect="square"],
+    .collection-list.collection-list--styled-cards .collection-card--image-bg[data-aspect="square"] {
       height: auto;
     }
   }
 
   @media screen and (min-width: 750px) and (max-width: 990px) {
-    #shopify-section-{{ section.id }} .resource-list--grid {
+    .collection-list .resource-list--grid {
       grid-template-columns: repeat(var(--collection-list-tablet-columns), 1fr);
     }
 
-    #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg {
+    .collection-list.collection-list--styled-cards .collection-card.collection-card--image-bg {
       height: var(--collection-card-height-tablet);
     }
 
-    #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg[data-aspect="square"] {
+    .collection-list.collection-list--styled-cards .collection-card.collection-card--image-bg[data-aspect="square"] {
       height: auto;
     }
   }
 
   @media screen and (max-width: 749px) {
-    #shopify-section-{{ section.id }}.collection-list--mobile-one_column .resource-list--grid:not(.hidden--mobile) {
+    .collection-list.collection-list--mobile-one_column .resource-list--grid:not(.hidden--mobile) {
       grid-template-columns: 1fr;
     }
 
-    #shopify-section-{{ section.id }}.collection-list--mobile-two_columns .resource-list--grid:not(.hidden--mobile) {
+    .collection-list.collection-list--mobile-two_columns .resource-list--grid:not(.hidden--mobile) {
       grid-template-columns: repeat(2, 1fr);
     }
 
-    #shopify-section-{{ section.id }}.collection-list--styled-cards .collection-card.collection-card--image-bg {
+    .collection-list.collection-list--styled-cards .collection-card.collection-card--image-bg {
       height: auto;
     }
 
-    #shopify-section-{{ section.id }}.collection-list--mobile-swipe_carousel .resource-list--grid:not(.hidden--mobile) {
+    .collection-list.collection-list--mobile-swipe_carousel .resource-list--grid:not(.hidden--mobile) {
       display: flex;
-      flex-wrap: nowrap;
+      flex-flow: row nowrap;
+      align-items: stretch;
       overflow-x: auto;
+      overscroll-behavior-x: contain;
       scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
-      grid-template-columns: unset;
+      grid-template-columns: none;
+      gap: var(--resource-list-column-gap);
       scrollbar-width: none;
     }
 
-    #shopify-section-{{ section.id }}.collection-list--mobile-swipe_carousel .resource-list--grid:not(.hidden--mobile)::-webkit-scrollbar {
+    .collection-list.collection-list--mobile-swipe_carousel .resource-list--grid:not(.hidden--mobile)::-webkit-scrollbar {
       display: none;
     }
 
-    #shopify-section-{{ section.id }}.collection-list--mobile-swipe_carousel .resource-list--grid:not(.hidden--mobile) .resource-list__item {
+    .collection-list.collection-list--mobile-swipe_carousel .resource-list--grid:not(.hidden--mobile) .resource-list__item {
       flex: 0 0 var(--collection-list-swipe-card-width);
-      scroll-snap-align: start;
+      width: var(--collection-list-swipe-card-width);
       max-width: var(--collection-list-swipe-card-width);
+      scroll-snap-align: start;
+      height: auto;
+      min-width: 0;
+    }
+
+    .collection-list.collection-list--mobile-swipe_carousel .collection-card,
+    .collection-list.collection-list--mobile-swipe_carousel .collection-card.collection-card--image-bg {
+      height: auto;
+      width: 100%;
+      flex: none;
     }
   }
 {% endstylesheet %}
@@ -406,6 +419,193 @@
       "step": 1,
       "default": 4,
       "visible_if": "{{ section.settings.layout_type == 'editorial' }}"
+    },
+    {
+      "type": "header",
+      "content": "Card Styles"
+    },
+    {
+      "type": "select",
+      "id": "card_aspect_ratio",
+      "label": "Card aspect ratio",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "Adapt to Image"
+        },
+        {
+          "value": "figma_portrait",
+          "label": "Figma Portrait 9:16/437px"
+        },
+        {
+          "value": "square",
+          "label": "Square 1:1"
+        },
+        {
+          "value": "custom",
+          "label": "Custom Height"
+        }
+      ],
+      "default": "adapt"
+    },
+    {
+      "type": "range",
+      "id": "custom_card_height",
+      "label": "Custom card height",
+      "min": 250,
+      "max": 600,
+      "step": 5,
+      "unit": "px",
+      "default": 435,
+      "visible_if": "{{ section.settings.card_aspect_ratio == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "card_corner_radius",
+      "label": "t:settings.card_corner_radius",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "card_title_font_size",
+      "label": "Title font size",
+      "min": 14,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "select",
+      "id": "card_title_font_weight",
+      "label": "Title font weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "600",
+          "label": "Semibold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "range",
+      "id": "card_subtitle_font_size",
+      "label": "Subtitle font size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "card_subtitle_color",
+      "label": "Subtitle color",
+      "alpha": true,
+      "default": "#ffffffb3"
+    },
+    {
+      "type": "range",
+      "id": "card_cta_font_size",
+      "label": "CTA font size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "card_content_gap",
+      "label": "Content vertical gap",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "card_content_padding",
+      "label": "Content padding",
+      "min": 0,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Responsive Layout"
+    },
+    {
+      "type": "range",
+      "id": "tablet_columns",
+      "label": "Tablet columns",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "default": 3,
+      "visible_if": "{{ section.settings.layout_type == 'grid' }}"
+    },
+    {
+      "type": "range",
+      "id": "tablet_card_height",
+      "label": "Tablet card height",
+      "min": 200,
+      "max": 600,
+      "step": 5,
+      "unit": "px",
+      "default": 380,
+      "visible_if": "{{ section.settings.layout_type == 'grid' }}"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "t:settings.mobile_layout",
+      "options": [
+        {
+          "value": "one_column",
+          "label": "1 column stacked"
+        },
+        {
+          "value": "two_columns",
+          "label": "2 columns"
+        },
+        {
+          "value": "swipe_carousel",
+          "label": "Swipe carousel"
+        }
+      ],
+      "default": "two_columns",
+      "visible_if": "{{ section.settings.layout_type == 'grid' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_swipe_card_width",
+      "label": "Swipe card width",
+      "min": 40,
+      "max": 90,
+      "step": 1,
+      "unit": "%",
+      "default": 75,
+      "visible_if": "{{ section.settings.layout_type == 'grid' and section.settings.mobile_layout == 'swipe_carousel' }}"
     },
     {
       "type": "header",
