@@ -97,6 +97,21 @@
     gap: 16px;
   }
 
+  /* Mobile: hug content so the pink tile stays a rounded rectangle, not a stretched desktop-height block */
+  @media screen and (max-width: 767px) {
+    .testimonial-card {
+      min-height: 0;
+      height: auto;
+      padding: var(--testimonial-mobile-card-padding, 24px);
+      gap: 12px;
+    }
+
+    .testimonial-card__body p {
+      font-size: 0.9375rem;
+      line-height: 1.5;
+    }
+  }
+
   .testimonial-card__quote-icon {
     flex-shrink: 0;
     display: flex;

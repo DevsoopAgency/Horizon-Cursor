@@ -2533,6 +2533,8 @@
         "tablet_gap": 24,
         "mobile_layout": "carousel",
         "mobile_gap": 16,
+        "mobile_card_width": 80,
+        "mobile_card_padding": 24,
         "section_width": "page-width",
         "horizontal_alignment": "center",
         "gap": 24,

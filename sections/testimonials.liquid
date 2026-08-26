@@ -17,6 +17,8 @@
   assign tablet_gap = ss.tablet_gap | default: 24
   assign mobile_layout = ss.mobile_layout | default: 'carousel'
   assign mobile_gap = ss.mobile_gap | default: 16
+  assign mobile_card_width = ss.mobile_card_width | default: 80
+  assign mobile_card_padding = ss.mobile_card_padding | default: 24
   assign horizontal_alignment = ss.horizontal_alignment | default: 'center'
   assign section_gap = ss.gap | default: 24
 
@@ -43,6 +45,8 @@
     --testimonial-tablet-columns: {{ tablet_columns }};
     --testimonial-tablet-gap: {{ tablet_gap }}px;
     --testimonial-mobile-gap: {{ mobile_gap }}px;
+    --testimonial-mobile-card-width: {{ mobile_card_width }}%;
+    --testimonial-mobile-card-padding: {{ mobile_card_padding }}px;
     --testimonial-heading-align: {{ heading_align }};
   }
 {% endstyle %}
@@ -127,14 +131,16 @@
   .testimonials__grid--mobile-carousel {
     display: flex;
     flex-flow: row nowrap;
+    align-items: stretch;
     gap: var(--testimonial-mobile-gap, 16px);
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    margin-inline: -16px;
-    padding-inline: 16px;
+    margin-inline: calc(-1 * var(--page-margin, 16px));
+    padding-inline: var(--page-margin, 16px);
+    width: calc(100% + var(--page-margin, 16px) * 2);
   }
 
   .testimonials__grid--mobile-carousel::-webkit-scrollbar {
@@ -142,10 +148,20 @@
   }
 
   .testimonials__grid--mobile-carousel > * {
-    flex: 0 0 85%;
-    max-width: 340px;
+    flex: 0 0 var(--testimonial-mobile-card-width, 80%);
+    width: var(--testimonial-mobile-card-width, 80%);
+    max-width: none;
+    height: auto;
     scroll-snap-align: start;
     min-width: 0;
+  }
+
+  @media screen and (max-width: 767px) {
+    .testimonials__grid--mobile-carousel .testimonial-card {
+      height: auto;
+      min-height: 0;
+      padding: var(--testimonial-mobile-card-padding, 24px);
+    }
   }
 
   /* Tablet 768–1023px */
@@ -173,6 +189,13 @@
       flex: unset;
       max-width: none;
       width: auto;
+      height: 100%;
+    }
+
+    .testimonials__grid--mobile-carousel .testimonial-card {
+      height: 100%;
+      min-height: var(--testimonial-card-height, 333px);
+      padding: var(--testimonial-card-padding, 32px);
     }
   }
 
@@ -205,6 +228,13 @@
       flex: unset;
       max-width: none;
       width: auto;
+      height: 100%;
+    }
+
+    .testimonials__grid--mobile-carousel .testimonial-card {
+      height: 100%;
+      min-height: var(--testimonial-card-height, 333px);
+      padding: var(--testimonial-card-padding, 32px);
     }
   }
 {% endstylesheet %}
@@ -371,6 +401,27 @@
       "step": 2,
       "unit": "px",
       "default": 16
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_width",
+      "label": "Card width (mobile)",
+      "min": 60,
+      "max": 92,
+      "step": 1,
+      "unit": "%",
+      "default": 80,
+      "visible_if": "{{ section.settings.mobile_layout == 'carousel' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_padding",
+      "label": "Card padding (mobile)",
+      "min": 12,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 24
     },
     {
       "type": "header",
