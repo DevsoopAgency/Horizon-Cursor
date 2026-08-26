@@ -500,6 +500,10 @@
     --hero-mobile-stack-pad-bottom: {{ section.settings.mobile_stack_padding_bottom | default: 16 }}px;
     --hero-mobile-stack-pad-inline: {{ section.settings.mobile_stack_padding_inline | default: 24 }}px;
     --hero-mobile-stack-gap: {{ section.settings.mobile_stack_gap | default: 8 }}px;
+    --hero-overlay-pad-top-mobile: {{ section.settings.mobile_overlay_pad_top | default: 0 }}px;
+    --hero-overlay-pad-inline-mobile: {{ section.settings.mobile_overlay_pad_inline | default: 0 }}px;
+    --hero-mobile-media-fit: {{ section.settings.mobile_media_fit | default: 'cover' }};
+    --hero-mobile-media-position: {{ section.settings.mobile_media_position | default: 'center center' }};
     --hero-content-safe-inset: max(var(--page-margin, 1rem), 1.5rem);
     {% if section.settings.section_height == 'custom' %}
       --hero-min-height: {{ section.settings.section_height_custom }}svh;
@@ -542,6 +546,25 @@
     }
 
     @media screen and (max-width: 749px) {
+      {% if section.settings.mobile_overlay_pad_inline > 0 %}
+        #Hero-{{ section.id }} {
+          --hero-content-safe-inset: {{ section.settings.mobile_overlay_pad_inline }}px;
+        }
+      {% endif %}
+
+      {% if section.settings.mobile_content_layout != 'stack' %}
+        #Hero-{{ section.id }} .hero__media {
+          object-fit: var(--hero-mobile-media-fit, cover);
+          object-position: var(--hero-mobile-media-position, center center);
+        }
+
+        {% if section.settings.mobile_overlay_pad_top > 0 %}
+          #Hero-{{ section.id }} .banner-content--mobile-pos-top .banner-content__slot {
+            top: {{ section.settings.mobile_overlay_pad_top }}px !important;
+          }
+        {% endif %}
+      {% endif %}
+
       {% if section.settings.mobile_height == 'small' or section.settings.mobile_height == 'medium' or section.settings.mobile_height == 'large' %}
         #Hero-{{ section.id }} {
           --hero-min-height-mobile: var(--section-height-{{ section.settings.mobile_height }});
@@ -1388,7 +1411,7 @@
       "id": "mobile_stack_padding_top",
       "label": "t:settings.mobile_stack_padding_top",
       "min": 0,
-      "max": 120,
+      "max": 200,
       "step": 4,
       "unit": "px",
       "default": 48,
@@ -1399,7 +1422,7 @@
       "id": "mobile_stack_padding_bottom",
       "label": "t:settings.mobile_stack_padding_bottom",
       "min": 0,
-      "max": 80,
+      "max": 160,
       "step": 4,
       "unit": "px",
       "default": 16,
@@ -1410,7 +1433,7 @@
       "id": "mobile_stack_padding_inline",
       "label": "t:settings.mobile_stack_padding_inline",
       "min": 0,
-      "max": 64,
+      "max": 80,
       "step": 4,
       "unit": "px",
       "default": 24,
@@ -1421,11 +1444,71 @@
       "id": "mobile_stack_gap",
       "label": "t:settings.mobile_stack_gap",
       "min": 0,
-      "max": 64,
+      "max": 80,
       "step": 2,
       "unit": "px",
       "default": 8,
       "visible_if": "{{ section.settings.mobile_content_layout == 'stack' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_overlay_pad_top",
+      "label": "t:settings.mobile_overlay_pad_top",
+      "min": 0,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "info": "t:info.mobile_overlay_pad_top",
+      "visible_if": "{{ section.settings.mobile_content_layout == 'overlay' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_overlay_pad_inline",
+      "label": "t:settings.mobile_overlay_pad_inline",
+      "min": 0,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "info": "t:info.mobile_overlay_pad_inline",
+      "visible_if": "{{ section.settings.mobile_content_layout == 'overlay' }}"
+    },
+    {
+      "type": "select",
+      "id": "mobile_media_fit",
+      "label": "t:settings.mobile_media_fit",
+      "options": [
+        {
+          "value": "cover",
+          "label": "t:options.cover"
+        },
+        {
+          "value": "contain",
+          "label": "t:options.contain"
+        }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "select",
+      "id": "mobile_media_position",
+      "label": "t:settings.mobile_media_position",
+      "options": [
+        {
+          "value": "center center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "center top",
+          "label": "t:options.top"
+        },
+        {
+          "value": "center bottom",
+          "label": "t:options.bottom"
+        }
+      ],
+      "default": "center center"
     },
     {
       "type": "checkbox",

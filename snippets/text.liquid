@@ -107,6 +107,13 @@
   {% liquid
     assign mobile_type = 'body'
     assign mobile_font_size = block_settings.font_size_mobile
+    if mobile_font_size == 'custom'
+      if block_settings.font_size_mobile_custom != blank
+        assign mobile_font_size = block_settings.font_size_mobile_custom
+      else
+        assign mobile_font_size = blank
+      endif
+    endif
     assign mobile_line_height = block_settings.line_height_mobile
     assign mobile_letter_spacing = block_settings.letter_spacing_mobile
     assign mobile_case = block_settings.case_mobile

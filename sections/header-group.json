@@ -147,6 +147,12 @@
       },
       "settings": {
         "logo_position": "left",
+        "custom_mobile_header": true,
+        "logo_position_mobile": "left",
+        "menu_position_mobile": "right",
+        "hide_search_mobile": true,
+        "header_mobile_pad_inline": 16,
+        "header_mobile_icon_gap": 4,
         "menu_position": "center",
         "menu_row": "top",
         "highlight_menu_title": "Sale",

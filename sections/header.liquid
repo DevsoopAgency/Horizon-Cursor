@@ -207,6 +207,15 @@
     assign class = class | append: ' ' | append: collapse_header_paddings_class
   endif
 
+  if section.settings.custom_mobile_header
+    assign class = class | append: ' header--custom-mobile'
+    assign class = class | append: ' header--mobile-logo-' | append: section.settings.logo_position_mobile | default: 'center'
+    assign class = class | append: ' header--mobile-menu-' | append: section.settings.menu_position_mobile | default: 'left'
+    if section.settings.hide_search_mobile
+      assign class = class | append: ' header--mobile-hide-search'
+    endif
+  endif
+
   # Determine transparent background value
   assign top_transparent = false
   assign bottom_transparent = false
@@ -351,6 +360,8 @@
     --cart-badge-top: {{ section.settings.cart_badge_offset_y | default: 0 }}px;
     --cart-badge-right: {{ section.settings.cart_badge_offset_x | default: 0 }}px;
     --cart-badge-font-size: {{ section.settings.cart_badge_font_size | default: 10 }}px;
+    --header-mobile-pad-inline: {{ section.settings.header_mobile_pad_inline | default: 16 }}px;
+    --header-mobile-icon-gap: {{ section.settings.header_mobile_icon_gap | default: 4 }}px;
   }
 
   {% if cart_badge_bg != blank or cart_badge_text_color != blank or cart_bubble_color_override %}
@@ -1177,6 +1188,86 @@
     }
   }
 
+  /*
+    Custom mobile header (≤749px only). Default off = stock Horizon grid.
+    Figma: logo left, account + cart + hamburger grouped right, search hidden.
+  */
+  @media screen and (max-width: 749px) {
+    #header-component.header--custom-mobile .header__columns,
+    #header-component[data-menu-style='drawer'].header--custom-mobile .header__columns {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      gap: var(--header-mobile-icon-gap, 4px);
+      padding-inline: var(--header-mobile-pad-inline, 16px);
+      grid-template-columns: none;
+      grid-template-areas: none;
+      column-gap: var(--header-mobile-icon-gap, 4px);
+    }
+
+    #header-component.header--custom-mobile .header__columns .header-logo,
+    #header-component.header--custom-mobile .header__columns .search-action,
+    #header-component.header--custom-mobile .header__columns header-actions,
+    #header-component.header--custom-mobile .header__columns .header__drawer,
+    #header-component[data-menu-style='drawer'].header--custom-mobile .header__columns .header-logo,
+    #header-component[data-menu-style='drawer'].header--custom-mobile .header__columns .search-action,
+    #header-component[data-menu-style='drawer'].header--custom-mobile .header__columns header-actions,
+    #header-component[data-menu-style='drawer'].header--custom-mobile .header__columns .header__drawer {
+      grid-area: unset;
+    }
+
+    #header-component.header--custom-mobile.header--mobile-logo-left .header-logo,
+    #header-component[data-menu-style='drawer'].header--custom-mobile.header--mobile-logo-left .header-logo {
+      order: 1;
+      margin-inline-end: auto;
+      justify-content: flex-start;
+      justify-self: start;
+      flex: 0 1 auto;
+    }
+
+    #header-component.header--custom-mobile.header--mobile-logo-center .header-logo,
+    #header-component[data-menu-style='drawer'].header--custom-mobile.header--mobile-logo-center .header-logo {
+      order: 2;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-inline: 0;
+    }
+
+    #header-component.header--custom-mobile .search-action,
+    #header-component[data-menu-style='drawer'].header--custom-mobile .search-action {
+      order: 2;
+    }
+
+    #header-component.header--custom-mobile header-actions,
+    #header-component[data-menu-style='drawer'].header--custom-mobile header-actions {
+      order: 3;
+      gap: var(--header-mobile-icon-gap, 4px);
+      flex: 0 0 auto;
+    }
+
+    #header-component.header--custom-mobile.header--mobile-menu-right .header__drawer,
+    #header-component[data-menu-style='drawer'].header--custom-mobile.header--mobile-menu-right .header__drawer {
+      order: 4;
+      flex: 0 0 auto;
+    }
+
+    #header-component.header--custom-mobile.header--mobile-menu-left .header__drawer,
+    #header-component[data-menu-style='drawer'].header--custom-mobile.header--mobile-menu-left .header__drawer {
+      order: 0;
+    }
+
+    #header-component.header--custom-mobile.header--mobile-hide-search .search-action,
+    #header-component[data-menu-style='drawer'].header--custom-mobile.header--mobile-hide-search .search-action {
+      display: none !important;
+    }
+
+    #header-component.header--custom-mobile .header__icon--summary {
+      padding: var(--padding-xs);
+    }
+  }
+
   /* Single column layout if there are no columns within */
   .header__columns:not(:has(.header__column)) {
     grid-template-columns: 1fr;
@@ -1467,6 +1558,81 @@
         }
       ],
       "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "t:content.mobile_header"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_mobile_header",
+      "label": "t:settings.custom_mobile_header",
+      "default": false,
+      "info": "t:info.custom_mobile_header"
+    },
+    {
+      "type": "select",
+      "id": "logo_position_mobile",
+      "label": "t:settings.logo_position_mobile",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        }
+      ],
+      "default": "center",
+      "visible_if": "{{ section.settings.custom_mobile_header }}"
+    },
+    {
+      "type": "select",
+      "id": "menu_position_mobile",
+      "label": "t:settings.menu_position_mobile",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "right",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "left",
+      "visible_if": "{{ section.settings.custom_mobile_header }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_search_mobile",
+      "label": "t:settings.hide_search_mobile",
+      "default": false,
+      "info": "t:info.hide_search_mobile",
+      "visible_if": "{{ section.settings.custom_mobile_header }}"
+    },
+    {
+      "type": "range",
+      "id": "header_mobile_pad_inline",
+      "label": "t:settings.header_mobile_pad_inline",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ section.settings.custom_mobile_header }}"
+    },
+    {
+      "type": "range",
+      "id": "header_mobile_icon_gap",
+      "label": "t:settings.header_mobile_icon_gap",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 4,
+      "visible_if": "{{ section.settings.custom_mobile_header }}"
     },
     {
       "type": "header",
