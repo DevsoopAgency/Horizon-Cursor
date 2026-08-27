@@ -18,6 +18,9 @@
   if block.settings.mobile_columns == '2'
     assign group_extra_class = group_extra_class | append: ' group-block--mobile-cols-2'
   endif
+  if block.settings.tablet_columns == '2' or block.settings.tablet_columns == '3' or block.settings.tablet_columns == '4'
+    assign group_extra_class = group_extra_class | append: ' group-block--tablet-cols-' | append: block.settings.tablet_columns
+  endif
 %}
 
 {% render 'group',
@@ -55,7 +58,7 @@
   }
 
   .group-block--stats.group-block--stats-desktop-2 > .group-block-content {
-    @media screen and (min-width: 991px) {
+    @media screen and (min-width: 1200px) {
       display: grid;
       grid-template-columns: repeat(2, minmax(min-content, 1fr));
       gap: var(--gap);
@@ -63,7 +66,7 @@
   }
 
   .group-block--stats.group-block--stats-desktop-3 > .group-block-content {
-    @media screen and (min-width: 991px) {
+    @media screen and (min-width: 1200px) {
       display: grid;
       grid-template-columns: repeat(3, minmax(min-content, 1fr));
       gap: var(--gap);
@@ -71,7 +74,7 @@
   }
 
   .group-block--stats.group-block--stats-desktop-4 > .group-block-content {
-    @media screen and (min-width: 991px) {
+    @media screen and (min-width: 1200px) {
       display: grid;
       grid-template-columns: repeat(4, minmax(min-content, 1fr));
       gap: var(--gap);
@@ -79,7 +82,7 @@
   }
 
   .group-block--stats.group-block--stats-tablet-columns_2 > .group-block-content {
-    @media screen and (min-width: 750px) and (max-width: 990px) {
+    @media screen and (min-width: 750px) and (max-width: 1199px) {
       display: grid;
       grid-template-columns: repeat(2, minmax(min-content, 1fr));
       gap: var(--gap);
@@ -88,7 +91,7 @@
   }
 
   .group-block--stats.group-block--stats-tablet-columns_3 > .group-block-content {
-    @media screen and (min-width: 750px) and (max-width: 990px) {
+    @media screen and (min-width: 750px) and (max-width: 1199px) {
       display: grid;
       grid-template-columns: repeat(3, minmax(min-content, 1fr));
       gap: var(--gap);
@@ -97,7 +100,7 @@
   }
 
   .group-block--stats.group-block--stats-tablet-scroll > .group-block-content {
-    @media screen and (min-width: 750px) and (max-width: 990px) {
+    @media screen and (min-width: 750px) and (max-width: 1199px) {
       display: flex;
       flex-flow: row nowrap;
       overflow-x: auto;
@@ -113,7 +116,7 @@
   }
 
   .group-block--stats.group-block--stats-tablet-scroll > .group-block-content > * {
-    @media screen and (min-width: 750px) and (max-width: 990px) {
+    @media screen and (min-width: 750px) and (max-width: 1199px) {
       flex: 0 0 40%;
       min-width: 160px;
     }
@@ -186,6 +189,75 @@
       width: 100%;
     }
   }
+
+  .group-block--tablet-cols-2 > .group-block-content,
+  .group-block--tablet-cols-3 > .group-block-content,
+  .group-block--tablet-cols-4 > .group-block-content {
+    @media screen and (min-width: 750px) and (max-width: 1199px) {
+      display: grid;
+      gap: var(--gap);
+      align-items: stretch;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
+  }
+
+  .group-block--tablet-cols-2 > .group-block-content {
+    @media screen and (min-width: 750px) and (max-width: 1199px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .group-block--tablet-cols-3 > .group-block-content {
+    @media screen and (min-width: 750px) and (max-width: 1199px) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .group-block--tablet-cols-4 > .group-block-content {
+    @media screen and (min-width: 750px) and (max-width: 1199px) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .group-block--tablet-cols-2 > .group-block-content > *,
+  .group-block--tablet-cols-3 > .group-block-content > *,
+  .group-block--tablet-cols-4 > .group-block-content > * {
+    @media screen and (min-width: 750px) and (max-width: 1199px) {
+      min-width: 0;
+      max-width: 100%;
+      width: 100%;
+    }
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 1199px) {
+    .group-block--stats > .group-block-content > * {
+      min-width: 0;
+    }
+
+    .group-block--stats .text-block,
+    .group-block--stats .text-block > * {
+      white-space: normal;
+      text-wrap: wrap;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      max-inline-size: 100%;
+    }
+
+    .group-block--stats.group-block--stats-tablet-columns_2 > .group-block-content,
+    .group-block--stats.group-block--stats-tablet-columns_3 > .group-block-content {
+      grid-template-columns: repeat(var(--stats-tablet-cols, 3), minmax(0, 1fr));
+    }
+
+    .group-block--stats.group-block--stats-tablet-columns_2 > .group-block-content {
+      --stats-tablet-cols: 2;
+    }
+
+    .group-block--stats.group-block--stats-tablet-columns_3 > .group-block-content {
+      --stats-tablet-cols: 3;
+    }
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -247,6 +319,32 @@
       ],
       "default": "1",
       "info": "On mobile, keep a 2-column grid instead of stacking. Desktop layout is unchanged."
+    },
+    {
+      "type": "select",
+      "id": "tablet_columns",
+      "label": "Tablet columns",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Same as desktop"
+        },
+        {
+          "value": "2",
+          "label": "2 columns"
+        },
+        {
+          "value": "3",
+          "label": "3 columns"
+        },
+        {
+          "value": "4",
+          "label": "4 columns"
+        }
+      ],
+      "default": "auto",
+      "info": "750–1199px only. Desktop and mobile layouts stay as set.",
+      "visible_if": "{{ block.settings.content_direction == 'row' }}"
     },
     {
       "type": "select",

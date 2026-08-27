@@ -364,7 +364,7 @@
     --header-mobile-icon-gap: {{ section.settings.header_mobile_icon_gap | default: 4 }}px;
   }
 
-  @media screen and (max-width: 749px) {
+  @media screen and (max-width: 1199px) {
     {% if section.settings.custom_mobile_header and section.settings.hide_search_mobile %}
       #shopify-section-{{ section.id }} .search-action {
         display: none !important;
@@ -561,8 +561,8 @@
     display: flex;
   }
 
-  /* Desktop ≥1024: inline search (shrinks within max-width); tablet/mobile: icon */
-  @media screen and (min-width: 1024px) {
+  /* Desktop ≥1200: inline search (shrinks within max-width); tablet/mobile: icon */
+  @media screen and (min-width: 1200px) {
     #shopify-section-{{ section.id }} .search-action--inline .header-search-inline {
       display: flex;
     }
@@ -582,7 +582,7 @@
     }
   }
 
-  @media screen and (max-width: 1023px) {
+  @media screen and (max-width: 1199px) {
     #shopify-section-{{ section.id }} .search-action--inline .header-search-inline {
       display: none;
     }
@@ -778,7 +778,7 @@
     display: none;
   }
 
-  @media screen and (min-width: 750px) {
+  @media screen and (min-width: 1200px) {
     #header-component[data-menu-style='menu'] :is(.header-menu, .dropdown-localization) {
       display: flex;
     }
@@ -788,7 +788,7 @@
     display: contents;
   }
 
-  @media screen and (min-width: 750px) {
+  @media screen and (min-width: 1200px) {
     #header-component[data-menu-style='menu'] .header__navigation-bar-row {
       display: none;
     }
@@ -1055,8 +1055,8 @@
     display: flex;
     align-items: center;
 
-    /* on mobile, header__column nodes are ignored to create a new grid-template-area based on all visible content */
-    @media screen and (max-width: 749px) {
+    /* through tablet, header__column nodes are ignored so compact/drawer layout can reflow */
+    @media screen and (max-width: 1199px) {
       display: contents;
     }
   }
@@ -1197,10 +1197,10 @@
   }
 
   /*
-    Custom mobile header (≤749px only). Default off = stock Horizon grid.
+    Compact header through tablet (≤1199px). Desktop ≥1200 keeps the inline menu.
     Figma: logo left, account + cart + hamburger grouped right, search hidden.
   */
-  @media screen and (max-width: 749px) {
+  @media screen and (max-width: 1199px) {
     #header-component.header--custom-mobile .header__columns,
     #header-component[data-menu-style='drawer'].header--custom-mobile .header__columns {
       display: flex;

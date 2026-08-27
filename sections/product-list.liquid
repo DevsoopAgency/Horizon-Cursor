@@ -256,6 +256,17 @@
       "visible_if": "{{ section.settings.layout_type != 'editorial' }}"
     },
     {
+      "type": "range",
+      "id": "tablet_columns",
+      "label": "Tablet columns",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 3,
+      "info": "750–1199px. Desktop column count is unchanged.",
+      "visible_if": "{{ section.settings.layout_type != 'editorial' }}"
+    },
+    {
       "type": "select",
       "id": "mobile_columns",
       "label": "t:settings.mobile_columns",

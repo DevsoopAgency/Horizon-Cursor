@@ -82,6 +82,12 @@
     }
   }
 
+  @media screen and (min-width: 750px) and (max-width: 1199px) {
+    .resource-list__carousel {
+      --column-count: var(--column-count-tablet, min(3, var(--column-count-desktop, 3)));
+    }
+  }
+
   @container resource-list-carousel (min-width: 750px) {
     .resource-list__carousel .resource-list__slide {
       --section-slide-width: calc(

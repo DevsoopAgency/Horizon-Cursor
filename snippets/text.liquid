@@ -288,6 +288,18 @@
     text-wrap: var(--text-wrap);
   }
 
+  @media screen and (min-width: 750px) and (max-width: 1199px) {
+    .text-block {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .text-block > * {
+      overflow-wrap: anywhere;
+      max-inline-size: min(100%, var(--max-width, 100%));
+    }
+  }
+
   .text-block:not(.text-block--full-width).rte,
   .text-block:not(.text-block--full-width).paragraph {
     /* Safari doesn't support pretty, so fallback to balance */

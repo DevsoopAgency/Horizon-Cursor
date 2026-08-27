@@ -53,6 +53,13 @@
 
   assign layout_type = settings.layout_type | default: 'grid'
   assign columns = settings.columns | default: 3
+  assign tablet_columns = settings.tablet_columns | default: 3 | plus: 0
+  if tablet_columns < 1
+    assign tablet_columns = 3
+  endif
+  if tablet_columns > columns
+    assign tablet_columns = columns
+  endif
   assign mobile_columns = settings.mobile_columns | default: 2
   assign columns_gap = settings.columns_gap | default: 16
   assign rows_gap = settings.rows_gap | default: 16
@@ -66,9 +73,12 @@
       capture resource_list_styles
         echo '--resource-list-column-gap-desktop: ' | append: columns_gap | append: 'px;'
         echo '--resource-list-row-gap-desktop: ' | append: rows_gap | append: 'px;'
-        echo '--resource-list-columns: repeat(' | append: columns | append: ', 1fr);'
-        echo '--resource-list-columns-mobile: repeat(' | append: mobile_columns | append: ', 1fr);'
+        echo '--resource-list-columns: repeat(' | append: columns | append: ', minmax(0, 1fr));'
+        echo '--resource-list-columns-mobile: repeat(' | append: mobile_columns | append: ', minmax(0, 1fr));'
         echo '--column-count-mobile: ' | append: mobile_columns | append: ';'
+        echo '--column-count-desktop: ' | append: columns | append: ';'
+        echo '--column-count-tablet: ' | append: tablet_columns | append: ';'
+        echo '--resource-list-columns-tablet: repeat(' | append: tablet_columns | append: ', minmax(0, 1fr));'
       endcapture
 
     when 'bento'
@@ -85,7 +95,9 @@
       endif
       capture resource_list_styles
         echo '--resource-list-column-gap-desktop: ' | append: columns_gap | append: 'px;'
+        echo '--column-count-desktop: ' | append: columns | append: ';'
         echo '--column-count: ' | append: columns | append: ';'
+        echo '--column-count-tablet: ' | append: tablet_columns | append: ';'
         echo '--column-count-mobile: 1;'
         echo '--mobile-card-size: ' | append: mobile_card_size | append: ';'
         if carousel_contained
