@@ -534,13 +534,59 @@
       --hero-content-safe-inset: max(var(--page-margin, 1rem), 1.5rem);
     }
 
-    @media screen and (min-width: 750px) and (max-width: 989px) {
+    @media screen and (min-width: 750px) and (max-width: 1024px) {
       #Hero-{{ section.id }} {
-        --hero-content-safe-inset: max(var(--page-margin, 1rem), 1.25rem);
+        --hero-content-safe-inset: max(var(--page-margin, 1rem), 1.5rem);
+      }
+
+      #Hero-{{ section.id }} .hero__media,
+      #Hero-{{ section.id }} img.hero__media,
+      #Hero-{{ section.id }} picture.hero__media img {
+        object-position: right center !important;
+      }
+
+      #Hero-{{ section.id }}.hero--height-adaptive .hero__content-wrapper:has(.banner-content) {
+        padding-inline-end: 64%;
+        box-sizing: border-box;
+        max-width: 100%;
+        overflow: hidden;
+        min-width: 0;
+      }
+
+      #Hero-{{ section.id }} .banner-content,
+      #Hero-{{ section.id }} .banner-content__slot,
+      #Hero-{{ section.id }} .banner-content__inner {
+        position: relative !important;
+        inset: auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-inline: 0 !important;
+        left: auto !important;
+        right: auto !important;
+        transform: none !important;
+      }
+
+      #Hero-{{ section.id }} .banner-content__slot {
+        padding-inline-start: var(--hero-content-safe-inset);
+        padding-inline-end: 0.5rem;
+        box-sizing: border-box;
+      }
+
+      #Hero-{{ section.id }} .banner-content__inner .text-block,
+      #Hero-{{ section.id }} .banner-content__inner .text-block > * {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+        text-wrap: wrap !important;
+      }
+
+      #Hero-{{ section.id }} .banner-content__inner :is(h1, h2, h3) {
+        font-size: clamp(1.5rem, 2.8vw, 2.125rem) !important;
       }
     }
 
-    @media screen and (min-width: 990px) {
+    @media screen and (min-width: 1200px) {
       #Hero-{{ section.id }} {
         --hero-content-safe-inset: max(var(--page-margin, 1rem), 2rem);
       }
@@ -922,30 +968,60 @@
     }
   }
 
-  /* Tablet: fluid type/gap — no edge-stick, no hard breaks */
-  @media screen and (min-width: 750px) and (max-width: 1199px) {
+  /* 768–1024 only: pin copy left so it cannot overlap the product photo.
+     Mobile ≤749 and ≥1025 are unchanged. */
+  @media screen and (min-width: 750px) and (max-width: 1024px) {
     .hero {
-      --hero-content-safe-inset: max(var(--page-margin, 1rem), 1.25rem);
+      --hero-content-safe-inset: max(var(--page-margin, 1rem), 1.5rem);
+    }
+
+    .hero .hero__media,
+    .hero .hero__media img,
+    .hero picture.hero__media img,
+    .hero .hero__media-wrapper img {
+      object-position: right center !important;
+    }
+
+    .hero.hero--height-adaptive .hero__content-wrapper:has(.banner-content) {
+      padding-inline-end: 62%;
+      box-sizing: border-box;
     }
 
     .hero .banner-content__inner {
       gap: clamp(0.75rem, 2vw, var(--banner-content-gap, 1.5rem));
     }
 
-    .hero .banner-content__slot {
-      width: min(var(--banner-content-width), calc(100% - (2 * var(--hero-content-safe-inset))));
+    .hero .banner-content,
+    .hero--height-adaptive .banner-content {
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .hero .banner-content__slot,
+    .hero--height-adaptive .banner-content__slot {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin-inline-start: 0 !important;
+      margin-inline-end: 0 !important;
+      padding-inline-start: var(--hero-content-safe-inset);
+      padding-inline-end: 0.75rem;
+      box-sizing: border-box;
     }
 
     .hero .banner-content__inner .text-block,
-    .hero .banner-content__inner .text-block > * {
-      max-width: 100%;
+    .hero .banner-content__inner .text-block > *,
+    .hero .banner-content__inner :is(h1, h2, h3, h4, p) {
+      width: 100% !important;
+      max-width: 100% !important;
       overflow-wrap: anywhere;
+      word-break: break-word;
+      text-wrap: wrap;
       hyphens: auto;
     }
 
     .hero .banner-content__inner :is(h1, h2, h3, .h1, .h2, .h3) {
-      font-size: clamp(1.75rem, 4.2vw, 3.25rem);
-      line-height: 1.15;
+      font-size: clamp(1.625rem, 3vw, 2.25rem) !important;
+      line-height: 1.12;
     }
   }
 
